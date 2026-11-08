@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ทดสอบ LIFF</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body style="font-family:sans-serif;padding:24px">
+  <h3>ทดสอบการเชื่อมต่อ LIFF</h3>
+  <div id="out">กำลังโหลด...</div>
+  <script>
+    const LIFF_ID = 'ใส่_LIFF_ID_ตรงนี้'; // จะได้จากขั้น B
+    const out = document.getElementById('out');
+    liff.init({ liffId: LIFF_ID })
+      .then(() => {
+        if (!liff.isLoggedIn()) { liff.login(); return; }
+        return liff.getProfile().then(p => {
+          out.textContent = 'เชื่อมต่อสำเร็จ | ชื่อ LINE: ' + p.displayName +
+            ' | เปิดในแอป LINE: ' + (liff.isInClient() ? 'ใช่' : 'ไม่ใช่');
+        });
+      })
+      .catch(e => { out.textContent = 'ผิดพลาด: ' + e.message; });
+  </script>
+</body>
+</html>
