@@ -1418,7 +1418,7 @@
     };
     $('holSyncBtn').onclick = async () => {
       const year = $('holYear').value;
-      const ok = await showConfirm(\ต้องการซิงค์วันหยุดราชการประจำปี พ.ศ. ${Number(year) + 543} จาก Google Calendar ใช่หรือไม่?`);`
+      const ok = await showConfirm(`ต้องการซิงค์วันหยุดราชการประจำปี พ.ศ. ${Number(year) + 543} จาก Google Calendar ใช่หรือไม่?`);
       if (!ok) return;
       const btn = $('holSyncBtn'); btn.disabled = true;
       try {
