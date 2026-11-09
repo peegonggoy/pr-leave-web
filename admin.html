@@ -592,6 +592,7 @@
             <li class="nav-item"><button class="nav-link" data-tab="duty" data-perm="duty.manage"><i class="bi bi-journal-text"></i><span>สถานะพิเศษ</span></button></li>
             <li class="nav-item"><button class="nav-link" data-tab="holiday" data-perm="holiday.manage"><i class="bi bi-calendar-event-fill"></i><span>วันหยุด</span></button></li>
             <li class="nav-item"><button class="nav-link" data-tab="unit" data-perm="duty.manage"><i class="bi bi-building-gear"></i><span>ตั้งค่าแผนก</span></button></li>
+            <li class="nav-item"><button class="nav-link" data-tab="people" data-perm="people.manage"><i class="bi bi-people-fill"></i><span>บุคลากร</span></button></li>
           </ul>
         </div>
       </div>
@@ -726,7 +727,159 @@
         </div>
         <div id="unitOut"></div>
       </section>
+      
+      <!-- แท็บที่ 6: จัดการบุคลากร -->
+      <section id="pane-people" class="pane">
+        <div class="control-bar mb-3 mb-lg-4">
+          <div class="row g-2 align-items-center justify-content-between">
+            <div class="col-12 col-md-5">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="personSearch" class="form-control" placeholder="ค้นหาชื่อ, เลขประจำตัว, ตำแหน่ง...">
+              </div>
+            </div>
+            <div class="col-12 col-md-7 d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
+              <select id="personUnitFilter" class="form-select form-select-sm" style="max-width: 180px;">
+                <option value="">ทุกแผนก</option>
+              </select>
+              <button id="personAddBtn" class="btn btn-success btn-sm px-3 text-nowrap">
+                <i class="bi bi-person-plus-fill me-1"></i> เพิ่มบุคลากร
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="peopleOut"></div>
+      </section>
 
+  <!-- Modal จัดการข้อมูลบุคลากร -->
+  <div class="modal fade" id="personModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header border-bottom-0 pb-0 px-4 pt-4">
+          <h5 class="modal-title fw-bold" id="personModalTitle">ข้อมูลบุคลากร</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body px-4 py-3">
+          <input type="hidden" id="pFormPid">
+          
+          <h6 class="fw-bold text-primary border-bottom pb-1 mb-3"><i class="bi bi-person-lines-fill me-1"></i> 1. ข้อมูลส่วนบุคคล</h6>
+          <div class="row g-2 mb-3">
+            <div class="col-12 col-sm-3">
+              <label for="pFormTitle" class="form-label small fw-bold text-secondary">คำนำหน้า/ยศ</label>
+              <input type="text" id="pFormTitle" class="form-control form-control-sm" placeholder="เช่น ร.ท., นาย">
+            </div>
+            <div class="col-12 col-sm-4">
+              <label for="pFormFirstName" class="form-label small fw-bold text-secondary">ชื่อ</label>
+              <input type="text" id="pFormFirstName" class="form-control form-control-sm" required>
+            </div>
+            <div class="col-12 col-sm-5">
+              <label for="pFormLastName" class="form-label small fw-bold text-secondary">นามสกุล</label>
+              <input type="text" id="pFormLastName" class="form-control form-control-sm" required>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-12 col-sm-4">
+              <label for="pFormCode" class="form-label small fw-bold text-secondary">เลขประจำตัว (10 หลัก)</label>
+              <input type="text" id="pFormCode" class="form-control form-control-sm" placeholder="สำหรับผูก LINE" required>
+            </div>
+            <div class="col-12 col-sm-4">
+              <label for="pFormPhone" class="form-label small fw-bold text-secondary">เบอร์โทรศัพท์</label>
+              <input type="tel" id="pFormPhone" class="form-control form-control-sm" placeholder="เช่น 0812345678">
+            </div>
+            <div class="col-12 col-sm-4">
+              <label for="pFormGender" class="form-label small fw-bold text-secondary">เพศ</label>
+              <select id="pFormGender" class="form-select form-select-sm">
+                <option value="ชาย">ชาย</option>
+                <option value="หญิง">หญิง</option>
+              </select>
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-primary border-bottom pb-1 mb-3 mt-4"><i class="bi bi-building me-1"></i> 2. การทำงานและสังกัด</h6>
+          <div class="row g-2 mb-3">
+            <div class="col-12 col-sm-4">
+              <label for="pFormUnit" class="form-label small fw-bold text-secondary">แผนก/สังกัด</label>
+              <select id="pFormUnit" class="form-select form-select-sm" required></select>
+            </div>
+            <div class="col-12 col-sm-4">
+              <label for="pFormPt" class="form-label small fw-bold text-secondary">ประเภทกำลังพล</label>
+              <select id="pFormPt" class="form-select form-select-sm" required></select>
+            </div>
+            <div class="col-12 col-sm-4">
+              <label for="pFormPosition" class="form-label small fw-bold text-secondary">ตำแหน่ง</label>
+              <input type="text" id="pFormPosition" class="form-control form-control-sm">
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-12 col-sm-4">
+              <label for="pFormStart" class="form-label small fw-bold text-secondary">วันบรรจุรับราชการ</label>
+              <input type="date" id="pFormStart" class="form-control form-control-sm">
+            </div>
+            <div class="col-12 col-sm-4">
+              <label for="pFormWfhGroup" class="form-label small fw-bold text-secondary">กลุ่ม WFH</label>
+              <input type="text" id="pFormWfhGroup" class="form-control form-control-sm" placeholder="เช่น A หรือ B" maxlength="5">
+            </div>
+            <div class="col-12 col-sm-4 d-flex align-items-center mt-3 mt-sm-0">
+              <div class="form-check form-switch mt-2">
+                <input class="form-check-input" type="checkbox" id="pFormActive" checked>
+                <label class="form-check-label small fw-bold" for="pFormActive">เปิดใช้งานในระบบ</label>
+              </div>
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-primary border-bottom pb-1 mb-3 mt-4"><i class="bi bi-shield-lock me-1"></i> 3. บทบาทและวันลาสะสม</h6>
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary d-block mb-2">บทบาทและสิทธิ์พิเศษ</label>
+            <div class="d-flex flex-wrap gap-3">
+              <div class="form-check">
+                <input class="form-check-input role-check" type="checkbox" value="HEAD" id="roleHead">
+                <label class="form-check-label small" for="roleHead">หัวหน้าแผนก (HEAD)</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input role-check" type="checkbox" value="DEPUTY" id="roleDeputy">
+                <label class="form-check-label small" for="roleDeputy">รอง ผอ.กอง (DEPUTY)</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input role-check" type="checkbox" value="DIRECTOR" id="roleDirector">
+                <label class="form-check-label small" for="roleDirector">ผอ.กอง (DIRECTOR)</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input role-check" type="checkbox" value="HR" id="roleHr">
+                <label class="form-check-label small" for="roleHr">ธุรการ (HR)</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input role-check" type="checkbox" value="ADMIN" id="roleAdmin">
+                <label class="form-check-label small" for="roleAdmin">ผู้ดูแลระบบ (ADMIN)</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-2">
+            <div class="col-12 col-sm-6">
+              <label for="pFormCarried" class="form-label small fw-bold text-secondary">วันลาพักผ่อนสะสมยกมา (ปีนี้)</label>
+              <div class="input-group input-group-sm">
+                <input type="number" step="0.5" min="0" id="pFormCarried" class="form-control" value="0">
+                <span class="input-group-text">วัน</span>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <label for="pFormAdjust" class="form-label small fw-bold text-secondary">ปรับปรุงยอดวันลา (+/-)</label>
+              <div class="input-group input-group-sm">
+                <input type="number" step="0.5" id="pFormAdjust" class="form-control" value="0">
+                <span class="input-group-text">วัน</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
+          <button type="button" class="btn btn-light btn-sm px-3" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-primary btn-sm px-4" id="personSaveBtn">บันทึกข้อมูล</button>
+        </div>
+      </div>
+    </div>
+  </div>
     </div>
   </main>
 
@@ -1369,6 +1522,62 @@
 
   // ผูกอีเวนต์และแสดงผลหน้าแอปพลิเคชัน
   function setupAppUI() {
+    $('personSearch').oninput = renderPeopleTable;
+    $('personUnitFilter').onchange = renderPeopleTable;
+    $('personAddBtn').onclick = async () => {
+      await initPersonFormMeta();
+      $('personModalTitle').textContent = 'เพิ่มบุคลากรใหม่';
+      $('pFormPid').value = '';
+      $('pFormCode').value = '';
+      $('pFormTitle').value = '';
+      $('pFormFirstName').value = '';
+      $('pFormLastName').value = '';
+      $('pFormPosition').value = '';
+      $('pFormPhone').value = '';
+      $('pFormStart').value = today();
+      $('pFormWfhGroup').value = '';
+      $('pFormActive').checked = true;
+      document.querySelectorAll('.role-check').forEach(cb => cb.checked = false);
+      $('pFormCarried').value = 0;
+      $('pFormAdjust').value = 0;
+      bootstrap.Modal.getOrCreateInstance($('personModal')).show();
+    };
+
+    $('personSaveBtn').onclick = async () => {
+      const roles = [];
+      document.querySelectorAll('.role-check:checked').forEach(cb => roles.push(cb.value));
+      const payload = {
+        pid: $('pFormPid').value,
+        code: $('pFormCode').value,
+        title: $('pFormTitle').value,
+        first_name: $('pFormFirstName').value,
+        last_name: $('pFormLastName').value,
+        pt_id: $('pFormPt').value,
+        unit_id: $('pFormUnit').value,
+        position: $('pFormPosition').value,
+        gender: $('pFormGender').value,
+        service_start: $('pFormStart').value,
+        phone: $('pFormPhone').value,
+        wfh_group: $('pFormWfhGroup').value,
+        active: $('pFormActive').checked,
+        roles,
+        carried: parseFloat($('pFormCarried').value) || 0,
+        adjust: parseFloat($('pFormAdjust').value) || 0
+      };
+
+      const btn = $('personSaveBtn');
+      btn.disabled = true;
+      try {
+        await api('person.save', payload);
+        bootstrap.Modal.getOrCreateInstance($('personModal')).hide();
+        await showAlert('บันทึกข้อมูลบุคลากรเรียบร้อยแล้ว');
+        loadPeople();
+      } catch (e) {
+        await showAlert('บันทึกไม่สำเร็จ: ' + e.message, true);
+      } finally {
+        btn.disabled = false;
+      }
+    };
     $('who').textContent = ME.person.name;
     let first = '';
     document.querySelectorAll('#tabs .nav-link').forEach(b => {
@@ -1458,6 +1667,152 @@
       say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + e.message);
     }
   }
+    // ===== แท็บจัดการบุคลากร (HR Portal) =====
+  let ALL_PEOPLE = [];
+
+  async function loadPeople() {
+    const out = $('peopleOut');
+    out.dataset.loaded = '1';
+    out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดรายชื่อ...</div></div>';
+    try {
+      ALL_PEOPLE = await api('people.list');
+      renderPeopleTable();
+    } catch (e) {
+      out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`;
+    }
+  }
+
+  function renderPeopleTable() {
+    const out = $('peopleOut');
+    const q = ($('personSearch')?.value || '').trim().toLowerCase();
+    const uFilter = $('personUnitFilter')?.value || '';
+
+    const filtered = ALL_PEOPLE.filter(p => {
+      const matchQ = !q || p.name.toLowerCase().includes(q) || (p.pid && p.pid.toLowerCase().includes(q)) || (p.position && p.position.toLowerCase().includes(q));
+      const matchU = !uFilter || p.unit_id === uFilter;
+      return matchQ && matchU;
+    });
+
+    if (!filtered.length) {
+      out.innerHTML = `
+        <div class="surface-card empty-state">
+          <div class="empty-state-icon"><i class="bi bi-people"></i></div>
+          <div class="fw-semibold text-dark mb-1">ไม่พบบุคลากรที่ค้นหา</div>
+          <div class="small">ลองเปลี่ยนคำค้นหา หรือกดปุ่ม "เพิ่มบุคลากร" ด้านบน</div>
+        </div>`;
+      return;
+    }
+
+    out.innerHTML = `<div class="surface-card mb-4"><div class="table-responsive">
+      <table class="table table-custom align-middle mb-0 small">
+        <thead>
+          <tr>
+            <th class="ps-3">ชื่อ-นามสกุล</th>
+            <th>แผนก/ตำแหน่ง</th>
+            <th class="text-center">กลุ่ม WFH</th>
+            <th class="text-center">สถานะ LINE</th>
+            <th class="text-end pe-3">จัดการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filtered.map(p => `
+            <tr>
+              <td class="ps-3">
+                <div class="fw-bold text-dark">${esc(p.name)}</div>
+                <div class="text-muted" style="font-size:0.75rem;">PID: ${esc(p.pid)}</div>
+              </td>
+              <td>
+                <div class="fw-medium text-dark">${esc(p.unit || '-')}</div>
+                <div class="text-muted" style="font-size:0.75rem;">${esc(p.position || '-')}</div>
+              </td>
+              <td class="text-center">
+                ${p.wfh_group ? `<span class="badge bg-info text-dark">กลุ่ม ${esc(p.wfh_group)}</span>` : '<span class="text-muted">-</span>'}
+              </td>
+              <td class="text-center">
+                ${p.linked 
+                  ? `<span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-check-circle-fill me-1"></i>ผูกแล้ว</span>`
+                  : `<span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1">ยังไม่ผูก</span>`}
+              </td>
+              <td class="text-end pe-3 text-nowrap">
+                <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editPerson('${p.pid}')" title="แก้ไขข้อมูล/สิทธิ์"><i class="bi bi-pencil-square"></i></button>
+                ${p.linked ? `<button type="button" class="btn btn-outline-warning btn-sm me-1" onclick="unlinkPersonLine('${p.pid}')" title="ยกเลิกผูก LINE"><i class="bi bi-link-45deg"></i></button>` : ''}
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deactivatePerson('${p.pid}', '${esc(p.name)}')" title="ปิดใช้งาน"><i class="bi bi-person-x"></i></button>
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div></div>`;
+  }
+
+  async function initPersonFormMeta() {
+    try {
+      const [units, ptypes] = await Promise.all([api('unit.list'), api('config.public')]);
+      const uSelect = $('pFormUnit');
+      const uFilter = $('personUnitFilter');
+      if (uSelect) uSelect.innerHTML = units.map(u => `<option value="${u.unit_id}">${esc(u.name)}</option>`).join('');
+      if (uFilter) uFilter.innerHTML = '<option value="">ทุกแผนก</option>' + units.map(u => `<option value="${u.unit_id}">${esc(u.name)}</option>`).join('');
+      
+      const ptSelect = $('pFormPt');
+      if (ptSelect) {
+        ptSelect.innerHTML = `
+          <option value="OFF">นายทหารสัญญาบัตร (OFF)</option>
+          <option value="NCO">นายทหารประทวน (NCO)</option>
+          <option value="GOV">พนักงานราชการ (GOV)</option>
+          <option value="EMP">ลูกจ้าง (EMP)</option>`;
+      }
+    } catch (e) { console.error('Meta load failed', e); }
+  }
+
+  window.editPerson = async function(pid) {
+    await initPersonFormMeta();
+    try {
+      const d = await api('person.detail', { pid });
+      const p = d.person;
+      $('personModalTitle').textContent = 'แก้ไขข้อมูลบุคลากร (' + p.pid + ')';
+      $('pFormPid').value = p.pid;
+      $('pFormCode').value = p.code;
+      $('pFormTitle').value = p.title;
+      $('pFormFirstName').value = p.first_name;
+      $('pFormLastName').value = p.last_name;
+      $('pFormPt').value = p.pt_id;
+      $('pFormUnit').value = p.unit_id;
+      $('pFormPosition').value = p.position;
+      $('pFormGender').value = p.gender || 'ชาย';
+      $('pFormStart').value = p.service_start;
+      $('pFormPhone').value = p.phone;
+      $('pFormWfhGroup').value = p.wfh_group;
+      $('pFormActive').checked = p.active;
+
+      document.querySelectorAll('.role-check').forEach(cb => {
+        cb.checked = (d.roles || []).includes(cb.value);
+      });
+
+      $('pFormCarried').value = d.balance ? d.balance.carried : 0;
+      $('pFormAdjust').value = d.balance ? d.balance.adjust : 0;
+
+      bootstrap.Modal.getOrCreateInstance($('personModal')).show();
+    } catch (e) { await showAlert('ดึงข้อมูลไม่สำเร็จ: ' + e.message, true); }
+  };
+
+  window.unlinkPersonLine = async function(pid) {
+    const ok = await showConfirm('ยืนยันยกเลิกการผูกบัญชี LINE ของบุคลากรนี้ใช่หรือไม่?');
+    if (!ok) return;
+    try {
+      await api('reg.unlink', { pid });
+      await showAlert('ยกเลิกการผูก LINE สำเร็จ');
+      loadPeople();
+    } catch (e) { await showAlert('ทำรายการไม่สำเร็จ: ' + e.message, true); }
+  };
+
+  window.deactivatePerson = async function(pid, name) {
+    const ok = await showConfirm(`ยืนยันปิดการใช้งาน ${name} ในระบบใช่หรือไม่?`);
+    if (!ok) return;
+    try {
+      await api('person.delete', { pid });
+      await showAlert('ปิดการใช้งานเรียบร้อยแล้ว');
+      loadPeople();
+    } catch (e) { await showAlert('ปิดการใช้งานไม่สำเร็จ: ' + e.message, true); }
+  };
   main();
 </script>
 </body>
