@@ -9,18 +9,26 @@
 <body style="font-family:sans-serif;padding:24px">
   <h3>ทดสอบการเชื่อมต่อ LIFF</h3>
   <div id="out">กำลังโหลด...</div>
+  <p>LINE User ID ของคุณ:</p>
+  <input id="uid" readonly style="width:100%;font-size:14px;padding:8px">
+  <button id="copy" style="margin-top:8px;padding:8px 16px">คัดลอก</button>
   <script>
-    const LIFF_ID = '2012347393-9duzGDMx'; // จะได้จากขั้น B
+    const LIFF_ID = 'ใส่_LIFF_ID_ตรงนี้';
     const out = document.getElementById('out');
     liff.init({ liffId: LIFF_ID })
       .then(() => {
         if (!liff.isLoggedIn()) { liff.login(); return; }
         return liff.getProfile().then(p => {
-          out.textContent = 'เชื่อมต่อสำเร็จ | ชื่อ LINE: ' + p.displayName +
-            ' | เปิดในแอป LINE: ' + (liff.isInClient() ? 'ใช่' : 'ไม่ใช่');
+          out.textContent = 'เชื่อมต่อสำเร็จ | ชื่อ LINE: ' + p.displayName;
+          document.getElementById('uid').value = p.userId;
         });
       })
       .catch(e => { out.textContent = 'ผิดพลาด: ' + e.message; });
+    document.getElementById('copy').onclick = () => {
+      const u = document.getElementById('uid');
+      u.select();
+      navigator.clipboard.writeText(u.value).then(() => alert('คัดลอกแล้ว'));
+    };
   </script>
 </body>
 </html>
