@@ -575,11 +575,6 @@
   <!-- เนื้อหาหลัก -->
   <main class="app-container">
 
-    <!-- แถบแจ้งเตือนกรณีอยู่ในโหมดตัวอย่างข้อมูล (แยกออกจาก Navbar เพื่อไม่ให้เบียดชื่อผู้ใช้บนมือถือ) -->
-    <div id="sampleBadge" class="alert alert-warning border-0 shadow-sm rounded-3 py-2 px-3 mb-2 small d-none d-flex align-items-center justify-content-between flex-wrap gap-1">
-      <span><i class="bi bi-eye-fill me-1"></i><strong>โหมดตัวอย่างข้อมูล (Sample Data)</strong> — แสดงผลตัวอย่างเมื่อไม่ได้เชื่อมต่อผ่าน LINE LIFF</span>
-    </div>
-
     <!-- กล่องแจ้งสถานะ -->
     <div id="msg" class="alert alert-primary border-0 shadow-sm rounded-4 d-flex align-items-center py-3 px-3" role="alert">
       <div class="spinner-border spinner-border-sm me-2" role="status"></div> กำลังเชื่อมต่อระบบ...
@@ -910,208 +905,10 @@
   }
 
   let ME = null;
-  let IS_SAMPLE_MODE = false;
   const can = k => !!ME && (ME.permissions.includes('*') || ME.permissions.includes(k));
-
-  // ===== ข้อมูลตัวอย่าง (Sample Data) สำหรับแสดงผลพรีวิวเมื่อไม่ได้เปิดผ่าน LINE LIFF =====
-  const SAMPLE_STATE = {
-    duties: [
-      { duty_id: 'D001', range: '16 เม.ย. 69 - 17 เม.ย. 69', name: 'พ.ต. ธีรภัทร มั่นคง (ตัวอย่าง)', type: 'ไปราชการ / ลงพื้นที่ทำข่าว', order_no: 'ปก. 114/2569', note: 'ทำข่าวภารกิจผู้บังคับบัญชา' },
-      { duty_id: 'D002', range: '16 เม.ย. 69', name: 'ร.ท. ธนากร ศรีสวัสดิ์ (ตัวอย่าง)', type: 'ลาพักผ่อน', order_no: 'ล. 042/2569', note: 'ลาพักผ่อนประจำปี' }
-    ],
-    holidays: [
-      { date: new Date().getFullYear() + '-01-01', dow: 4, name: 'วันขึ้นปีใหม่', note: 'วันหยุดราชการประจำปี (ตัวอย่าง)' },
-      { date: new Date().getFullYear() + '-04-06', dow: 1, name: 'วันจักรี', note: 'วันหยุดราชการประจำปี (ตัวอย่าง)' },
-      { date: new Date().getFullYear() + '-04-13', dow: 1, name: 'วันสงกรานต์', note: 'วันหยุดราชการประจำปี (ตัวอย่าง)' }
-    ],
-    units: [
-      { unit_id: 'U01', name: 'แผนกอำนวยการและธุรการ', members: 10, mode: 'COUNT', min_pct: 50, min_onsite: 6 },
-      { unit_id: 'U02', name: 'แผนกผลิตสื่อและสารสนเทศ', members: 14, mode: 'PCT', min_pct: 60, min_onsite: 9 },
-      { unit_id: 'U03', name: 'แผนกข่าวและวิเทศสัมพันธ์', members: 12, mode: 'COUNT', min_pct: 50, min_onsite: 8 },
-      { unit_id: 'U04', name: 'แผนกเทคนิคและโสตทัศนูปกรณ์', members: 6, mode: 'PCT', min_pct: 50, min_onsite: 3 }
-    ],
-    wfhState: {}
-  };
-
-  function getSampleData(action, payload) {
-    if (action === 'me.get') {
-      return {
-        registered: true,
-        person: { name: 'ผู้ดูแลระบบ (ตัวอย่าง)' },
-        permissions: ['*']
-      };
-    }
-    if (action === 'strength.get') {
-      const reqDate = (payload && payload.date) ? payload.date : today();
-      const d = new Date(reqDate + 'T00:00:00');
-      const isWeekend = (d.getDay() === 0 || d.getDay() === 6);
-      const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-      const dateLabel = isNaN(d.getTime())
-        ? reqDate
-        : `วันที่ ${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear() + 543} (ข้อมูลตัวอย่าง)`;
-      return {
-        label: dateLabel,
-        workday: !isWeekend,
-        unit_word: 'นาย',
-        total: 42,
-        groups: { ONSITE: 33, OUTSIDE: 6, ABSENT: 3 },
-        by_type: [
-          { name: 'ปฏิบัติงานนอกที่ตั้ง (WFH)', group: 'OUTSIDE', people: ['ร.อ. กิตติพงศ์ ใจดี (ตัวอย่าง)', 'จ.ส.อ. วรพล สุขสันต์ (ตัวอย่าง)', 'น.ส. พิมพ์ชนก รักงาน (ตัวอย่าง)'] },
-          { name: 'ไปราชการ / ลงพื้นที่ทำข่าว', group: 'OUTSIDE', people: ['พ.ต. ธีรภัทร มั่นคง (ตัวอย่าง)', 'ส.อ. ณัฐวุฒิ แสงทอง (ตัวอย่าง)', 'นาย ศุภชัย สายสื่อ (ตัวอย่าง)'] },
-          { name: 'ลาพักผ่อน / ลากิจ', group: 'ABSENT', people: ['ร.ท. ธนากร ศรีสวัสดิ์ (ตัวอย่าง)', 'จ.ส.ท. ประเสริฐ ยิ้มแย้ม (ตัวอย่าง)', 'น.ส. อารยา งามตา (ตัวอย่าง)'] }
-        ],
-        by_unit: [
-          { name: 'แผนกอำนวยการและธุรการ', total: 10, ONSITE: 8, OUTSIDE: 1, ABSENT: 1 },
-          { name: 'แผนกผลิตสื่อและสารสนเทศ', total: 14, ONSITE: 11, OUTSIDE: 2, ABSENT: 1 },
-          { name: 'แผนกข่าวและวิเทศสัมพันธ์', total: 12, ONSITE: 9, OUTSIDE: 2, ABSENT: 1 },
-          { name: 'แผนกเทคนิคและโสตทัศนูปกรณ์', total: 6, ONSITE: 5, OUTSIDE: 1, ABSENT: 0 }
-        ]
-      };
-    }
-    if (action === 'wfh.week') {
-      const startStr = (payload && payload.start) ? payload.start : today();
-      const dayNames = ['จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.'];
-      const days = dayNames.map((lbl, idx) => {
-        const dt = addDays(startStr, idx);
-        const dObj = new Date(dt + 'T00:00:00');
-        const dd = isNaN(dObj.getTime()) ? (idx + 1) : dObj.getDate();
-        return { date: dt, label: `${lbl} ${dd}`, workday: true, holiday: '' };
-      });
-      const samplePeople = [
-        { pid: 'P01', name: 'ร.อ. กิตติพงศ์ ใจดี', unit: 'แผนกอำนวยการและธุรการ', group: 'A', defaultWfh: [0, 2] },
-        { pid: 'P02', name: 'พ.ต. ธีรภัทร มั่นคง', unit: 'แผนกข่าวและวิเทศสัมพันธ์', group: 'B', defaultWfh: [1, 3], statusDay: 4, statusText: 'ไปราชการ' },
-        { pid: 'P03', name: 'จ.ส.อ. วรพล สุขสันต์', unit: 'แผนกผลิตสื่อและสารสนเทศ', group: 'A', defaultWfh: [0, 4] },
-        { pid: 'P04', name: 'ร.ท. ธนากร ศรีสวัสดิ์', unit: 'แผนกผลิตสื่อและสารสนเทศ', group: 'B', defaultWfh: [2], statusDay: 1, statusText: 'ลาพักผ่อน' },
-        { pid: 'P05', name: 'น.ส. พิมพ์ชนก รักงาน', unit: 'แผนกเทคนิคและโสตทัศนูปกรณ์', group: 'A', defaultWfh: [1, 3] }
-      ];
-      const rows = samplePeople.map(p => ({
-        pid: p.pid,
-        name: p.name,
-        unit: p.unit,
-        group: p.group,
-        cells: days.map((day, idx) => {
-          const k = p.pid + '|' + day.date;
-          const hasCustom = Object.prototype.hasOwnProperty.call(SAMPLE_STATE.wfhState, k);
-          const isWfh = hasCustom ? SAMPLE_STATE.wfhState[k] : p.defaultWfh.includes(idx);
-          if (p.statusDay === idx) {
-            return { wfh: false, status: p.statusText, label: p.statusText };
-          }
-          return { wfh: isWfh, status: '', label: '' };
-        })
-      }));
-      const summary = days.map((_, idx) => {
-        let wfhCount = 0;
-        let onsiteCount = 0;
-        rows.forEach(r => {
-          if (r.cells[idx].status) return;
-          if (r.cells[idx].wfh) wfhCount++;
-          else onsiteCount++;
-        });
-        return { wfh: wfhCount, onsite: onsiteCount };
-      });
-      return {
-        warnings: ['โหมดตัวอย่างข้อมูล: คลิกที่ปุ่มในตารางเพื่อทดสอบสลับสถานะ WFH และกดบันทึกการเปลี่ยนแปลง'],
-        days,
-        rows,
-        summary
-      };
-    }
-    if (action === 'wfh.set') {
-      let added = 0, removed = 0;
-      ((payload && payload.changes) || []).forEach(ch => {
-        SAMPLE_STATE.wfhState[ch.pid + '|' + ch.date] = ch.on;
-        if (ch.on) added++; else removed++;
-      });
-      return { added, removed };
-    }
-    if (action === 'duty.list') {
-      return SAMPLE_STATE.duties;
-    }
-    if (action === 'duty.types') {
-      return [
-        { type_id: 'T01', name: 'ไปราชการ / ลงพื้นที่ทำข่าว', category: 'นอกที่ตั้ง' },
-        { type_id: 'T02', name: 'ลาพักผ่อน', category: 'ไม่อยู่' },
-        { type_id: 'T03', name: 'ลากิจ / ลาป่วย', category: 'ไม่อยู่' },
-        { type_id: 'T04', name: 'อบรม / สัมมนา', category: 'นอกที่ตั้ง' }
-      ];
-    }
-    if (action === 'people.list') {
-      return [
-        { pid: 'P01', name: 'ร.อ. กิตติพงศ์ ใจดี', unit: 'แผนกอำนวยการและธุรการ', active: true },
-        { pid: 'P02', name: 'พ.ต. ธีรภัทร มั่นคง', unit: 'แผนกข่าวและวิเทศสัมพันธ์', active: true },
-        { pid: 'P03', name: 'จ.ส.อ. วรพล สุขสันต์', unit: 'แผนกผลิตสื่อและสารสนเทศ', active: true },
-        { pid: 'P04', name: 'ร.ท. ธนากร ศรีสวัสดิ์', unit: 'แผนกผลิตสื่อและสารสนเทศ', active: true },
-        { pid: 'P05', name: 'น.ส. พิมพ์ชนก รักงาน', unit: 'แผนกเทคนิคและโสตทัศนูปกรณ์', active: true }
-      ];
-    }
-    if (action === 'duty.save') {
-      const people = getSampleData('people.list');
-      const types = getSampleData('duty.types');
-      const pObj = people.find(x => x.pid === payload.pid) || { name: 'กำลังพล (ตัวอย่าง)' };
-      const tObj = types.find(x => x.type_id === payload.type_id) || { name: 'สถานะพิเศษ' };
-      SAMPLE_STATE.duties.unshift({
-        duty_id: 'D' + Date.now(),
-        range: payload.start_date === payload.end_date ? payload.start_date : `${payload.start_date} - ${payload.end_date}`,
-        name: pObj.name,
-        type: tObj.name,
-        order_no: payload.order_no || '',
-        note: payload.note || ''
-      });
-      return { warnings: [] };
-    }
-    if (action === 'duty.delete') {
-      SAMPLE_STATE.duties = SAMPLE_STATE.duties.filter(d => d.duty_id !== payload.duty_id);
-      return { ok: true };
-    }
-    if (action === 'holiday.list') {
-      return SAMPLE_STATE.holidays;
-    }
-    if (action === 'holiday.save') {
-      const dObj = new Date((payload.date || today()) + 'T00:00:00');
-      const dow = isNaN(dObj.getTime()) ? 1 : dObj.getDay();
-      if (payload.original_date) {
-        const idx = SAMPLE_STATE.holidays.findIndex(h => h.date === payload.original_date);
-        if (idx > -1) {
-          SAMPLE_STATE.holidays[idx] = { date: payload.date, dow, name: payload.name, note: payload.note };
-          return { ok: true };
-        }
-      }
-      SAMPLE_STATE.holidays.push({ date: payload.date, dow, name: payload.name, note: payload.note });
-      return { ok: true };
-    }
-    if (action === 'holiday.delete') {
-      SAMPLE_STATE.holidays = SAMPLE_STATE.holidays.filter(h => h.date !== payload.date);
-      return { ok: true };
-    }
-    if (action === 'holiday.sync') {
-      return { added: 2 };
-    }
-    if (action === 'unit.list') {
-      return SAMPLE_STATE.units;
-    }
-    if (action === 'unit.save') {
-      ((payload && payload.units) || []).forEach(u => {
-        const target = SAMPLE_STATE.units.find(item => item.unit_id === u.unit_id);
-        if (target) {
-          target.mode = u.mode;
-          if (u.mode === 'PCT') {
-            target.min_pct = u.value;
-            target.min_onsite = Math.ceil(target.members * u.value / 100);
-          } else {
-            target.min_onsite = u.value;
-          }
-        }
-      });
-      return { ok: true };
-    }
-    return {};
-  }
 
   // ===== ฟังก์ชันดึงข้อมูลจากฐานข้อมูล (คงรูปแบบและวิธีการดึงข้อมูลเดิม 100%) =====
   async function api(action, payload) {
-    if (IS_SAMPLE_MODE) {
-      return getSampleData(action, payload);
-    }
     let res, j;
     try {
       res = await fetch(API_URL, {
@@ -1619,40 +1416,18 @@
     openTab(first);
   }
 
-  function enableSamplePreview() {
-    IS_SAMPLE_MODE = true;
-    $('sampleBadge').classList.remove('d-none');
-    ME = getSampleData('me.get');
-    setupAppUI();
-  }
-
   // ===== เริ่มทำงาน =====
   async function main() {
     try {
-      if (typeof liff === 'undefined') {
-        enableSamplePreview();
-        return;
-      }
       await liff.init({ liffId: LIFF_ID });
-      if (!liff.isLoggedIn()) {
-        if (window.top === window.self) {
-          liff.login({ redirectUri: location.href });
-          return;
-        }
-        enableSamplePreview();
-        return;
-      }
+      if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
       ME = await api('me.get');
       if (!ME.registered) { say('warning', '<i class="bi bi-exclamation-triangle-fill me-1"></i> บัญชี LINE นี้ยังไม่ได้ลงทะเบียนในระบบ'); return; }
       if (!can('duty.manage') && !can('holiday.manage')) { say('danger', '<i class="bi bi-slash-circle-fill me-1"></i> บัญชีนี้ไม่มีสิทธิ์เข้าใช้งานหน้าธุรการ'); return; }
 
       setupAppUI();
     } catch (e) {
-      if (window.top !== window.self) {
-        enableSamplePreview();
-      } else {
-        say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + e.message);
-      }
+      say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + e.message);
     }
   }
   main();
