@@ -4,99 +4,521 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ระบบธุรการ - กองประชาสัมพันธ์</title>
+  <!-- Google Fonts: Sarabun -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Bootstrap 5.3 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- LINE LIFF SDK -->
+  <script src="about:invalid#zPythonSafez"></script>
   <style>
-    :root { --bs-primary-rgb: 13, 110, 253; }
-    body { background-color: #f8f9fa; font-size: 0.95rem; color: #333; }
-    .navbar { box-shadow: 0 2px 4px rgba(0,0,0,.08); }
-    .pane { display: none; }
-    .pane.on { display: block; }
-    /* ปรับแต่งแท็บให้เลื่อนแนวนอนได้ดีบนมือถือ */
+    :root {
+      --bs-primary: #1e40af;
+      --bs-primary-rgb: 30, 64, 175;
+      --brand-dark: #1e3a8a;
+      --brand-primary: #2563eb;
+      --brand-light: #eff6ff;
+      --surface-bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --ink-main: #0f172a;
+      --ink-muted: #64748b;
+      --border-subtle: #e2e8f0;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--surface-bg);
+      font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.96rem;
+      color: var(--ink-main);
+      line-height: 1.55;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== Navbar ===== */
+    .app-navbar {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand-primary) 100%);
+      box-shadow: 0 2px 12px rgba(30, 58, 138, 0.18);
+      padding-top: 0.7rem;
+      padding-bottom: 0.7rem;
+    }
+
+    .brand-icon-wrap {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(4px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      color: #fff;
+    }
+
+    .user-pill {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #fff;
+      border-radius: 50rem;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      max-width: 240px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ===== Layout Container ===== */
+    .app-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.25rem 1rem 2.5rem;
+      flex: 1;
+    }
+
+    @media (min-width: 992px) {
+      .app-container {
+        padding: 1.75rem 1.5rem 3rem;
+      }
+    }
+
+    /* ===== Navigation Tabs (Responsive Mobile Scroll & Desktop Bar) ===== */
+    .nav-shell {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 0.45rem;
+      box-shadow: var(--shadow-xs);
+    }
+
     #tabs-container {
       overflow-x: auto;
       white-space: nowrap;
       -webkit-overflow-scrolling: touch;
-      scrollbar-width: none; /* Firefox */
+      scrollbar-width: none;
     }
-    #tabs-container::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+
+    #tabs-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    #tabs {
+      gap: 0.35rem;
+      width: 100%;
+    }
+
+    #tabs .nav-item {
+      flex: 0 0 auto;
+    }
+
+    @media (min-width: 768px) {
+      #tabs .nav-item {
+        flex: 1 1 auto;
+      }
+      #tabs .nav-link {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
     #tabs .nav-link {
-      border-radius: 50rem;
-      padding: 0.5rem 1rem;
-      font-weight: 500;
-      color: #495057;
-      background: #e9ecef;
-      margin-right: 0.5rem;
+      border-radius: 11px;
+      padding: 0.6rem 1.1rem;
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: var(--ink-muted);
+      background: transparent;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.18s ease;
     }
+
+    #tabs .nav-link:hover:not(.active) {
+      color: var(--brand-primary);
+      background: var(--brand-light);
+    }
+
     #tabs .nav-link.active {
-      color: #fff;
-      background-color: #0d6efd;
-      box-shadow: 0 2px 6px rgba(13,110,253,.3);
+      color: #ffffff;
+      background: var(--brand-primary);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
     }
+
+    /* ===== Panes ===== */
+    .pane {
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .pane.on {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Filter Bar Card ===== */
+    .control-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xs);
+      padding: 1rem 1.25rem;
+    }
+
+    /* ===== KPI Stat Cards ===== */
     .stat-card {
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,.05);
-      transition: transform 0.2s;
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 1.15rem 1.2rem;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
-    .big-num { font-size: 1.8rem; font-weight: 700; line-height: 1.1; }
-    .table-container { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.05); overflow: hidden; }
-    /* ปุ่มและฟิลด์ให้กดง่ายบนมือถือ */
-    .btn, .form-control, .form-select { border-radius: 8px; padding: 0.55rem 0.75rem; }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .stat-dark .stat-icon-box { background: #f1f5f9; color: #0f172a; }
+    .stat-success .stat-icon-box { background: #dcfce7; color: #15803d; }
+    .stat-primary .stat-icon-box { background: #dbeafe; color: #1d4ed8; }
+    .stat-danger .stat-icon-box { background: #fee2e2; color: #b91c1c; }
+
+    .stat-dark { border-top: 4px solid #334155; }
+    .stat-success { border-top: 4px solid #16a34a; }
+    .stat-primary { border-top: 4px solid #2563eb; }
+    .stat-danger { border-top: 4px solid #dc2626; }
+
+    .big-num {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    @media (max-width: 575.98px) {
+      .big-num {
+        font-size: 1.65rem;
+      }
+      .stat-card {
+        padding: 0.95rem 1rem;
+      }
+      .stat-icon-box {
+        width: 38px;
+        height: 38px;
+        font-size: 1.1rem;
+      }
+    }
+
+    /* ===== Content Cards & Tables ===== */
+    .surface-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .surface-card-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-subtle);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .table-custom {
+      margin-bottom: 0;
+    }
+
+    .table-custom thead th {
+      background-color: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.85rem 0.75rem;
+      white-space: nowrap;
+    }
+
+    .table-custom tbody td {
+      padding: 0.85rem 0.75rem;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    .table-custom tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .table-custom tbody tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .num-pill {
+      display: inline-block;
+      min-width: 32px;
+      padding: 0.2rem 0.55rem;
+      border-radius: 50rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .person-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      border-radius: 50rem;
+      padding: 0.22rem 0.65rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      margin: 0.15rem 0.2rem 0.15rem 0;
+    }
+
+    /* ===== Controls ===== */
+    .btn, .form-control, .form-select {
+      border-radius: 10px;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.92rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn-primary {
+      background-color: var(--brand-primary);
+      border-color: var(--brand-primary);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--brand-dark);
+      border-color: var(--brand-dark);
+    }
+
+    /* ===== Placeholder State for Future Tabs ===== */
+    .upcoming-state {
+      background: var(--card-bg);
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius-lg);
+      padding: 3rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .upcoming-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--brand-light);
+      color: var(--brand-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
   </style>
-</head>
+<style data-link-removed-style>a[data-link-removed],a[href*="zPythonSafez"]:not([onclick]){pointer-events:none!important;cursor:default!important;opacity:.6}</style></head>
 <body>
 
   <!-- Navbar ด้านบน -->
-  <nav class="navbar navbar-dark bg-primary sticky-top">
-    <div class="container-fluid px-3">
-      <span class="navbar-brand mb-0 h6 fw-bold"><i class="bi bi-shield-lock-fill me-1"></i> ธุรการ กปส.</span>
-      <div id="who" class="text-white-50 small text-end">กำลังโหลด...</div>
+  <nav class="navbar navbar-dark app-navbar sticky-top">
+    <div class="container-fluid px-3 px-lg-4" style="max-width: 1200px; margin: 0 auto;">
+      <div class="d-flex align-items-center gap-2">
+        <span class="brand-icon-wrap">
+          <i class="bi bi-shield-lock-fill"></i>
+        </span>
+        <div>
+          <span class="navbar-brand mb-0 h6 fw-bold d-block lh-sm">ธุรการ กปส.</span>
+          <small class="text-white-50 d-none d-sm-block" style="font-size: 0.76rem;">ระบบบริหารจัดการกำลังพล กองประชาสัมพันธ์</small>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <span id="sampleBadge" class="badge rounded-pill bg-warning text-dark d-none">
+          <i class="bi bi-eye-fill me-1"></i>โหมดตัวอย่างข้อมูล (Sample Data)
+        </span>
+        <div class="user-pill">
+          <i class="bi bi-person-circle"></i>
+          <span id="who">กำลังโหลด...</span>
+        </div>
+      </div>
     </div>
   </nav>
 
   <!-- เนื้อหาหลัก -->
-  <main class="container py-3 px-2 px-md-3">
+  <main class="app-container">
+
     <!-- กล่องแจ้งสถานะ -->
-    <div id="msg" class="alert alert-primary shadow-sm" role="alert">
-      <div class="spinner-border spinner-border-sm me-2" role="status"></div> กำลังเชื่อมต่อระบบ...
+    <div id="msg" class="alert alert-primary border-0 shadow-sm rounded-4 d-flex align-items-center justify-content-between flex-wrap gap-2 py-3 px-3" role="alert">
+      <div class="d-flex align-items-center">
+        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+        <span>กำลังเชื่อมต่อระบบ...</span>
+      </div>
     </div>
 
     <!-- ส่วนเนื้อหาหลักหลังโหลดผ่าน -->
     <div id="app" class="d-none">
-      <!-- เมนูแท็บแบบเลื่อนได้ -->
-      <div id="tabs-container" class="mb-3 pb-1">
-        <ul id="tabs" class="nav nav-pills flex-nowrap d-inline-flex">
-          <li class="nav-item"><button class="nav-link" data-tab="strength" data-perm="strength.view"><i class="bi bi-pie-chart-fill me-1"></i> กำลังพล</button></li>
-          <li class="nav-item"><button class="nav-link" data-tab="wfh" data-perm="duty.manage"><i class="bi bi-house-door-fill me-1"></i> WFH</button></li>
-          <li class="nav-item"><button class="nav-link" data-tab="duty" data-perm="duty.manage"><i class="bi bi-journal-text me-1"></i> สถานะพิเศษ</button></li>
-          <li class="nav-item"><button class="nav-link" data-tab="holiday" data-perm="holiday.manage"><i class="bi bi-calendar-event-fill me-1"></i> วันหยุด</button></li>
-          <li class="nav-item"><button class="nav-link" data-tab="unit" data-perm="duty.manage"><i class="bi bi-building-gear me-1"></i> ตั้งค่าแผนก</button></li>
-        </ul>
+
+      <!-- เมนูแท็บแบบเลื่อนได้บนมือถือ และเต็มแถบบนคอมพิวเตอร์ -->
+      <div class="nav-shell mb-4">
+        <div id="tabs-container">
+          <ul id="tabs" class="nav nav-pills flex-nowrap d-inline-flex d-md-flex">
+            <li class="nav-item">
+              <button class="nav-link" data-tab="strength" data-perm="strength.view">
+                <i class="bi bi-pie-chart-fill"></i>
+                <span>กำลังพล</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" data-tab="wfh" data-perm="duty.manage">
+                <i class="bi bi-house-door-fill"></i>
+                <span>WFH</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" data-tab="duty" data-perm="duty.manage">
+                <i class="bi bi-journal-text"></i>
+                <span>สถานะพิเศษ</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" data-tab="holiday" data-perm="holiday.manage">
+                <i class="bi bi-calendar-event-fill"></i>
+                <span>วันหยุด</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" data-tab="unit" data-perm="duty.manage">
+                <i class="bi bi-building-gear"></i>
+                <span>ตั้งค่าแผนก</span>
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <!-- แท็บที่ 1: ยอดกำลังพล -->
       <section id="pane-strength" class="pane">
-        <div class="card border-0 shadow-sm mb-3 rounded-4 p-3 bg-white">
-          <div class="row g-2 align-items-center">
-            <div class="col-7 col-sm-auto">
-              <input type="date" id="stDate" class="form-control form-control-sm">
+        <!-- แถบเลือกวันที่ -->
+        <div class="control-bar mb-4">
+          <div class="row g-2 align-items-center justify-content-between">
+            <div class="col-12 col-md-auto">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-calendar2-check text-primary fs-5"></i>
+                <div>
+                  <div class="fw-bold text-dark lh-sm">รายงานยอดกำลังพลประจำวัน</div>
+                  <div class="text-muted small">เลือกวันที่เพื่อตรวจสอบสถานะการปฏิบัติงานของกำลังพล</div>
+                </div>
+              </div>
             </div>
-            <div class="col-5 col-sm-auto">
-              <button id="stGo" class="btn btn-primary btn-sm w-100"><i class="bi bi-search me-1"></i> แสดงข้อมูล</button>
+            <div class="col-12 col-md-auto mt-2 mt-md-0">
+              <div class="row g-2 align-items-center">
+                <div class="col-7 col-sm-auto">
+                  <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-calendar3"></i></span>
+                    <input type="date" id="stDate" class="form-control border-start-0 ps-0" aria-label="เลือกวันที่">
+                  </div>
+                </div>
+                <div class="col-5 col-sm-auto">
+                  <button id="stGo" class="btn btn-primary w-100 d-inline-flex align-items-center justify-content-center gap-1">
+                    <i class="bi bi-search"></i>
+                    <span>แสดงข้อมูล</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- พื้นที่แสดงผลข้อมูลกำลังพล -->
         <div id="stOut"></div>
       </section>
 
       <!-- แท็บเตรียมไว้สำหรับขั้นตอนถัดไป -->
-      <section id="pane-wfh" class="pane"><div class="alert alert-info border-0 shadow-sm">แท็บตาราง WFH จะพร้อมใช้งานในขั้นตอนถัดไปครับ</div></section>
-      <section id="pane-duty" class="pane"><div class="alert alert-info border-0 shadow-sm">แท็บสถานะพิเศษจะพร้อมใช้งานในขั้นตอนถัดไปครับ</div></section>
-      <section id="pane-holiday" class="pane"><div class="alert alert-info border-0 shadow-sm">แท็บวันหยุดจะพร้อมใช้งานในขั้นตอนถัดไปครับ</div></section>
-      <section id="pane-unit" class="pane"><div class="alert alert-info border-0 shadow-sm">แท็บตั้งค่าแผนกจะพร้อมใช้งานในขั้นตอนถัดไปครับ</div></section>
+      <section id="pane-wfh" class="pane">
+        <div class="upcoming-state">
+          <div class="upcoming-icon"><i class="bi bi-house-door-fill"></i></div>
+          <h6 class="fw-bold text-dark mb-1">ตารางปฏิบัติงานนอกที่ตั้ง (WFH)</h6>
+          <p class="text-muted small mb-0">แท็บตาราง WFH จะพร้อมใช้งานในขั้นตอนถัดไปครับ</p>
+        </div>
+      </section>
+
+      <section id="pane-duty" class="pane">
+        <div class="upcoming-state">
+          <div class="upcoming-icon"><i class="bi bi-journal-text"></i></div>
+          <h6 class="fw-bold text-dark mb-1">จัดการสถานะพิเศษประจำวัน</h6>
+          <p class="text-muted small mb-0">แท็บสถานะพิเศษจะพร้อมใช้งานในขั้นตอนถัดไปครับ</p>
+        </div>
+      </section>
+
+      <section id="pane-holiday" class="pane">
+        <div class="upcoming-state">
+          <div class="upcoming-icon"><i class="bi bi-calendar-event-fill"></i></div>
+          <h6 class="fw-bold text-dark mb-1">ปฏิทินวันหยุดราชการ</h6>
+          <p class="text-muted small mb-0">แท็บวันหยุดจะพร้อมใช้งานในขั้นตอนถัดไปครับ</p>
+        </div>
+      </section>
+
+      <section id="pane-unit" class="pane">
+        <div class="upcoming-state">
+          <div class="upcoming-icon"><i class="bi bi-building-gear"></i></div>
+          <h6 class="fw-bold text-dark mb-1">ตั้งค่าข้อมูลแผนก</h6>
+          <p class="text-muted small mb-0">แท็บตั้งค่าแผนกจะพร้อมใช้งานในขั้นตอนถัดไปครับ</p>
+        </div>
+      </section>
+
     </div>
   </main>
 
@@ -108,19 +530,93 @@
   const $ = id => document.getElementById(id);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
     c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const today = () => { const d = new Date();
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
-  const say = (type, text) => { const m = $('msg'); m.className = 'alert alert-' + type + ' shadow-sm'; m.innerHTML = text; };
+
+  const today = () => {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  };
+
+  const say = (type, text) => {
+    const m = $('msg');
+    m.className = 'alert alert-' + type + ' border-0 shadow-sm rounded-4 d-flex align-items-center justify-content-between flex-wrap gap-2 py-3 px-3';
+    m.innerHTML = text;
+  };
+
   let ME = null;
+  let IS_SAMPLE_MODE = false;
+
   const can = k => !!ME && (ME.permissions.includes('*') || ME.permissions.includes(k));
 
+  // ข้อมูลตัวอย่าง (Sample Data) สำหรับแสดงผลเมื่อไม่ได้เปิดผ่าน LINE LIFF
+  function getSampleData(action, payload) {
+    if (action === 'me.get') {
+      return {
+        registered: true,
+        person: { name: 'ผู้ดูแลระบบ (ข้อมูลตัวอย่าง)' },
+        permissions: ['*']
+      };
+    }
+    if (action === 'strength.get') {
+      const reqDate = (payload && payload.date) ? payload.date : today();
+      const d = new Date(reqDate + 'T00:00:00');
+      const isWeekend = (d.getDay() === 0 || d.getDay() === 6);
+      const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+      const dateLabel = isNaN(d.getTime())
+        ? reqDate
+        : `วันที่ ${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear() + 543} (ข้อมูลตัวอย่าง)`;
+
+      return {
+        label: dateLabel,
+        workday: !isWeekend,
+        unit_word: 'นาย',
+        total: 42,
+        groups: {
+          ONSITE: 33,
+          OUTSIDE: 6,
+          ABSENT: 3
+        },
+        by_type: [
+          {
+            name: 'ปฏิบัติงานนอกที่ตั้ง (WFH)',
+            group: 'OUTSIDE',
+            people: ['ร.อ. กิตติพงศ์ ใจดี (ตัวอย่าง)', 'จ.ส.อ. วรพล สุขสันต์ (ตัวอย่าง)', 'น.ส. พิมพ์ชนก รักงาน (ตัวอย่าง)']
+          },
+          {
+            name: 'ไปราชการ / ลงพื้นที่ทำข่าว',
+            group: 'OUTSIDE',
+            people: ['พ.ต. ธีรภัทร มั่นคง (ตัวอย่าง)', 'ส.อ. ณัฐวุฒิ แสงทอง (ตัวอย่าง)', 'นาย ศุภชัย สายสื่อ (ตัวอย่าง)']
+          },
+          {
+            name: 'ลาพักผ่อน / ลากิจ',
+            group: 'ABSENT',
+            people: ['ร.ท. ธนากร ศรีสวัสดิ์ (ตัวอย่าง)', 'จ.ส.ท. ประเสริฐ ยิ้มแย้ม (ตัวอย่าง)', 'น.ส. อารยา งามตา (ตัวอย่าง)']
+          }
+        ],
+        by_unit: [
+          { name: 'แผนกอำนวยการและธุรการ', total: 10, ONSITE: 8, OUTSIDE: 1, ABSENT: 1 },
+          { name: 'แผนกผลิตสื่อและสารสนเทศ', total: 14, ONSITE: 11, OUTSIDE: 2, ABSENT: 1 },
+          { name: 'แผนกข่าวและวิเทศสัมพันธ์', total: 12, ONSITE: 9, OUTSIDE: 2, ABSENT: 1 },
+          { name: 'แผนกเทคนิคและโสตทัศนูปกรณ์', total: 6, ONSITE: 5, OUTSIDE: 1, ABSENT: 0 }
+        ]
+      };
+    }
+    return {};
+  }
+
   async function api(action, payload) {
+    if (IS_SAMPLE_MODE) {
+      return getSampleData(action, payload);
+    }
     let res, j;
     try {
       res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action, payload: payload || {}, idToken: liff.getIDToken() })
+        body: JSON.stringify({
+          action,
+          payload: payload || {},
+          idToken: (typeof liff !== 'undefined' && liff.getIDToken) ? liff.getIDToken() : ''
+        })
       });
     } catch (e) { throw new Error('ติดต่อเซิร์ฟเวอร์ไม่ได้'); }
     try { j = await res.json(); } catch (e) { throw new Error('รูปแบบข้อมูลตอบกลับไม่ถูกต้อง'); }
@@ -138,96 +634,186 @@
   async function loadStrength() {
     const out = $('stOut');
     out.dataset.loaded = '1';
-    out.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังประมวลผลข้อมูล...</div></div>';
+    out.innerHTML = `
+      <div class="surface-card p-5 text-center">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="small text-muted mt-2 fw-medium">กำลังประมวลผลข้อมูลยอดกำลังพล...</div>
+      </div>`;
     try {
       const s = await api('strength.get', { date: $('stDate').value });
       const w = esc(s.unit_word);
       const G = { ONSITE: 'ณ ที่ตั้ง', OUTSIDE: 'นอกที่ตั้ง', ABSENT: 'ไม่อยู่' };
+      const groupBadgeColor = {
+        ONSITE: 'bg-success-subtle text-success-emphasis border-success-subtle',
+        OUTSIDE: 'bg-primary-subtle text-primary-emphasis border-primary-subtle',
+        ABSENT: 'bg-danger-subtle text-danger-emphasis border-danger-subtle'
+      };
+
       const card = (t, n, c, icon) => `
-        <div class="col-6 col-md-3">
-          <div class="card stat-card p-3 bg-white h-100 border-start border-4 border-${c}">
-            <div class="small text-muted mb-1"><i class="bi bi-${icon} me-1"></i>${t}</div>
-            <div class="big-num text-${c}">${n}</div>
-            <div class="text-secondary" style="font-size: 0.8rem;">${w}</div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card stat-${c}">
+            <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+              <div class="small text-muted fw-medium">${t}</div>
+              <div class="stat-icon-box"><i class="bi bi-${icon}"></i></div>
+            </div>
+            <div class="d-flex align-items-baseline gap-2">
+              <div class="big-num text-${c}">${n}</div>
+              <div class="text-secondary small">${w}</div>
+            </div>
           </div>
         </div>`;
-      
+
       out.innerHTML = `
-        <div class="d-flex align-items-center justify-content-between mb-3 px-1">
-          <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-calendar3 me-2 text-primary"></i>${esc(s.label)}</h6>
-          ${s.workday ? '' : '<span class="badge bg-secondary">วันหยุดราชการ</span>'}
-        </div>
-        <div class="row g-2 mb-3">
-          ${card('ยอดกำลังพลรวม', s.total, 'dark', 'people')}
-          ${card('ปฏิบัติงาน ณ ที่ตั้ง', s.groups.ONSITE, 'success', 'building-check')}
-          ${card('ปฏิบัติงานนอกที่ตั้ง', s.groups.OUTSIDE, 'primary', 'geo-alt')}
-          ${card('ไม่อยู่ / ลา', s.groups.ABSENT, 'danger', 'person-dash')}
-        </div>
-        
-        <div class="card border-0 shadow-sm rounded-4 mb-3 bg-white">
-          <div class="card-header bg-transparent fw-bold py-3 border-0"><i class="bi bi-list-check me-2 text-primary"></i>รายละเอียดสถานะพิเศษประจำวัน</div>
-          <ul class="list-group list-group-flush small">
-            ${s.by_type.length ? s.by_type.map(t => `
-              <li class="list-group-item py-2 px-3">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <span class="fw-bold text-dark">${esc(t.name)}</span>
-                  <span class="badge bg-light text-dark border">${t.people.length} ${w} (${G[t.group] || ''})</span>
-                </div>
-                <div class="text-muted" style="font-size: 0.85rem;">${t.people.map(esc).join(', ')}</div>
-              </li>`).join('')
-              : '<li class="list-group-item text-muted text-center py-3">ไม่มีผู้มีสถานะพิเศษในวันนี้ ทุกคนปฏิบัติงานตามปกติ</li>'}
-          </ul>
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 px-1">
+          <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+            <i class="bi bi-calendar3 text-primary"></i>
+            <span>${esc(s.label)}</span>
+          </h6>
+          ${s.workday
+            ? '<span class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle px-3 py-2"><i class="bi bi-briefcase-fill me-1"></i>วันทำการปกติ</span>'
+            : '<span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle px-3 py-2"><i class="bi bi-calendar-x-fill me-1"></i>วันหยุดราชการ</span>'}
         </div>
 
-        <div class="card border-0 shadow-sm rounded-4 bg-white mb-4">
-          <div class="card-header bg-transparent fw-bold py-3 border-0"><i class="bi bi-buildings me-2 text-primary"></i>สรุปแยกตามแผนก</div>
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 small text-center">
-              <thead class="table-light">
-                <tr><th class="text-start ps-3">แผนก</th><th>ทั้งหมด</th><th>ณ ที่ตั้ง</th><th>นอกที่ตั้ง</th><th>ไม่อยู่</th></tr>
-              </thead>
-              <tbody>
-                ${s.by_unit.map(u => `
-                  <tr>
-                    <td class="text-start ps-3 fw-medium">${esc(u.name)}</td>
-                    <td><span class="badge bg-secondary bg-opacity-10 text-secondary">${u.total}</span></td>
-                    <td class="text-success fw-bold">${u.ONSITE}</td>
-                    <td class="text-primary">${u.OUTSIDE}</td>
-                    <td class="text-danger">${u.ABSENT}</td>
-                  </tr>`).join('')}
-              </tbody>
-            </table>
+        <!-- การ์ดสรุป 4 สถานะหลัก -->
+        <div class="row g-3 mb-4">
+          ${card('ยอดกำลังพลรวม', s.total, 'dark', 'people-fill')}
+          ${card('ปฏิบัติงาน ณ ที่ตั้ง', s.groups.ONSITE, 'success', 'building-check')}
+          ${card('ปฏิบัติงานนอกที่ตั้ง', s.groups.OUTSIDE, 'primary', 'geo-alt-fill')}
+          ${card('ไม่อยู่ / ลา', s.groups.ABSENT, 'danger', 'person-dash-fill')}
+        </div>
+
+        <!-- แบ่ง 2 คอลัมน์บนจอคอมพิวเตอร์ และเรียงซ้อนกันบนมือถือ -->
+        <div class="row g-4 mb-4">
+          <!-- คอลัมน์ซ้าย: รายละเอียดสถานะพิเศษประจำวัน -->
+          <div class="col-12 col-lg-5">
+            <div class="surface-card">
+              <div class="surface-card-header">
+                <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                  <i class="bi bi-list-check text-primary fs-5"></i>
+                  <span>รายละเอียดสถานะพิเศษประจำวัน</span>
+                </div>
+                <span class="badge rounded-pill bg-light text-secondary border">${s.by_type.length} รายการ</span>
+              </div>
+              <ul class="list-group list-group-flush">
+                ${s.by_type.length ? s.by_type.map(t => `
+                  <li class="list-group-item py-3 px-3 border-light-subtle">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-1 mb-2">
+                      <span class="fw-bold text-dark">${esc(t.name)}</span>
+                      <span class="badge rounded-pill border ${groupBadgeColor[t.group] || 'bg-light text-dark border'}">
+                        ${t.people.length} ${w} ${G[t.group] ? '• ' + G[t.group] : ''}
+                      </span>
+                    </div>
+                    <div class="d-flex flex-wrap">
+                      ${t.people.map(p => `<span class="person-chip"><i class="bi bi-person text-secondary"></i>${esc(p)}</span>`).join('')}
+                    </div>
+                  </li>`).join('')
+                  : `<li class="list-group-item text-muted text-center py-5 border-0">
+                      <i class="bi bi-check2-circle text-success fs-2 d-block mb-2"></i>
+                      <div class="fw-medium text-dark">ไม่มีผู้มีสถานะพิเศษในวันนี้</div>
+                      <div class="small">กำลังพลทุกคนปฏิบัติงานตามปกติ</div>
+                    </li>`}
+              </ul>
+            </div>
+          </div>
+
+          <!-- คอลัมน์ขวา: สรุปแยกตามแผนก -->
+          <div class="col-12 col-lg-7">
+            <div class="surface-card">
+              <div class="surface-card-header">
+                <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                  <i class="bi bi-buildings text-primary fs-5"></i>
+                  <span>สรุปแยกตามแผนก</span>
+                </div>
+                <span class="badge rounded-pill bg-light text-secondary border">${s.by_unit.length} แผนก</span>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-custom align-middle text-center">
+                  <thead>
+                    <tr>
+                      <th class="text-start ps-3">แผนก</th>
+                      <th>ทั้งหมด</th>
+                      <th>ณ ที่ตั้ง</th>
+                      <th>นอกที่ตั้ง</th>
+                      <th class="pe-3">ไม่อยู่</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${s.by_unit.map(u => `
+                      <tr>
+                        <td class="text-start ps-3 fw-semibold text-dark">${esc(u.name)}</td>
+                        <td><span class="num-pill bg-secondary bg-opacity-10 text-secondary">${u.total}</span></td>
+                        <td><span class="num-pill bg-success bg-opacity-10 text-success">${u.ONSITE}</span></td>
+                        <td><span class="num-pill bg-primary bg-opacity-10 text-primary">${u.OUTSIDE}</span></td>
+                        <td class="pe-3"><span class="num-pill ${u.ABSENT > 0 ? 'bg-danger bg-opacity-10 text-danger' : 'text-muted'}">${u.ABSENT}</span></td>
+                      </tr>`).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>`;
     } catch (e) {
-      out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm">${esc(e.message)}</div>`;
+      out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4"><i class="bi bi-exclamation-octagon-fill me-2"></i>${esc(e.message)}</div>`;
     }
+  }
+
+  function renderAppWithUser() {
+    $('who').textContent = ME.person.name;
+    let first = '';
+    document.querySelectorAll('#tabs .nav-link').forEach(b => {
+      if (!can(b.dataset.perm)) { b.parentElement.remove(); return; }
+      b.onclick = () => openTab(b.dataset.tab);
+      first = first || b.dataset.tab;
+    });
+
+    if (!$('stDate').value) {
+      $('stDate').value = today();
+    }
+    $('stGo').onclick = loadStrength;
+
+    $('msg').className = 'd-none';
+    $('app').classList.remove('d-none');
+    openTab(first);
+  }
+
+  function enableSamplePreview() {
+    IS_SAMPLE_MODE = true;
+    $('sampleBadge').classList.remove('d-none');
+    ME = getSampleData('me.get');
+    renderAppWithUser();
   }
 
   async function main() {
     try {
+      if (typeof liff === 'undefined') {
+        throw new Error('ไม่พบไลบรารี LINE LIFF');
+      }
       await liff.init({ liffId: LIFF_ID });
-      if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
+      if (!liff.isLoggedIn()) {
+        if (window.top === window.self) {
+          liff.login({ redirectUri: location.href });
+          return;
+        }
+        enableSamplePreview();
+        return;
+      }
       ME = await api('me.get');
-      if (!ME.registered) { say('warning', '<i class="bi bi-exclamation-triangle-fill me-1"></i> บัญชี LINE นี้ยังไม่ได้ลงทะเบียนในระบบ'); return; }
-      if (!can('duty.manage') && !can('holiday.manage')) { say('danger', '<i class="bi bi-slash-circle-fill me-1"></i> บัญชีนี้ไม่มีสิทธิ์เข้าใช้งานหน้าธุรการ'); return; }
-      
-      $('who').textContent = ME.person.name;
-      let first = '';
-      document.querySelectorAll('#tabs .nav-link').forEach(b => {
-        if (!can(b.dataset.perm)) { b.parentElement.remove(); return; }
-        b.onclick = () => openTab(b.dataset.tab);
-        first = first || b.dataset.tab;
-      });
-      $('stDate').value = today();
-      $('stGo').onclick = loadStrength;
-      $('msg').className = 'd-none';
-      $('app').classList.remove('d-none');
-      openTab(first);
+      if (!ME.registered) {
+        say('warning', '<div><i class="bi bi-exclamation-triangle-fill me-1"></i> บัญชี LINE นี้ยังไม่ได้ลงทะเบียนในระบบ</div>');
+        return;
+      }
+      if (!can('duty.manage') && !can('holiday.manage')) {
+        say('danger', '<div><i class="bi bi-slash-circle-fill me-1"></i> บัญชีนี้ไม่มีสิทธิ์เข้าใช้งานหน้าธุรการ</div>');
+        return;
+      }
+
+      renderAppWithUser();
     } catch (e) {
-      say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + e.message);
+      // กรณีเปิดทดสอบบนเบราว์เซอร์หรือพรีวิวที่ไม่ได้เชื่อมต่อกับ LINE LIFF จะแสดงโหมดข้อมูลตัวอย่างพร้อมแจ้งเตือนชัดเจน
+      enableSamplePreview();
     }
   }
+
   main();
 </script>
 </body>
