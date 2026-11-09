@@ -661,15 +661,43 @@
     const LIFF_ID = '2012347393-9duzGDMx';
     const API_URL = 'https://script.google.com/macros/s/AKfycbyxdXyW1pmlMHSNvhkHqd3NUuEloJLOd1cx1uozQ4wU4fz1gAl_evliPHAmsstzxtjg/exec';
 
-    const $ = id => document.getElementById(id);
+    // ส่งต่อไปหน้า admin.html ทันทีเมื่อเปิดจากลิงก์ธุรการหรือยอดกำลังพลใน LINE
+    (function () {
+      const p = new URLSearchParams(location.search).get('p');
+      if (['admin', 'strength', 'wfh', 'duty', 'holiday', 'unit'].includes(p)) {
+        location.replace('admin.html' + location.search);
+      }
+    })();
 
+    const $ = id => document.getElementById(id);
     const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
       c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-    const today = () => {
-      const d = new Date();
-      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-    };
+    const TH_MONTHS = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+    const TH_DAYS = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+
+    const fmtIso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    const today = () => fmtIso(new Date());
+
+    function addDaysStr(dStr, n) {
+      const [y, m, d] = dStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d + n);
+      return fmtIso(dt);
+    }
+
+    function mondayOfStr(dStr) {
+      const [y, m, d] = (dStr || today()).split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      const w = dt.getDay();
+      dt.setDate(dt.getDate() + (w === 0 ? -6 : 1 - w));
+      return fmtIso(dt);
+    }
+
+    function thDateBe(dStr) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dStr || '').trim());
+      if (!m) return dStr || '';
+      return `${Number(m[3])} ${TH_MONTHS[Number(m[2]) - 1]} ${Number(m[1]) + 543}`;
+    }
 
     const say = (type, text) => {
       const m = $('msg');
@@ -691,10 +719,11 @@
       return j.data;
     }
 
-    window.switchPane = function(paneName) {
+    window.switchPane = function (paneName) {
       document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
       $('pane-' + paneName).classList.add('on');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
       if (paneName === 'leave-form') {
         $('leaveStart').value = today();
         $('leaveEnd').value = today();
@@ -703,7 +732,7 @@
       }
       if (paneName === 'leave-history') loadLeaveHistory();
       if (paneName === 'my-wfh') {
-        $('myWfhDate').value = today();
+        if (!$('myWfhDate').value) $('myWfhDate').value = today();
         loadMyWfh();
       }
       if (paneName === 'approval') loadApprovalList();
@@ -712,7 +741,10 @@
     async function loadLeaveTypes() {
       try {
         const types = await api('leave.types');
-        $('leaveType').innerHTML = types.map(t => `<option value="${t.type_id}">${esc(t.name)}</option>`).join('');
+        $('leaveType').innerHTML = types.map(t => {
+          const leftTxt = t.balance && t.balance.configured && !t.balance.unlimited ? ` (คงเหลือ ${t.balance.left} วัน)` : '';
+          return `<option value="${t.type_id}">${esc(t.name)}${esc(leftTxt)}</option>`;
+        }).join('');
       } catch (e) { console.error(e); }
     }
 
@@ -720,39 +752,79 @@
       const out = $('historyOut');
       out.innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>กำลังโหลดประวัติ...</div>';
       try {
-        const list = await api('leave.history');
+        const list = await api('leave.mine');
         if (!list.length) {
           out.innerHTML = '<div class="card p-4 bg-white text-center text-muted">ยังไม่มีประวัติการลา</div>';
           return;
         }
-        const BADGE = { PENDING: 'bg-warning text-dark', APPROVED: 'bg-success', REJECTED: 'bg-danger', CANCELLED: 'bg-secondary' };
-        const LABEL = { PENDING: 'รออนุมัติ', APPROVED: 'อนุมัติแล้ว', REJECTED: 'ไม่อนุมัติ', CANCELLED: 'ยกเลิกแล้ว' };
+        const BADGE = {
+          PENDING: 'bg-warning text-dark',
+          APPROVED: 'bg-success',
+          REJECTED: 'bg-danger',
+          RETURNED: 'bg-info text-dark',
+          CANCELLED: 'bg-secondary',
+          CANCEL_REQ: 'bg-warning text-dark'
+        };
         out.innerHTML = list.map(item => `
           <div class="card p-3 bg-white mb-2">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-1">
-              <span class="fw-bold text-dark">${esc(item.type_name)}</span>
-              <span class="badge ${BADGE[item.status] || 'bg-secondary'}">${LABEL[item.status] || item.status}</span>
+              <span class="fw-bold text-dark">${esc(item.type)} <span class="text-muted small fw-normal">(${esc(item.id)})</span></span>
+              <span class="badge ${BADGE[item.status] || 'bg-secondary'}">${esc(item.status_label || item.status)}</span>
             </div>
             <div class="small text-muted mb-2"><i class="bi bi-calendar3 me-1"></i> ${esc(item.range)} (${item.days} วัน)</div>
             <div class="small text-secondary bg-light p-2 rounded text-break">${esc(item.reason)}</div>
+            ${['PENDING', 'RETURNED', 'APPROVED'].includes(item.status) ? `
+              <div class="text-end mt-2">
+                <button class="btn btn-outline-danger btn-sm" onclick="cancelMyLeave('${item.id}', '${item.status}')">
+                  <i class="bi bi-x-circle me-1"></i> ${item.status === 'APPROVED' ? 'ขอยกเลิกใบลา' : 'ถอนใบลา'}
+                </button>
+              </div>` : ''}
           </div>`).join('');
       } catch (e) {
         out.innerHTML = `<div class="alert alert-danger small">โหลดประวัติไม่สำเร็จ: ${esc(e.message)}</div>`;
       }
     }
 
+    window.cancelMyLeave = async function (reqId, status) {
+      let reason = '';
+      if (status === 'APPROVED') {
+        reason = prompt('กรุณาระบุเหตุผลการขอยกเลิกใบลาที่อนุมัติแล้ว:');
+        if (reason === null) return;
+        if (!reason.trim()) { alert('กรุณาระบุเหตุผลการขอยกเลิก'); return; }
+      } else {
+        if (!confirm(`ยืนยันถอนใบลา ${reqId} ใช่หรือไม่?`)) return;
+      }
+      try {
+        await api('leave.cancel', { id: reqId, reason: reason.trim() });
+        alert('ดำเนินการเรียบร้อยแล้ว');
+        loadLeaveHistory();
+      } catch (e) {
+        alert('ทำรายการไม่สำเร็จ: ' + e.message);
+      }
+    };
+
     async function loadMyWfh() {
       const out = $('myWfhOut');
-      out.innerHTML = '<div class="text-center py-4 text-muted">กำลังโหลดตาราง WFH...</div>';
+      out.innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>กำลังโหลดตาราง WFH...</div>';
       try {
-        const data = await api('my.wfh', { date: $('myWfhDate').value });
+        const mon = mondayOfStr($('myWfhDate').value || today());
+        const fri = addDaysStr(mon, 4);
+        const data = await api('wfh.mine', { from: mon, to: fri });
+        const wfhSet = new Set(data.dates || []);
+        const days = [0, 1, 2, 3, 4].map(i => {
+          const d = addDaysStr(mon, i);
+          const [y, m, dayNum] = d.split('-').map(Number);
+          const dow = new Date(y, m - 1, dayNum).getDay();
+          return { date: d, label: `วัน${TH_DAYS[dow]}ที่ ${thDateBe(d)}`, wfh: wfhSet.has(d) };
+        });
+
         out.innerHTML = `<div class="card p-3 bg-white">
-          <div class="fw-bold text-primary mb-2"><i class="bi bi-calendar-week me-1"></i> สัปดาห์วันที่ ${esc(data.week_label)}</div>
+          <div class="fw-bold text-primary mb-2"><i class="bi bi-calendar-week me-1"></i> สัปดาห์วันที่ ${esc(thDateBe(mon))} – ${esc(thDateBe(fri))}</div>
           <ul class="list-group list-group-flush small">
-            ${data.days.map(d => `
+            ${days.map(d => `
               <li class="list-group-item wfh-list-item px-0">
-                <span class="fw-medium">${esc(d.date_label)}</span>
-                <span class="badge ${d.wfh ? 'bg-info text-dark' : 'bg-secondary'}">${d.wfh ? 'ปฏิบัติงานนอกที่ตั้ง (WFH)' : 'ปฏิบัติงาน ณ ที่ตั้ง'}</span>
+                <span class="fw-medium">${esc(d.label)}</span>
+                <span class="badge ${d.wfh ? 'bg-info text-dark' : 'bg-secondary bg-opacity-25 text-dark'}">${d.wfh ? 'ปฏิบัติงานนอกที่ตั้ง (WFH)' : 'ปฏิบัติงาน ณ ที่ตั้ง'}</span>
               </li>`).join('')}
           </ul>
         </div>`;
@@ -763,21 +835,22 @@
 
     async function loadApprovalList() {
       const out = $('approvalOut');
-      out.innerHTML = '<div class="text-center py-4 text-muted">กำลังโหลดรายการ...</div>';
+      out.innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>กำลังโหลดรายการ...</div>';
       try {
-        const list = await api('approval.list');
+        const list = await api('approve.list');
+        $('pendingBadge').textContent = list.length;
         if (!list.length) {
-          out.innerHTML = '<div class="card p-4 bg-white text-center text-muted">ไม่มีรายการรออนุมัติ</div>';
+          out.innerHTML = '<div class="card p-4 bg-white text-center text-muted">ไม่มีรายการรออนุมัติ ✓</div>';
           return;
         }
         out.innerHTML = list.map(item => `
           <div class="card p-3 bg-white mb-3 border-start border-4 border-warning">
             <div class="fw-bold text-dark text-break">${esc(item.name)} <span class="text-muted small fw-normal">(${esc(item.unit)})</span></div>
-            <div class="small text-primary fw-bold my-1">${esc(item.type_name)} • ${esc(item.range)} (${item.days} วัน)</div>
+            <div class="small text-primary fw-bold my-1">${esc(item.type)} • ${esc(item.range)} (${item.days} วัน)</div>
             <div class="small text-secondary bg-light p-2 rounded mb-3 text-break">เหตุผล: ${esc(item.reason)}</div>
             <div class="d-flex gap-2">
-              <button class="btn btn-success btn-sm flex-grow-1" onclick="processApproval('${item.leave_id}', 'APPROVED')"><i class="bi bi-check-lg me-1"></i> อนุมัติ</button>
-              <button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="processApproval('${item.leave_id}', 'REJECTED')"><i class="bi bi-x-lg me-1"></i> ไม่อนุมัติ</button>
+              <button class="btn btn-success btn-sm flex-grow-1" onclick="processApproval('${item.id}', 'APPROVE', '${item.stamp || ''}')"><i class="bi bi-check-lg me-1"></i> อนุมัติ</button>
+              <button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="processApproval('${item.id}', 'REJECT', '${item.stamp || ''}')"><i class="bi bi-x-lg me-1"></i> ไม่อนุมัติ</button>
             </div>
           </div>`).join('');
       } catch (e) {
@@ -785,16 +858,41 @@
       }
     }
 
-    window.processApproval = async function(leaveId, status) {
-      if (!confirm(`ยืนยันการ${status === 'APPROVED' ? 'อนุมัติ' : 'ไม่อนุมัติ'}ใบลาคลังนี้ใช่หรือไม่?`)) return;
+    window.processApproval = async function (leaveId, action, stamp) {
+      let comment = '';
+      if (action !== 'APPROVE') {
+        comment = prompt('กรุณาระบุเหตุผลที่ไม่อนุมัติ:');
+        if (comment === null) return;
+        if (!comment.trim()) { alert('กรุณาระบุเหตุผล'); return; }
+      } else {
+        if (!confirm(`ยืนยันการอนุมัติใบลา ${leaveId} ใช่หรือไม่?`)) return;
+      }
       try {
-        await api('approval.process', { leave_id: leaveId, status });
+        await api('approve.decide', { id: leaveId, action, comment: comment.trim(), stamp });
         alert('ดำเนินการเรียบร้อยแล้ว');
         loadApprovalList();
       } catch (e) {
         alert('ทำรายการไม่สำเร็จ: ' + e.message);
       }
     };
+
+    function addAdminCardIfAllowed(perms) {
+      const canAdmin = perms.includes('*') || perms.includes('duty.manage') || perms.includes('holiday.manage') || perms.includes('strength.view');
+      if (!canAdmin || $('menuAdminPortal')) return;
+      const row = $('menuApproval') ? $('menuApproval').parentElement : null;
+      if (!row) return;
+      const col = document.createElement('div');
+      col.className = 'col-6 col-md-3';
+      col.id = 'menuAdminPortal';
+      col.innerHTML = `
+        <div class="card menu-card text-center bg-white h-100 cursor-pointer" onclick="location.href='admin.html'">
+          <div class="menu-icon-wrap" style="background:#e0e7ff;color:#1e40af;">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+          <div class="menu-title">ระบบธุรการ / กำลังพล</div>
+        </div>`;
+      row.appendChild(col);
+    }
 
     async function main() {
       try {
@@ -807,7 +905,7 @@
 
         if (!me.registered) {
           $('view-unreg').classList.remove('d-none');
-          $('who').textContent = me.line.displayName || 'ผู้ใช้งานทั่วไป';
+          $('who').textContent = (me.line && (me.line.name || me.line.displayName)) || 'ผู้ใช้งานทั่วไป';
           if (me.registration === 'PENDING') {
             $('regPendingBox').classList.remove('d-none');
             $('regBtn').disabled = true;
@@ -834,34 +932,34 @@
           $('pMeta').textContent = `${me.person.position || ''} • ${me.person.unit || ''}`;
           $('pRoleBadge').textContent = me.roles.map(r => r.label).join(', ');
 
-          // ตรวจสอบสิทธิ์หัวหน้างานเพื่อแสดงเมนูอนุมัติ
-          const canApprove = me.permissions.includes('*') || me.permissions.includes('leave.approve');
+          const perms = me.permissions || [];
+          const canApprove = perms.includes('*') || perms.includes('leave.approve');
           if (canApprove) {
             $('menuApproval').classList.remove('d-none');
-            // โหลดจำนวนรออนุมัติมาโชว์ที่ Badge
-            api('approval.list').then(list => {
+            api('approve.list').then(list => {
               $('pendingBadge').textContent = list.length;
             }).catch(() => {});
           }
 
-          // โหลดข้อมูลวันลาคงเหลือ
+          // เพิ่มการ์ดปุ่มเข้าหน้า admin.html สำหรับธุรการและผู้บริหาร
+          addAdminCardIfAllowed(perms);
+
+          // โหลดข้อมูลวันลาคงเหลือ (แสดงเฉพาะประเภทที่ตั้งค่าแล้ว หรือ 3 ประเภทหลัก)
           try {
             const balances = await api('leave.balances');
-            let bHtml = '';
-            balances.forEach(b => {
-              bHtml += `<div class="col-4">
+            const showList = balances.filter(b => b.configured && ['VAC', 'SICK', 'BIZ'].includes(b.type_id));
+            const items = showList.length ? showList : balances.slice(0, 3);
+            $('balanceOut').innerHTML = items.map(b => `
+              <div class="col-4">
                 <div class="balance-item-box">
                   <div class="balance-type-name">${esc(b.name)}</div>
-                  <div class="balance-num">${b.remaining} <span class="balance-unit">วัน</span></div>
+                  <div class="balance-num">${b.unlimited ? 'ไม่จำกัด' : (b.left ?? '-')} <span class="balance-unit">${b.unlimited ? '' : 'วัน'}</span></div>
                 </div>
-              </div>`;
-            });
-            $('balanceOut').innerHTML = bHtml;
+              </div>`).join('');
           } catch (e) {
             $('balanceOut').innerHTML = '<div class="col-12 text-white-50 small">ไม่สามารถโหลดข้อมูลวันลาได้</div>';
           }
 
-          // ผูกอีเวนต์ปุ่มต่างๆ
           $('leaveSubmitBtn').onclick = async () => {
             const type_id = $('leaveType').value, start_date = $('leaveStart').value, end_date = $('leaveEnd').value, reason = $('leaveReason').value.trim();
             if (!start_date || !end_date || !reason) { alert('กรุณากรอกข้อมูลให้ครบถ้วน'); return; }
@@ -869,9 +967,9 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังส่งคำขอ...';
             try {
-              await api('leave.request', { type_id, start_date, end_date, reason });
+              await api('leave.submit', { type_id, start_date, end_date, reason });
               alert('ส่งคำขอลาสำเร็จ!');
-              switchPane('home');
+              switchPane('leave-history');
             } catch (e) {
               alert('ส่งคำขอไม่สำเร็จ: ' + e.message);
             } finally {
@@ -879,7 +977,14 @@
               btn.innerHTML = '<i class="bi bi-send me-1"></i> ส่งคำขอลา';
             }
           };
+
           $('myWfhGo').onclick = loadMyWfh;
+
+          // เปิดหน้าที่ตรงกับพารามิเตอร์ ?p= จากปุ่มบนการ์ด LINE
+          const p = new URLSearchParams(location.search).get('p');
+          if (p === 'request') switchPane('leave-form');
+          else if (p === 'mine' || p === 'leave') switchPane('leave-history');
+          else if (p === 'approve') switchPane('approval');
         }
       } catch (e) {
         say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + e.message);
