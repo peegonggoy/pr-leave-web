@@ -24,6 +24,8 @@
       --brand-light: #eff6ff;
       --success: #198754;
       --success-light: #ecfdf5;
+      --info-light: #ecfeff;
+      --warning-light: #fffbeb;
       --radius-sm: 10px;
       --radius-md: 14px;
       --radius-lg: 18px;
@@ -64,6 +66,35 @@
       font-family: var(--font-heading);
     }
 
+    .min-w-0 {
+      min-width: 0 !important;
+    }
+
+    .cursor-pointer {
+      cursor: pointer;
+    }
+
+    /* Pane Switching */
+    .pane {
+      display: none;
+    }
+
+    .pane.on {
+      display: block;
+      animation: paneFadeIn 0.18s ease-out;
+    }
+
+    @keyframes paneFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     /* Navbar - Mobile First */
     .navbar {
       background: linear-gradient(135deg, #1d4ed8 0%, #0d6efd 60%, #0284c7 100%);
@@ -101,10 +132,6 @@
       display: inline-block;
     }
 
-    .min-w-0 {
-      min-width: 0 !important;
-    }
-
     /* Main Container */
     main.container {
       flex: 1;
@@ -136,45 +163,72 @@
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
       background: var(--surface);
+      max-width: 100%;
     }
 
-    /* Form Controls - 16px minimum on mobile to prevent iOS auto-zoom */
-    .form-control {
+    /* Form Controls - 16px on mobile to prevent iOS auto-zoom */
+    .form-control, .form-select {
       border-radius: 12px;
-      padding: 0.7rem 0.9rem;
+      padding: 0.68rem 0.85rem;
       font-size: 16px;
       border: 1.5px solid var(--border-color);
       background-color: var(--surface-subtle);
       color: var(--ink);
-      min-height: 48px;
+      min-height: 46px;
       transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
 
-    .form-control:focus {
+    .form-control:focus, .form-select:focus {
       background-color: #ffffff;
       border-color: var(--brand-primary);
       box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
     }
 
+    textarea.form-control {
+      min-height: 96px;
+    }
+
     .btn {
       border-radius: 12px;
-      padding: 0.7rem 1rem;
-      min-height: 48px;
+      padding: 0.68rem 1rem;
+      min-height: 46px;
       font-size: 0.95rem;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.4rem;
+      gap: 0.35rem;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-sm {
+      min-height: 38px;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.85rem;
+      border-radius: 10px;
+    }
+
+    .btn-back {
+      width: 38px;
+      height: 38px;
+      min-height: 38px;
+      padding: 0;
+      border-radius: 10px;
+      flex-shrink: 0;
     }
 
     .btn-primary {
       background: linear-gradient(135deg, #1d4ed8 0%, #0d6efd 100%);
       border: none;
-      box-shadow: 0 4px 14px rgba(13, 110, 253, 0.25);
+      box-shadow: 0 4px 14px rgba(13, 110, 253, 0.22);
     }
 
-    .btn-primary:active:not(:disabled) {
+    .btn-success {
+      background: linear-gradient(135deg, #15803d 0%, #198754 100%);
+      border: none;
+      box-shadow: 0 4px 14px rgba(25, 135, 84, 0.22);
+    }
+
+    .btn:active:not(:disabled) {
       transform: scale(0.99);
     }
 
@@ -191,7 +245,7 @@
       font-size: 2rem;
     }
 
-    /* Profile Card */
+    /* Profile Card - Mobile Safe Stacking */
     .profile-card {
       padding: 1.1rem 1.15rem;
       overflow: hidden;
@@ -239,7 +293,7 @@
       max-width: 100%;
     }
 
-    /* Balance Card - Mobile First */
+    /* Balance Card */
     .balance-card {
       background: linear-gradient(135deg, #0d6efd 0%, #0284c7 60%, #0dcaf0 100%);
       color: #ffffff;
@@ -260,6 +314,8 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      min-width: 0;
+      overflow: hidden;
     }
 
     .balance-type-name {
@@ -268,7 +324,7 @@
       color: rgba(255, 255, 255, 0.9);
       line-height: 1.25;
       margin-bottom: 0.25rem;
-      word-break: keep-all;
+      word-break: break-word;
       overflow-wrap: anywhere;
     }
 
@@ -288,7 +344,7 @@
     /* Quick Action Menu Cards */
     .menu-card {
       padding: 1rem 0.7rem;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
       cursor: pointer;
       display: flex;
       flex-direction: column;
@@ -305,6 +361,11 @@
       transform: scale(0.98);
     }
 
+    .menu-card-approval {
+      background: var(--warning-light) !important;
+      border: 1.5px solid #fcd34d !important;
+    }
+
     .menu-icon-wrap {
       width: 48px;
       height: 48px;
@@ -313,12 +374,7 @@
       align-items: center;
       justify-content: center;
       font-size: 1.45rem;
-      margin-bottom: 0.55rem;
-    }
-
-    .menu-icon-primary {
-      background: var(--brand-light);
-      color: var(--brand-primary);
+      margin-bottom: 0.5rem;
     }
 
     .menu-icon-success {
@@ -326,25 +382,44 @@
       color: var(--success);
     }
 
+    .menu-icon-primary {
+      background: var(--brand-light);
+      color: var(--brand-primary);
+    }
+
+    .menu-icon-info {
+      background: var(--info-light);
+      color: #0891b2;
+    }
+
+    .menu-icon-warning {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
     .menu-title {
       font-family: var(--font-heading);
       font-weight: 600;
-      font-size: clamp(0.84rem, 2.8vw, 0.98rem);
+      font-size: clamp(0.84rem, 2.8vw, 0.96rem);
       color: var(--ink);
-      margin-bottom: 0.15rem;
-      line-height: 1.3;
+      line-height: 1.35;
+      word-break: break-word;
     }
 
-    .menu-subtitle {
-      font-size: clamp(0.72rem, 2.3vw, 0.82rem);
-      color: var(--muted);
-      line-height: 1.35;
+    /* History, WFH & Approval List Items */
+    .wfh-list-item {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 0;
     }
 
     /* Tablet & Desktop Enhancements */
     @media (min-width: 576px) {
       #who {
-        max-width: 260px;
+        max-width: 280px;
         font-size: 0.85rem;
       }
 
@@ -359,25 +434,21 @@
       }
 
       .balance-card {
-        padding: 1.5rem;
+        padding: 1.4rem 1.5rem;
       }
 
       .balance-item-box {
-        padding: 0.9rem 0.75rem;
+        padding: 0.85rem 0.75rem;
       }
 
       .menu-card {
-        padding: 1.35rem 1rem;
+        padding: 1.25rem 1rem;
       }
     }
 
     @media (min-width: 992px) {
       main.container {
         padding-top: 1.75rem;
-      }
-
-      #view-reg .dashboard-row {
-        align-items: stretch;
       }
     }
   </style>
@@ -386,9 +457,7 @@
 
   <nav class="navbar navbar-dark bg-primary sticky-top">
     <div class="app-container px-3 d-flex align-items-center justify-content-between gap-2">
-      <span class="navbar-brand mb-0 h6 fw-bold">
-        <i class="bi bi-calendar-check-fill me-1"></i> ระบบลา กปส.
-      </span>
+      <span class="navbar-brand mb-0 h6 fw-bold"><i class="bi bi-calendar-check-fill me-1"></i> ระบบลา กปส.</span>
       <span id="who" class="text-white-50 small">กำลังโหลด...</span>
     </div>
   </nav>
@@ -399,7 +468,7 @@
       <div>กำลังเชื่อมต่อระบบ...</div>
     </div>
 
-    <!-- ส่วนเนื้อหาหลัก (ซ่อนไว้ก่อนจนกว่าจะโหลดสถานะเสร็จ) -->
+    <!-- ส่วนเนื้อหาหลัก -->
     <div id="app" class="d-none">
 
       <!-- มุมมองที่ 1: ยังไม่ได้ลงทะเบียน -->
@@ -411,87 +480,177 @@
                 <div class="unreg-icon-box mb-2">
                   <i class="bi bi-person-badge"></i>
                 </div>
-                <h4 class="fw-bold mt-1 mb-1 fs-5">ลงทะเบียนใช้งานระบบ</h4>
+                <h4 class="fw-bold mt-2">ลงทะเบียนใช้งานระบบ</h4>
                 <p class="text-muted small mb-0">กรุณากรอกข้อมูลเพื่อผูกบัญชี LINE กับฐานข้อมูลกำลังพล</p>
               </div>
-
               <div id="regPendingBox" class="d-none alert alert-warning small text-center mb-3">
                 <i class="bi bi-hourglass-split me-1"></i> คำขอลงทะเบียนของคุณอยู่ระหว่างรอธุรการตรวจสอบ
               </div>
-
-              <div id="regNotice" class="d-none alert small mb-3" role="alert"></div>
-
               <div class="mb-3">
-                <label for="regCode" class="form-label small fw-bold">เลขประจำตัว (PID)</label>
+                <label class="form-label small fw-bold" for="regCode">เลขประจำตัว (PID)</label>
                 <input type="text" id="regCode" class="form-control" placeholder="ระบุเลขประจำตัวของคุณ" autocomplete="off">
               </div>
-
               <div class="mb-3">
-                <label for="regPhone" class="form-label small fw-bold">เบอร์โทรศัพท์มือถือ</label>
+                <label class="form-label small fw-bold" for="regPhone">เบอร์โทรศัพท์มือถือ</label>
                 <input type="tel" id="regPhone" class="form-control" placeholder="เช่น 0812345678" inputmode="tel" autocomplete="tel">
               </div>
-
               <button id="regBtn" class="btn btn-primary w-100 fw-bold mt-2">ส่งคำขอลงทะเบียน</button>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- มุมมองที่ 2: ลงทะเบียนแล้ว (Dashboard พนักงาน) -->
+      <!-- มุมมองที่ 2: ลงทะเบียนแล้ว (แดชบอร์ดพนักงาน) -->
       <section id="view-reg" class="d-none">
-        <div class="row g-3 dashboard-row">
-          <!-- ข้อมูลส่วนตัว -->
-          <div class="col-12 col-lg-5">
-            <div class="card profile-card bg-white h-100 d-flex justify-content-center">
-              <div class="d-flex align-items-start gap-3 w-100 min-w-0">
-                <div class="profile-avatar">
-                  <i class="bi bi-person-vcard"></i>
-                </div>
-                <div class="flex-grow-1 min-w-0">
-                  <h5 id="pName" class="fw-bold mb-1 text-dark">ชื่อ-นามสกุล</h5>
-                  <div id="pMeta" class="text-muted small mb-2">ตำแหน่ง • แผนก</div>
-                  <div>
-                    <span id="pRoleBadge" class="badge bg-primary bg-opacity-10 text-primary">STAFF</span>
+
+        <!-- แผงหน้าแรก (Home Pane) -->
+        <div id="pane-home" class="pane on">
+          <div class="row g-3 mb-3">
+            <!-- การ์ดสรุปข้อมูลส่วนตัว -->
+            <div class="col-12 col-lg-5">
+              <div class="card profile-card bg-white h-100 d-flex justify-content-center">
+                <div class="d-flex align-items-start gap-3 w-100 min-w-0">
+                  <div class="profile-avatar">
+                    <i class="bi bi-person-vcard"></i>
+                  </div>
+                  <div class="flex-grow-1 min-w-0">
+                    <h5 id="pName" class="fw-bold mb-1 text-dark">ชื่อ-นามสกุล</h5>
+                    <div id="pMeta" class="text-muted small mb-2">ตำแหน่ง • แผนก</div>
+                    <div>
+                      <span id="pRoleBadge" class="badge bg-primary bg-opacity-10 text-primary">STAFF</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- การ์ดวันลาคงเหลือ -->
-          <div class="col-12 col-lg-7">
-            <div class="card balance-card h-100">
-              <h6 class="fw-bold mb-3 text-white-50 d-flex align-items-center">
-                <i class="bi bi-wallet2 me-1"></i>
-                <span>สิทธิ์วันลาคงเหลือ (ปีงบประมาณนี้)</span>
-              </h6>
-              <div id="balanceOut" class="row g-2 text-center">
-                <!-- โหลดผ่าน JS จากฐานข้อมูลจริง -->
+            <!-- การ์ดวันลาคงเหลือ -->
+            <div class="col-12 col-lg-7">
+              <div class="card balance-card h-100">
+                <h6 class="fw-bold mb-3 text-white-50"><i class="bi bi-wallet2 me-1"></i> สิทธิ์วันลาคงเหลือ (ปีงบประมาณนี้)</h6>
+                <div id="balanceOut" class="row g-2 text-center">
+                  <!-- โหลดผ่าน JS -->
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- เมนูลัด หรือข้อมูลเพิ่มเติม -->
-          <div class="col-6">
-            <div class="card menu-card text-center bg-white h-100">
-              <div class="menu-icon-wrap menu-icon-primary">
-                <i class="bi bi-file-earmark-text"></i>
+          <!-- เมนูลัดทั่วไป -->
+          <div class="row g-2 g-sm-3 mb-3">
+            <div class="col-6 col-md-3">
+              <div class="card menu-card text-center bg-white h-100 cursor-pointer" onclick="switchPane('leave-form')">
+                <div class="menu-icon-wrap menu-icon-success">
+                  <i class="bi bi-file-earmark-plus"></i>
+                </div>
+                <div class="menu-title">ยื่นใบลาใหม่</div>
               </div>
-              <div class="menu-title">ประวัติการลา</div>
-              <div class="menu-subtitle">ตรวจสอบสถานะใบลา</div>
             </div>
-          </div>
-
-          <div class="col-6">
-            <div class="card menu-card text-center bg-white h-100">
-              <div class="menu-icon-wrap menu-icon-success">
-                <i class="bi bi-house-door"></i>
+            <div class="col-6 col-md-3">
+              <div class="card menu-card text-center bg-white h-100 cursor-pointer" onclick="switchPane('leave-history')">
+                <div class="menu-icon-wrap menu-icon-primary">
+                  <i class="bi bi-clock-history"></i>
+                </div>
+                <div class="menu-title">ประวัติการลา</div>
               </div>
-              <div class="menu-title">ตาราง WFH ของฉัน</div>
-              <div class="menu-subtitle">ดูวันปฏิบัติงานนอกที่ตั้ง</div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="card menu-card text-center bg-white h-100 cursor-pointer" onclick="switchPane('my-wfh')">
+                <div class="menu-icon-wrap menu-icon-info">
+                  <i class="bi bi-house-door"></i>
+                </div>
+                <div class="menu-title">ตาราง WFH ของฉัน</div>
+              </div>
+            </div>
+            <!-- เมนูอนุมัติ (ซ่อนไว้ถ้าไม่ใช่หัวหน้า) -->
+            <div class="col-6 col-md-3 d-none" id="menuApproval">
+              <div class="card menu-card menu-card-approval text-center h-100 cursor-pointer" onclick="switchPane('approval')">
+                <div class="menu-icon-wrap menu-icon-warning">
+                  <i class="bi bi-check2-circle"></i>
+                </div>
+                <div class="menu-title text-dark">อนุมัติใบลา <span id="pendingBadge" class="badge bg-danger ms-1">0</span></div>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- แผงยื่นใบลา -->
+        <div id="pane-leave-form" class="pane">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+              <div class="card p-3 p-sm-4 bg-white mb-3">
+                <div class="d-flex align-items-center mb-3">
+                  <button class="btn btn-outline-secondary btn-sm btn-back me-2" onclick="switchPane('home')"><i class="bi bi-arrow-left"></i></button>
+                  <h5 class="fw-bold mb-0 text-dark">ยื่นคำขอลา</h5>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small fw-bold" for="leaveType">ประเภทการลา</label>
+                  <select id="leaveType" class="form-select"></select>
+                </div>
+                <div class="row g-2 mb-3">
+                  <div class="col-12 col-sm-6">
+                    <label class="form-label small fw-bold" for="leaveStart">ตั้งแต่วันที่</label>
+                    <input type="date" id="leaveStart" class="form-control">
+                  </div>
+                  <div class="col-12 col-sm-6">
+                    <label class="form-label small fw-bold" for="leaveEnd">ถึงวันที่</label>
+                    <input type="date" id="leaveEnd" class="form-control">
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small fw-bold" for="leaveReason">เหตุผลการลา</label>
+                  <textarea id="leaveReason" class="form-control" rows="3" placeholder="ระบุเหตุผลความจำเป็น..."></textarea>
+                </div>
+                <button id="leaveSubmitBtn" class="btn btn-success w-100 fw-bold"><i class="bi bi-send me-1"></i> ส่งคำขอลา</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- แผงประวัติการลา -->
+        <div id="pane-leave-history" class="pane">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-9 col-lg-8">
+              <div class="d-flex align-items-center mb-3">
+                <button class="btn btn-outline-secondary btn-sm btn-back me-2" onclick="switchPane('home')"><i class="bi bi-arrow-left"></i></button>
+                <h5 class="fw-bold mb-0 text-dark">ประวัติคำขอลา</h5>
+              </div>
+              <div id="historyOut"><div class="text-center py-4 text-muted">กำลังโหลดข้อมูล...</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- แผงตาราง WFH ของฉัน -->
+        <div id="pane-my-wfh" class="pane">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-9 col-lg-8">
+              <div class="d-flex align-items-center mb-3">
+                <button class="btn btn-outline-secondary btn-sm btn-back me-2" onclick="switchPane('home')"><i class="bi bi-arrow-left"></i></button>
+                <h5 class="fw-bold mb-0 text-dark">ตาราง WFH ของฉัน</h5>
+              </div>
+              <div class="card p-3 bg-white mb-3">
+                <div class="row g-2 align-items-center">
+                  <div class="col-12 col-sm-8"><input type="date" id="myWfhDate" class="form-control"></div>
+                  <div class="col-12 col-sm-4"><button id="myWfhGo" class="btn btn-primary w-100">ดูสัปดาห์นี้</button></div>
+                </div>
+              </div>
+              <div id="myWfhOut"><div class="text-center py-4 text-muted">กำลังโหลดตาราง WFH...</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- แผงอนุมัติใบลาสำหรับหัวหน้า -->
+        <div id="pane-approval" class="pane">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-9 col-lg-8">
+              <div class="d-flex align-items-center mb-3">
+                <button class="btn btn-outline-secondary btn-sm btn-back me-2" onclick="switchPane('home')"><i class="bi bi-arrow-left"></i></button>
+                <h5 class="fw-bold mb-0 text-dark">รายการรออนุมัติใบลา</h5>
+              </div>
+              <div id="approvalOut"><div class="text-center py-4 text-muted">กำลังโหลดรายการ...</div></div>
+            </div>
+          </div>
+        </div>
+
       </section>
 
     </div>
@@ -499,25 +658,23 @@
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    const LIFF_ID = '2012347393-9duzGDMx'; // ใส่ LIFF ID ของคุณ
-    const API_URL = 'https://script.google.com/macros/s/AKfycbxbHMFCz8B0PGPAka9h6yawBs8fxxUUrgKt_q1XweY/exec'; // ใส่ URL Web App ของคุณ
+    const LIFF_ID = '2012347393-9duzGDMx';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxbHMFCz8B0PGPAka9h6yawBs8fxxUUrgKt_q1XweY/exec';
 
     const $ = id => document.getElementById(id);
 
     const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
       c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+    const today = () => {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    };
+
     const say = (type, text) => {
       const m = $('msg');
       m.className = 'alert alert-' + type + ' shadow-sm';
       m.innerHTML = text;
-    };
-
-    const notifyReg = (type, text) => {
-      const n = $('regNotice');
-      if (!n) return;
-      n.className = 'alert alert-' + type + ' small mb-3';
-      n.textContent = text;
     };
 
     async function api(action, payload) {
@@ -533,6 +690,111 @@
       if (!j.ok) { const e = new Error(j.error.message); e.code = j.error.code; throw e; }
       return j.data;
     }
+
+    window.switchPane = function(paneName) {
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      $('pane-' + paneName).classList.add('on');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (paneName === 'leave-form') {
+        $('leaveStart').value = today();
+        $('leaveEnd').value = today();
+        $('leaveReason').value = '';
+        loadLeaveTypes();
+      }
+      if (paneName === 'leave-history') loadLeaveHistory();
+      if (paneName === 'my-wfh') {
+        $('myWfhDate').value = today();
+        loadMyWfh();
+      }
+      if (paneName === 'approval') loadApprovalList();
+    };
+
+    async function loadLeaveTypes() {
+      try {
+        const types = await api('leave.types');
+        $('leaveType').innerHTML = types.map(t => `<option value="${t.type_id}">${esc(t.name)}</option>`).join('');
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadLeaveHistory() {
+      const out = $('historyOut');
+      out.innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>กำลังโหลดประวัติ...</div>';
+      try {
+        const list = await api('leave.history');
+        if (!list.length) {
+          out.innerHTML = '<div class="card p-4 bg-white text-center text-muted">ยังไม่มีประวัติการลา</div>';
+          return;
+        }
+        const BADGE = { PENDING: 'bg-warning text-dark', APPROVED: 'bg-success', REJECTED: 'bg-danger', CANCELLED: 'bg-secondary' };
+        const LABEL = { PENDING: 'รออนุมัติ', APPROVED: 'อนุมัติแล้ว', REJECTED: 'ไม่อนุมัติ', CANCELLED: 'ยกเลิกแล้ว' };
+        out.innerHTML = list.map(item => `
+          <div class="card p-3 bg-white mb-2">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-1">
+              <span class="fw-bold text-dark">${esc(item.type_name)}</span>
+              <span class="badge ${BADGE[item.status] || 'bg-secondary'}">${LABEL[item.status] || item.status}</span>
+            </div>
+            <div class="small text-muted mb-2"><i class="bi bi-calendar3 me-1"></i> ${esc(item.range)} (${item.days} วัน)</div>
+            <div class="small text-secondary bg-light p-2 rounded text-break">${esc(item.reason)}</div>
+          </div>`).join('');
+      } catch (e) {
+        out.innerHTML = `<div class="alert alert-danger small">โหลดประวัติไม่สำเร็จ: ${esc(e.message)}</div>`;
+      }
+    }
+
+    async function loadMyWfh() {
+      const out = $('myWfhOut');
+      out.innerHTML = '<div class="text-center py-4 text-muted">กำลังโหลดตาราง WFH...</div>';
+      try {
+        const data = await api('my.wfh', { date: $('myWfhDate').value });
+        out.innerHTML = `<div class="card p-3 bg-white">
+          <div class="fw-bold text-primary mb-2"><i class="bi bi-calendar-week me-1"></i> สัปดาห์วันที่ ${esc(data.week_label)}</div>
+          <ul class="list-group list-group-flush small">
+            ${data.days.map(d => `
+              <li class="list-group-item wfh-list-item px-0">
+                <span class="fw-medium">${esc(d.date_label)}</span>
+                <span class="badge ${d.wfh ? 'bg-info text-dark' : 'bg-secondary'}">${d.wfh ? 'ปฏิบัติงานนอกที่ตั้ง (WFH)' : 'ปฏิบัติงาน ณ ที่ตั้ง'}</span>
+              </li>`).join('')}
+          </ul>
+        </div>`;
+      } catch (e) {
+        out.innerHTML = `<div class="alert alert-danger small">โหลดข้อมูลไม่สำเร็จ: ${esc(e.message)}</div>`;
+      }
+    }
+
+    async function loadApprovalList() {
+      const out = $('approvalOut');
+      out.innerHTML = '<div class="text-center py-4 text-muted">กำลังโหลดรายการ...</div>';
+      try {
+        const list = await api('approval.list');
+        if (!list.length) {
+          out.innerHTML = '<div class="card p-4 bg-white text-center text-muted">ไม่มีรายการรออนุมัติ</div>';
+          return;
+        }
+        out.innerHTML = list.map(item => `
+          <div class="card p-3 bg-white mb-3 border-start border-4 border-warning">
+            <div class="fw-bold text-dark text-break">${esc(item.name)} <span class="text-muted small fw-normal">(${esc(item.unit)})</span></div>
+            <div class="small text-primary fw-bold my-1">${esc(item.type_name)} • ${esc(item.range)} (${item.days} วัน)</div>
+            <div class="small text-secondary bg-light p-2 rounded mb-3 text-break">เหตุผล: ${esc(item.reason)}</div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-success btn-sm flex-grow-1" onclick="processApproval('${item.leave_id}', 'APPROVED')"><i class="bi bi-check-lg me-1"></i> อนุมัติ</button>
+              <button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="processApproval('${item.leave_id}', 'REJECTED')"><i class="bi bi-x-lg me-1"></i> ไม่อนุมัติ</button>
+            </div>
+          </div>`).join('');
+      } catch (e) {
+        out.innerHTML = `<div class="alert alert-danger small">โหลดรายการไม่สำเร็จ: ${esc(e.message)}</div>`;
+      }
+    }
+
+    window.processApproval = async function(leaveId, status) {
+      if (!confirm(`ยืนยันการ${status === 'APPROVED' ? 'อนุมัติ' : 'ไม่อนุมัติ'}ใบลาคลังนี้ใช่หรือไม่?`)) return;
+      try {
+        await api('approval.process', { leave_id: leaveId, status });
+        alert('ดำเนินการเรียบร้อยแล้ว');
+        loadApprovalList();
+      } catch (e) {
+        alert('ทำรายการไม่สำเร็จ: ' + e.message);
+      }
+    };
 
     async function main() {
       try {
@@ -551,21 +813,17 @@
             $('regBtn').disabled = true;
             $('regBtn').textContent = 'รอการตรวจสอบจากธุรการ';
           }
-
           $('regBtn').onclick = async () => {
             const code = $('regCode').value.trim();
             const phone = $('regPhone').value.trim();
-            if (!code || !phone) {
-              notifyReg('warning', 'กรุณากรอกข้อมูลให้ครบถ้วน');
-              return;
-            }
+            if (!code || !phone) { alert('กรุณากรอกข้อมูลให้ครบถ้วน'); return; }
             $('regBtn').disabled = true;
             try {
               await api('reg.submit', { code, phone });
-              notifyReg('success', 'ส่งคำขอลงทะเบียนเรียบร้อยแล้ว กรุณารอธุรการตรวจสอบ');
+              alert('ส่งคำขอลงทะเบียนเรียบร้อยแล้ว กรุณารอธุรการตรวจสอบ');
               location.reload();
             } catch (e) {
-              notifyReg('danger', 'ลงทะเบียนไม่สำเร็จ: ' + e.message);
+              alert('ลงทะเบียนไม่สำเร็จ: ' + e.message);
               $('regBtn').disabled = false;
             }
           };
@@ -576,7 +834,17 @@
           $('pMeta').textContent = `${me.person.position || ''} • ${me.person.unit || ''}`;
           $('pRoleBadge').textContent = me.roles.map(r => r.label).join(', ');
 
-          // โหลดข้อมูลวันลาคงเหลือจากฐานข้อมูลจริง
+          // ตรวจสอบสิทธิ์หัวหน้างานเพื่อแสดงเมนูอนุมัติ
+          const canApprove = me.permissions.includes('*') || me.permissions.includes('leave.approve');
+          if (canApprove) {
+            $('menuApproval').classList.remove('d-none');
+            // โหลดจำนวนรออนุมัติมาโชว์ที่ Badge
+            api('approval.list').then(list => {
+              $('pendingBadge').textContent = list.length;
+            }).catch(() => {});
+          }
+
+          // โหลดข้อมูลวันลาคงเหลือ
           try {
             const balances = await api('leave.balances');
             let bHtml = '';
@@ -592,9 +860,29 @@
           } catch (e) {
             $('balanceOut').innerHTML = '<div class="col-12 text-white-50 small">ไม่สามารถโหลดข้อมูลวันลาได้</div>';
           }
+
+          // ผูกอีเวนต์ปุ่มต่างๆ
+          $('leaveSubmitBtn').onclick = async () => {
+            const type_id = $('leaveType').value, start_date = $('leaveStart').value, end_date = $('leaveEnd').value, reason = $('leaveReason').value.trim();
+            if (!start_date || !end_date || !reason) { alert('กรุณากรอกข้อมูลให้ครบถ้วน'); return; }
+            const btn = $('leaveSubmitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังส่งคำขอ...';
+            try {
+              await api('leave.request', { type_id, start_date, end_date, reason });
+              alert('ส่งคำขอลาสำเร็จ!');
+              switchPane('home');
+            } catch (e) {
+              alert('ส่งคำขอไม่สำเร็จ: ' + e.message);
+            } finally {
+              btn.disabled = false;
+              btn.innerHTML = '<i class="bi bi-send me-1"></i> ส่งคำขอลา';
+            }
+          };
+          $('myWfhGo').onclick = loadMyWfh;
         }
       } catch (e) {
-        say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + esc(e.message));
+        say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + e.message);
       }
     }
 
