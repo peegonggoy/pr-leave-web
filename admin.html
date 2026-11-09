@@ -683,7 +683,7 @@
         <div class="control-bar mb-3 mb-lg-4">
           <div class="row g-2 align-items-end justify-content-between">
             <div class="col-12 col-sm-auto">
-              <label for="holYear" class="small text-muted fw-semibold mb-1 d-block">ปี พ.ศ. (ค.ศ.)</label>
+              <label for="holYear" class="small text-muted fw-semibold mb-1 d-block">ปี พ.ศ.</label>
               <div class="row g-2">
                 <div class="col-7 col-sm-auto">
                   <select id="holYear" class="form-select form-select-sm"></select>
@@ -1130,7 +1130,7 @@
 
   async function saveWfhChanges() {
     if (WFH_CHANGES.size === 0) { await showAlert('ไม่มีรายการที่มีการเปลี่ยนแปลง'); return; }
-    const ok = await showConfirm(`ยืนยันบันทึกการเปลี่ยนแปลง WFH จำนวน ${WFH_CHANGES.size} รายการใช่หรือไม่?`);
+    const ok = await showConfirm(`ต้องการซิงค์วันหยุดราชการประจำปี พ.ศ. ${Number(year) + 543} จาก Google Calendar ใช่หรือไม่?`);
     if (!ok) return;
 
     const changes = [];
