@@ -81,6 +81,8 @@
     .navbar-brand {
       font-size: 1rem;
       letter-spacing: -0.01em;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
 
     #who {
@@ -91,11 +93,16 @@
       padding: 0.28rem 0.75rem;
       font-size: 0.8rem;
       font-family: var(--font-heading);
-      max-width: 48vw;
+      max-width: 52%;
+      min-width: 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       display: inline-block;
+    }
+
+    .min-w-0 {
+      min-width: 0 !important;
     }
 
     /* Main Container */
@@ -186,40 +193,50 @@
 
     /* Profile Card */
     .profile-card {
-      padding: 1rem 1.1rem;
+      padding: 1.1rem 1.15rem;
+      overflow: hidden;
+      max-width: 100%;
     }
 
     .profile-avatar {
-      width: 46px;
-      height: 46px;
+      width: 48px;
+      height: 48px;
       border-radius: 14px;
       background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
       color: var(--brand-dark);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
+      font-size: 1.45rem;
       flex-shrink: 0;
     }
 
     #pName {
       font-size: 1.05rem;
-      line-height: 1.35;
+      line-height: 1.4;
       word-break: break-word;
+      overflow-wrap: anywhere;
     }
 
     #pMeta {
-      font-size: 0.82rem;
-      line-height: 1.4;
+      font-size: 0.85rem;
+      line-height: 1.45;
       word-break: break-word;
+      overflow-wrap: anywhere;
     }
 
     #pRoleBadge {
       font-size: 0.75rem;
-      padding: 0.35rem 0.65rem;
-      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      border-radius: 10px;
       font-weight: 600;
-      white-space: nowrap;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      text-align: left;
+      line-height: 1.4;
+      display: inline-block;
+      max-width: 100%;
     }
 
     /* Balance Card - Mobile First */
@@ -369,7 +386,7 @@
 
   <nav class="navbar navbar-dark bg-primary sticky-top">
     <div class="app-container px-3 d-flex align-items-center justify-content-between gap-2">
-      <span class="navbar-brand mb-0 h6 fw-bold text-truncate">
+      <span class="navbar-brand mb-0 h6 fw-bold">
         <i class="bi bi-calendar-check-fill me-1"></i> ระบบลา กปส.
       </span>
       <span id="who" class="text-white-50 small">กำลังโหลด...</span>
@@ -426,16 +443,16 @@
           <!-- ข้อมูลส่วนตัว -->
           <div class="col-12 col-lg-5">
             <div class="card profile-card bg-white h-100 d-flex justify-content-center">
-              <div class="d-flex align-items-center gap-3">
+              <div class="d-flex align-items-start gap-3 w-100 min-w-0">
                 <div class="profile-avatar">
                   <i class="bi bi-person-vcard"></i>
                 </div>
                 <div class="flex-grow-1 min-w-0">
-                  <div class="d-flex align-items-start justify-content-between gap-2 mb-1">
-                    <h5 id="pName" class="fw-bold mb-0 text-dark">ชื่อ-นามสกุล</h5>
-                    <span id="pRoleBadge" class="badge bg-primary bg-opacity-10 text-primary flex-shrink-0">STAFF</span>
+                  <h5 id="pName" class="fw-bold mb-1 text-dark">ชื่อ-นามสกุล</h5>
+                  <div id="pMeta" class="text-muted small mb-2">ตำแหน่ง • แผนก</div>
+                  <div>
+                    <span id="pRoleBadge" class="badge bg-primary bg-opacity-10 text-primary">STAFF</span>
                   </div>
-                  <div id="pMeta" class="text-muted small">ตำแหน่ง • แผนก</div>
                 </div>
               </div>
             </div>
@@ -483,7 +500,7 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     const LIFF_ID = '2012347393-9duzGDMx'; // ใส่ LIFF ID ของคุณ
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyxdXyW1pmlMHSNvhkHqd3NUuEloJLOd1cx1uozQ4wU4fz1gAl_evliPHAmsstzxtjg/exec'; // ใส่ URL Web App ของคุณ
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxbHMFCz8B0PGPAka9h6yawBs8fxxUUrgKt_q1XweY/exec'; // ใส่ URL Web App ของคุณ
 
     const $ = id => document.getElementById(id);
 
