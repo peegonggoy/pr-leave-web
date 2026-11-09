@@ -3,32 +3,190 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ทดสอบ LIFF</title>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <title>ระบบลาและกำลังพล - กองประชาสัมพันธ์</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; font-size: 0.95rem; color: #333; }
+    .navbar { box-shadow: 0 2px 4px rgba(0,0,0,.08); }
+    .card { border: none; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+    .btn, .form-control { border-radius: 8px; padding: 0.6rem 0.75rem; }
+    .balance-card { background: linear-gradient(135deg, #0d6efd, #0dcaf0); color: white; }
+  </style>
 </head>
-<body style="font-family:sans-serif;padding:24px">
-  <h3>ทดสอบการเชื่อมต่อ LIFF</h3>
-  <div id="out">กำลังโหลด...</div>
-  <p>LINE User ID ของคุณ:</p>
-  <input id="uid" readonly style="width:100%;font-size:14px;padding:8px">
-  <button id="copy" style="margin-top:8px;padding:8px 16px">คัดลอก</button>
-  <script>
-    const LIFF_ID = '2012347393-9duzGDMx';
-    const out = document.getElementById('out');
-    liff.init({ liffId: LIFF_ID })
-      .then(() => {
-        if (!liff.isLoggedIn()) { liff.login(); return; }
-        return liff.getProfile().then(p => {
-          out.textContent = 'เชื่อมต่อสำเร็จ | ชื่อ LINE: ' + p.displayName;
-          document.getElementById('uid').value = p.userId;
-        });
-      })
-      .catch(e => { out.textContent = 'ผิดพลาด: ' + e.message; });
-    document.getElementById('copy').onclick = () => {
-      const u = document.getElementById('uid');
-      u.select();
-      navigator.clipboard.writeText(u.value).then(() => alert('คัดลอกแล้ว'));
-    };
-  </script>
+<body>
+
+  <nav class="navbar navbar-dark bg-primary sticky-top">
+    <div class="container-fluid px-3">
+      <span class="navbar-brand mb-0 h6 fw-bold"><i class="bi bi-calendar-check-fill me-1"></i> ระบบลา กปส.</span>
+      <span id="who" class="text-white-50 small">กำลังโหลด...</span>
+    </div>
+  </nav>
+
+  <main class="container py-3 px-2 px-md-3">
+    <div id="msg" class="alert alert-primary shadow-sm" role="alert">
+      <div class="spinner-border spinner-border-sm me-2" role="status"></div> กำลังเชื่อมต่อระบบ...
+    </div>
+
+    <!-- ส่วนเนื้อหาหลัก (ซ่อนไว้ก่อนจนกว่าจะโหลดสถานะเสร็จ) -->
+    <div id="app" class="d-none">
+      
+      <!-- มุมมองที่ 1: ยังไม่ได้ลงทะเบียน -->
+      <section id="view-unreg" class="d-none py-4">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <div class="card p-4 bg-white">
+              <div class="text-center mb-4">
+                <i class="bi bi-person-badge text-primary" style="font-size: 3rem;"></i>
+                <h4 class="fw-bold mt-2">ลงทะเบียนใช้งานระบบ</h4>
+                <p class="text-muted small">กรุณากรอกข้อมูลเพื่อผูกบัญชี LINE กับฐานข้อมูลกำลังพล</p>
+              </div>
+              <div id="regPendingBox" class="d-none alert alert-warning small text-center mb-3">
+                <i class="bi bi-hourglass-split me-1"></i> คำขอลงทะเบียนของคุณอยู่ระหว่างรอธุรการตรวจสอบ
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-bold">เลขประจำตัว (PID)</label>
+                <input type="text" id="regCode" class="form-control" placeholder="ระบุเลขประจำตัวของคุณ">
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-bold">เบอร์โทรศัพท์มือถือ</label>
+                <input type="tel" id="regPhone" class="form-control" placeholder="เช่น 0812345678">
+              </div>
+              <button id="regBtn" class="btn btn-primary w-100 fw-bold mt-2">ส่งคำขอลงทะเบียน</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- มุมมองที่ 2: ลงทะเบียนแล้ว (Dashboard พนักงาน) -->
+      <section id="view-reg" class="d-none">
+        <!-- การ์ดสรุปข้อมูลส่วนตัว -->
+        <div class="card p-3 bg-white mb-3">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h5 id="pName" class="fw-bold mb-1 text-dark">ชื่อ-นามสกุล</h5>
+              <div id="pMeta" class="text-muted small">ตำแหน่ง • แผนก</div>
+            </div>
+            <div>
+              <span id="pRoleBadge" class="badge bg-primary bg-opacity-10 text-primary">STAFF</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- การ์ดวันลาคงเหลือ -->
+        <div class="card balance-card p-4 mb-3">
+          <h6 class="fw-bold mb-3 text-white-50"><i class="bi bi-wallet2 me-1"></i> สิทธิ์วันลาคงเหลือ (ปีงบประมาณนี้)</h6>
+          <div id="balanceOut" class="row g-2 text-center">
+            <!-- โหลดผ่าน JS -->
+          </div>
+        </div>
+
+        <!-- เมนูลัด หรือข้อมูลเพิ่มเติม -->
+        <div class="row g-2">
+          <div class="col-6">
+            <div class="card p-3 text-center bg-white h-100 py-4">
+              <i class="bi bi-file-earmark-text text-primary fs-3 mb-2"></i>
+              <div class="fw-bold small">ประวัติการลา</div>
+              <div class="text-muted" style="font-size: 0.75rem;">ตรวจสอบสถานะใบลา</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="card p-3 text-center bg-white h-100 py-4">
+              <i class="bi bi-house-door text-success fs-3 mb-2"></i>
+              <div class="fw-bold small">ตาราง WFH ของฉัน</div>
+              <div class="text-muted" style="font-size: 0.75rem;">ดูวันปฏิบัติงานนอกที่ตั้ง</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script>
+  const LIFF_ID = '2012347393-9duzGDMx'; // ใส่ LIFF ID ของคุณ
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxbHMFCz8B0PGPAka9h6yawBs8fxxUUrgKt_q1XweY/exec'; // ใส่ URL Web App ของคุณ
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
+    c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const say = (type, text) => { const m = $('msg'); m.className = 'alert alert-' + type + ' shadow-sm'; m.innerHTML = text; };
+
+  async function api(action, payload) {
+    let res, j;
+    try {
+      res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action, payload: payload || {}, idToken: liff.getIDToken() })
+      });
+    } catch (e) { throw new Error('ติดต่อเซิร์ฟเวอร์ไม่ได้'); }
+    try { j = await res.json(); } catch (e) { throw new Error('รูปแบบข้อมูลตอบกลับไม่ถูกต้อง'); }
+    if (!j.ok) { const e = new Error(j.error.message); e.code = j.error.code; throw e; }
+    return j.data;
+  }
+
+  async function main() {
+    try {
+      await liff.init({ liffId: LIFF_ID });
+      if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
+      
+      const me = await api('me.get');
+      $('msg').className = 'd-none';
+      $('app').classList.remove('d-none');
+
+      if (!me.registered) {
+        $('view-unreg').classList.remove('d-none');
+        $('who').textContent = me.line.displayName || 'ผู้ใช้งานทั่วไป';
+        if (me.registration === 'PENDING') {
+          $('regPendingBox').classList.remove('d-none');
+          $('regBtn').disabled = true;
+          $('regBtn').textContent = 'รอการตรวจสอบจากธุรการ';
+        }
+        $('regBtn').onclick = async () => {
+          const code = $('regCode').value.trim();
+          const phone = $('regPhone').value.trim();
+          if (!code || !phone) { alert('กรุณากรอกข้อมูลให้ครบถ้วน'); return; }
+          $('regBtn').disabled = true;
+          try {
+            await api('reg.submit', { code, phone });
+            alert('ส่งคำขอลงทะเบียนเรียบร้อยแล้ว กรุณารอธุรการตรวจสอบ');
+            location.reload();
+          } catch (e) {
+            alert('ลงทะเบียนไม่สำเร็จ: ' + e.message);
+            $('regBtn').disabled = false;
+          }
+        };
+      } else {
+        $('view-reg').classList.remove('d-none');
+        $('who').textContent = me.person.name;
+        $('pName').textContent = me.person.name;
+        $('pMeta').textContent = `${me.person.position || ''} • ${me.person.unit || ''}`;
+        $('pRoleBadge').textContent = me.roles.map(r => r.label).join(', ');
+
+        // โหลดข้อมูลวันลาคงเหลือ
+        try {
+          const balances = await api('leave.balances');
+          let bHtml = '';
+          balances.forEach(b => {
+            bHtml += `<div class="col-4">
+              <div class="p-2 rounded bg-white bg-opacity-15">
+                <div class="small text-white-50">${esc(b.name)}</div>
+                <div class="fs-5 fw-bold">${b.remaining} <span class="small fw-normal">วัน</span></div>
+              </div>
+            </div>`;
+          });
+          $('balanceOut').innerHTML = bHtml;
+        } catch (e) {
+          $('balanceOut').innerHTML = '<div class="col-12 text-white-50 small">ไม่สามารถโหลดข้อมูลวันลาได้</div>';
+        }
+      }
+    } catch (e) {
+      say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + e.message);
+    }
+  }
+  main();
+</script>
 </body>
 </html>
