@@ -35,6 +35,15 @@
       box-sizing: border-box;
     }
 
+    html,
+    body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       background-color: var(--surface-bg);
       font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -42,59 +51,86 @@
       color: var(--ink-main);
       line-height: 1.55;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
 
-    /* ===== Navbar ===== */
+    /* ===== Navbar ด้านบน (ป้องกันข้อความล้นหรือขาดหายบนมือถือ 100%) ===== */
     .navbar.app-navbar {
+      width: 100%;
       background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand-primary) 100%);
       box-shadow: 0 2px 12px rgba(30, 58, 138, 0.18);
-      padding-top: 0.65rem;
-      padding-bottom: 0.65rem;
+      padding-top: 0.6rem;
+      padding-bottom: 0.6rem;
+    }
+
+    .app-navbar-inner {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    @media (min-width: 576px) {
+      .app-navbar-inner {
+        padding: 0 1.25rem;
+        flex-wrap: nowrap;
+      }
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      min-width: 0;
+      flex-shrink: 0;
     }
 
     .brand-icon-wrap {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.16);
-      backdrop-filter: blur(4px);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       color: #fff;
       flex-shrink: 0;
     }
 
     .user-pill {
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.24);
       color: #fff;
       border-radius: 50rem;
-      padding: 0.32rem 0.85rem;
-      font-size: 0.84rem;
+      padding: 0.28rem 0.75rem;
+      font-size: 0.82rem;
       font-weight: 500;
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      max-width: 220px;
+      gap: 0.38rem;
+      min-width: 0;
+      max-width: 100%;
     }
 
     .user-pill #who {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.3;
+      text-align: right;
     }
 
     /* ===== Main Responsive Container ===== */
     .app-container {
       max-width: 1240px;
       width: 100%;
+      min-width: 0;
       margin: 0 auto;
-      padding: 1rem 0.75rem 2.5rem;
-      flex: 1;
+      padding: 0.85rem 0.75rem 2.5rem;
     }
 
     @media (min-width: 576px) {
@@ -109,58 +145,81 @@
       }
     }
 
-    /* ===== Navigation Tabs (Mobile Horizontal Scroll / Tablet & Desktop Full Bar) ===== */
+    /* ===== แถบเมนู 5 แท็บ (แสดงครบทั้ง 5 ปุ่มในจอเดียวบนมือถือ ไม่ถูกตัดขอบซ้าย-ขวา) ===== */
     .nav-shell {
       background: var(--card-bg);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
-      padding: 0.4rem;
+      padding: 0.35rem;
       box-shadow: var(--shadow-xs);
+      width: 100%;
+      overflow: hidden;
     }
 
     #tabs-container {
-      overflow-x: auto;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-
-    #tabs-container::-webkit-scrollbar {
-      display: none;
-    }
-
-    #tabs {
-      gap: 0.35rem;
       width: 100%;
     }
 
-    #tabs .nav-item {
-      flex: 0 0 auto;
+    #tabs {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
+      gap: 0.25rem;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      list-style: none;
     }
 
-    @media (min-width: 768px) {
-      #tabs .nav-item {
-        flex: 1 1 auto;
-      }
-      #tabs .nav-link {
-        width: 100%;
-        justify-content: center;
-      }
+    #tabs .nav-item {
+      min-width: 0;
+      width: 100%;
     }
 
     #tabs .nav-link {
-      border-radius: 12px;
-      padding: 0.6rem 1rem;
+      width: 100%;
+      height: 100%;
+      border-radius: 11px;
+      padding: 0.45rem 0.2rem;
       font-weight: 600;
-      font-size: 0.92rem;
+      font-size: 0.76rem;
+      line-height: 1.2;
       color: var(--ink-muted);
       background: transparent;
       border: 1px solid transparent;
-      display: inline-flex;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 0.45rem;
+      justify-content: center;
+      text-align: center;
+      gap: 0.2rem;
       transition: all 0.18s ease;
-      margin-right: 0;
+      margin: 0;
+      white-space: normal;
+      word-break: keep-all;
+    }
+
+    #tabs .nav-link i {
+      font-size: 1.05rem;
+      line-height: 1;
+    }
+
+    @media (min-width: 768px) {
+      .nav-shell {
+        padding: 0.4rem;
+      }
+      #tabs {
+        gap: 0.35rem;
+      }
+      #tabs .nav-link {
+        flex-direction: row;
+        padding: 0.6rem 1rem;
+        font-size: 0.92rem;
+        gap: 0.45rem;
+        white-space: nowrap;
+      }
+      #tabs .nav-link i {
+        font-size: 1rem;
+      }
     }
 
     #tabs .nav-link:hover:not(.active) {
@@ -195,7 +254,8 @@
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-xs);
-      padding: 1rem 1.15rem;
+      padding: 0.9rem 1rem;
+      width: 100%;
     }
 
     @media (min-width: 768px) {
@@ -210,7 +270,7 @@
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
-      padding: 1.1rem 1.15rem;
+      padding: 1.05rem 1.1rem;
       height: 100%;
       position: relative;
       overflow: hidden;
@@ -223,13 +283,13 @@
     }
 
     .stat-icon-box {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       flex-shrink: 0;
     }
 
@@ -244,7 +304,7 @@
     .stat-danger { border-top: 4px solid #dc2626; }
 
     .big-num {
-      font-size: 1.95rem;
+      font-size: 1.9rem;
       font-weight: 700;
       line-height: 1.1;
       letter-spacing: -0.02em;
@@ -252,15 +312,15 @@
 
     @media (max-width: 575.98px) {
       .big-num {
-        font-size: 1.6rem;
+        font-size: 1.55rem;
       }
       .stat-card {
-        padding: 0.9rem 0.95rem;
+        padding: 0.85rem 0.9rem;
       }
       .stat-icon-box {
-        width: 36px;
-        height: 36px;
-        font-size: 1.05rem;
+        width: 34px;
+        height: 34px;
+        font-size: 1rem;
       }
     }
 
@@ -272,10 +332,11 @@
       box-shadow: var(--shadow-sm);
       overflow: hidden;
       height: 100%;
+      width: 100%;
     }
 
     .surface-card-header {
-      padding: 0.95rem 1.2rem;
+      padding: 0.9rem 1.1rem;
       border-bottom: 1px solid var(--border-subtle);
       background: #ffffff;
       display: flex;
@@ -293,14 +354,14 @@
       background-color: #f8fafc;
       color: #475569;
       font-weight: 600;
-      font-size: 0.83rem;
+      font-size: 0.82rem;
       border-bottom: 1px solid var(--border-subtle);
-      padding: 0.85rem 0.75rem;
+      padding: 0.75rem 0.65rem;
       white-space: nowrap;
     }
 
     .table-custom tbody td {
-      padding: 0.85rem 0.75rem;
+      padding: 0.75rem 0.65rem;
       border-bottom: 1px solid #f1f5f9;
       vertical-align: middle;
     }
@@ -315,11 +376,11 @@
 
     .num-pill {
       display: inline-block;
-      min-width: 32px;
-      padding: 0.2rem 0.55rem;
+      min-width: 30px;
+      padding: 0.18rem 0.5rem;
       border-radius: 50rem;
       font-weight: 600;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       text-align: center;
     }
 
@@ -348,8 +409,8 @@
     .wfh-table td {
       vertical-align: middle;
       text-align: center;
-      font-size: 0.85rem;
-      padding: 0.7rem 0.55rem;
+      font-size: 0.84rem;
+      padding: 0.65rem 0.5rem;
       border-bottom: 1px solid var(--border-subtle);
       border-right: 1px solid #f1f5f9;
     }
@@ -358,14 +419,14 @@
       background-color: #f8fafc;
       color: #334155;
       font-weight: 600;
-      min-width: 92px;
+      min-width: 84px;
     }
 
     .wfh-table th.name-col,
     .wfh-table td.name-col {
       text-align: left;
-      min-width: 175px;
-      max-width: 230px;
+      min-width: 155px;
+      max-width: 210px;
       position: sticky;
       left: 0;
       z-index: 2;
@@ -388,14 +449,14 @@
     }
 
     .cell-btn {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       padding: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border-radius: 10px;
-      font-size: 1rem;
+      border-radius: 9px;
+      font-size: 0.95rem;
       transition: all 0.15s ease;
     }
 
@@ -428,9 +489,9 @@
     }
 
     .cell-badge {
-      font-size: 0.74rem;
-      padding: 0.25rem 0.5rem;
-      border-radius: 8px;
+      font-size: 0.72rem;
+      padding: 0.22rem 0.45rem;
+      border-radius: 7px;
       display: inline-block;
       white-space: nowrap;
     }
@@ -438,14 +499,14 @@
     /* ===== Buttons & Inputs ===== */
     .btn, .form-control, .form-select {
       border-radius: 10px;
-      padding: 0.52rem 0.85rem;
+      padding: 0.5rem 0.8rem;
       font-size: 0.9rem;
     }
 
     .btn-sm, .form-control-sm, .form-select-sm {
       border-radius: 9px;
-      padding: 0.45rem 0.75rem;
-      font-size: 0.86rem;
+      padding: 0.42rem 0.7rem;
+      font-size: 0.85rem;
     }
 
     .form-control:focus, .form-select:focus {
@@ -470,21 +531,21 @@
 
     /* ===== Empty State ===== */
     .empty-state {
-      padding: 3rem 1.25rem;
+      padding: 2.75rem 1.25rem;
       text-align: center;
       color: var(--ink-muted);
     }
 
     .empty-state-icon {
-      width: 56px;
-      height: 56px;
+      width: 54px;
+      height: 54px;
       border-radius: 50%;
       background: #f1f5f9;
       color: #64748b;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       margin-bottom: 0.75rem;
     }
   </style>
@@ -493,31 +554,31 @@
 
   <!-- Navbar ด้านบน -->
   <nav class="navbar navbar-dark app-navbar sticky-top">
-    <div class="container-fluid px-3 px-lg-4" style="max-width: 1240px; margin: 0 auto;">
-      <div class="d-flex align-items-center gap-2">
+    <div class="app-navbar-inner">
+      <div class="brand-block">
         <span class="brand-icon-wrap">
           <i class="bi bi-shield-lock-fill"></i>
         </span>
         <div>
-          <span class="navbar-brand mb-0 h6 fw-bold d-block lh-sm">ธุรการ กปส.</span>
+          <span class="navbar-brand mb-0 h6 fw-bold d-block lh-sm me-0">ธุรการ กปส.</span>
           <small class="text-white-50 d-none d-sm-block" style="font-size: 0.75rem;">ระบบบริหารจัดการกำลังพล กองประชาสัมพันธ์</small>
         </div>
       </div>
 
-      <div class="d-flex align-items-center gap-2">
-        <span id="sampleBadge" class="badge rounded-pill bg-warning text-dark d-none">
-          <i class="bi bi-eye-fill me-1"></i><span class="d-none d-sm-inline">โหมดตัวอย่างข้อมูล </span>(Sample Data)
-        </span>
-        <div class="user-pill">
-          <i class="bi bi-person-circle"></i>
-          <div id="who">กำลังโหลด...</div>
-        </div>
+      <div class="user-pill">
+        <i class="bi bi-person-circle flex-shrink-0"></i>
+        <div id="who">กำลังโหลด...</div>
       </div>
     </div>
   </nav>
 
   <!-- เนื้อหาหลัก -->
   <main class="app-container">
+
+    <!-- แถบแจ้งเตือนกรณีอยู่ในโหมดตัวอย่างข้อมูล (แยกออกจาก Navbar เพื่อไม่ให้เบียดชื่อผู้ใช้บนมือถือ) -->
+    <div id="sampleBadge" class="alert alert-warning border-0 shadow-sm rounded-3 py-2 px-3 mb-2 small d-none d-flex align-items-center justify-content-between flex-wrap gap-1">
+      <span><i class="bi bi-eye-fill me-1"></i><strong>โหมดตัวอย่างข้อมูล (Sample Data)</strong> — แสดงผลตัวอย่างเมื่อไม่ได้เชื่อมต่อผ่าน LINE LIFF</span>
+    </div>
 
     <!-- กล่องแจ้งสถานะ -->
     <div id="msg" class="alert alert-primary border-0 shadow-sm rounded-4 d-flex align-items-center py-3 px-3" role="alert">
@@ -527,10 +588,10 @@
     <!-- ส่วนเนื้อหาหลักหลังโหลดผ่าน -->
     <div id="app" class="d-none">
 
-      <!-- เมนูแท็บแบบเลื่อนได้บนมือถือ และขยายเต็มแถบบนแท็บเล็ต/คอมพิวเตอร์ -->
+      <!-- เมนูแท็บแสดงครบทั้ง 5 ปุ่มในหน้าจอมือถือ และเรียงเต็มแถบบนแท็บเล็ต/คอมพิวเตอร์ -->
       <div class="nav-shell mb-3 mb-lg-4">
         <div id="tabs-container">
-          <ul id="tabs" class="nav nav-pills flex-nowrap d-inline-flex d-md-flex">
+          <ul id="tabs" class="nav nav-pills">
             <li class="nav-item"><button class="nav-link" data-tab="strength" data-perm="strength.view"><i class="bi bi-pie-chart-fill"></i><span>กำลังพล</span></button></li>
             <li class="nav-item"><button class="nav-link" data-tab="wfh" data-perm="duty.manage"><i class="bi bi-house-door-fill"></i><span>WFH</span></button></li>
             <li class="nav-item"><button class="nav-link" data-tab="duty" data-perm="duty.manage"><i class="bi bi-journal-text"></i><span>สถานะพิเศษ</span></button></li>
@@ -576,11 +637,15 @@
               <label for="wfhDate" class="small text-muted fw-semibold mb-1 d-block">
                 <i class="bi bi-calendar-week text-primary me-1"></i>เลือกสัปดาห์ (วันจันทร์)
               </label>
-              <div class="d-flex flex-wrap flex-sm-nowrap gap-2">
-                <input type="date" id="wfhDate" class="form-control form-control-sm" style="min-width: 165px;">
-                <button id="wfhGo" class="btn btn-primary btn-sm text-nowrap px-3">
-                  <i class="bi bi-calendar-week me-1"></i> โหลดตาราง
-                </button>
+              <div class="row g-2">
+                <div class="col-7 col-sm-auto">
+                  <input type="date" id="wfhDate" class="form-control form-control-sm">
+                </div>
+                <div class="col-5 col-sm-auto">
+                  <button id="wfhGo" class="btn btn-primary btn-sm w-100 text-nowrap px-3">
+                    <i class="bi bi-calendar-week me-1"></i> โหลดตาราง
+                  </button>
+                </div>
               </div>
             </div>
             <div class="col-12 col-md-auto text-md-end mt-2 mt-md-0">
@@ -624,11 +689,15 @@
           <div class="row g-2 align-items-end justify-content-between">
             <div class="col-12 col-sm-auto">
               <label for="holYear" class="small text-muted fw-semibold mb-1 d-block">ปี พ.ศ. (ค.ศ.)</label>
-              <div class="d-flex gap-2">
-                <select id="holYear" class="form-select form-select-sm" style="min-width: 170px;"></select>
-                <button id="holGo" class="btn btn-primary btn-sm text-nowrap px-3">
-                  <i class="bi bi-search me-1"></i> แสดง
-                </button>
+              <div class="row g-2">
+                <div class="col-7 col-sm-auto">
+                  <select id="holYear" class="form-select form-select-sm"></select>
+                </div>
+                <div class="col-5 col-sm-auto">
+                  <button id="holGo" class="btn btn-primary btn-sm w-100 text-nowrap px-3">
+                    <i class="bi bi-search me-1"></i> แสดง
+                  </button>
+                </div>
               </div>
             </div>
             <div class="col-12 col-sm-auto d-flex align-items-end gap-2 mt-2 mt-sm-0">
@@ -868,7 +937,7 @@
     if (action === 'me.get') {
       return {
         registered: true,
-        person: { name: 'ผู้ดูแลระบบ (ข้อมูลตัวอย่าง)' },
+        person: { name: 'ผู้ดูแลระบบ (ตัวอย่าง)' },
         permissions: ['*']
       };
     }
@@ -1357,9 +1426,9 @@
             ${list.map(h => `
               <tr>
                 <td class="ps-3 fw-medium text-nowrap"><i class="bi bi-calendar-event text-primary me-1"></i>${esc(h.date)}</td>
-                <td><span class="badge rounded-pill bg-light text-secondary border">วัน${DOW[h.dow] || ''}</span></td>
-                <td class="fw-bold text-dark">${esc(h.name)}</td>
-                <td class="text-muted">${esc(h.note)}</td>
+                <td class="text-nowrap"><span class="badge rounded-pill bg-light text-secondary border">วัน${DOW[h.dow] || ''}</span></td>
+                <td class="fw-bold text-dark" style="min-width: 120px;">${esc(h.name)}</td>
+                <td class="text-muted" style="min-width: 130px;">${esc(h.note)}</td>
                 <td class="text-end pe-3 text-nowrap">
                   <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editHoliday('${h.date}', '${esc(h.name)}', '${esc(h.note)}')" title="แก้ไข"><i class="bi bi-pencil"></i></button>
                   <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteHoliday('${h.date}')" title="ลบ"><i class="bi bi-trash"></i></button>
@@ -1392,7 +1461,7 @@
       const units = await api('unit.list');
       out.innerHTML = `<div class="surface-card mb-4"><div class="table-responsive">
         <table class="table table-custom align-middle mb-0 small">
-          <thead><tr><th class="ps-3" style="min-width: 180px;">แผนก</th><th class="text-center" style="min-width: 110px;">กำลังพลทั้งหมด</th><th class="text-center" style="min-width: 175px;">รูปแบบเกณฑ์</th><th class="pe-3" style="min-width: 210px;">ค่าขั้นต่ำ (คน หรือ %)</th></tr></thead>
+          <thead><tr><th class="ps-3" style="min-width: 170px;">แผนก</th><th class="text-center" style="min-width: 105px;">กำลังพลทั้งหมด</th><th class="text-center" style="min-width: 165px;">รูปแบบเกณฑ์</th><th class="pe-3" style="min-width: 200px;">ค่าขั้นต่ำ (คน หรือ %)</th></tr></thead>
           <tbody>
             ${units.map(u => `
               <tr data-unit="${u.unit_id}">
