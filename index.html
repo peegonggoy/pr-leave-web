@@ -4,55 +4,585 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ระบบลาและกำลังพล - กองประชาสัมพันธ์</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <style>
-    body { background-color: #f8f9fa; font-size: 0.95rem; color: #333; }
-    .navbar { box-shadow: 0 2px 4px rgba(0,0,0,.08); }
-    .card { border: none; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
-    .btn, .form-control { border-radius: 8px; padding: 0.6rem 0.75rem; }
-    .balance-card { background: linear-gradient(135deg, #0d6efd, #0dcaf0); color: white; }
+    :root {
+      --bg-page: #f1f5f9;
+      --surface: #ffffff;
+      --surface-subtle: #f8fafc;
+      --border-color: #e2e8f0;
+      --ink: #0f172a;
+      --ink-secondary: #334155;
+      --muted: #64748b;
+      --brand-primary: #1d4ed8;
+      --brand-secondary: #0284c7;
+      --brand-light: #eff6ff;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.07), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      --shadow-brand: 0 12px 28px -6px rgba(29, 78, 216, 0.35);
+      --font-heading: 'Prompt', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-body: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      background-image:
+        radial-gradient(at 0% 0%, rgba(29, 78, 216, 0.06) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(2, 132, 199, 0.06) 0px, transparent 50%);
+      background-attachment: fixed;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--ink);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, h4, h5, h6, .navbar-brand, .fw-heading, .btn {
+      font-family: var(--font-heading);
+    }
+
+    /* Navbar */
+    .app-navbar {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 55%, #0284c7 100%);
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.12);
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+
+    .app-container {
+      max-width: 1080px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .brand-icon-wrap {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .user-pill {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.85rem;
+      font-family: var(--font-heading);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      max-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Preview Bar (Shown only when testing outside LINE LIFF) */
+    .preview-toolbar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.55rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    .preview-badge {
+      background: var(--warning-light);
+      color: var(--warning);
+      border: 1px solid rgba(217, 119, 6, 0.3);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .preview-btn-group .btn {
+      padding: 0.3rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 8px;
+    }
+
+    /* Main Content Container */
+    main.app-main {
+      flex: 1;
+      padding-top: 1.5rem;
+      padding-bottom: 2.5rem;
+    }
+
+    /* Status Alert (#msg) */
+    #msg {
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 1.1rem 1.25rem;
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Cards */
+    .surface-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Unregistered View */
+    .reg-card {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .reg-card-top-bar {
+      height: 6px;
+      background: linear-gradient(90deg, #1d4ed8, #0284c7, #0ea5e9);
+    }
+
+    .reg-hero-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
+      color: var(--brand-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.12);
+    }
+
+    .form-label-custom {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      margin-bottom: 0.45rem;
+    }
+
+    .input-group-custom {
+      position: relative;
+    }
+
+    .input-group-custom .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1.1rem;
+      pointer-events: none;
+      transition: color 0.2s ease;
+    }
+
+    .input-group-custom .form-control {
+      padding: 0.78rem 1rem 0.78rem 2.75rem;
+      border-radius: 12px;
+      border: 1.5px solid var(--border-color);
+      font-size: 1rem;
+      color: var(--ink);
+      background-color: var(--surface-subtle);
+      transition: all 0.2s ease;
+    }
+
+    .input-group-custom .form-control:focus {
+      background-color: #ffffff;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.12);
+    }
+
+    .input-group-custom:focus-within .input-icon {
+      color: var(--brand-primary);
+    }
+
+    .btn-submit-primary {
+      background: linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%);
+      border: none;
+      color: #ffffff;
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 6px 18px rgba(29, 78, 216, 0.25);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn-submit-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(29, 78, 216, 0.34);
+      color: #ffffff;
+    }
+
+    .btn-submit-primary:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-submit-primary:disabled {
+      background: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* Registered Dashboard View */
+    .profile-card {
+      padding: 1.35rem 1.5rem;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #dbeafe 0%, #bae6fd 100%);
+      color: var(--brand-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.65rem;
+      flex-shrink: 0;
+    }
+
+    .role-badge {
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 0.42rem 0.85rem;
+      border-radius: 999px;
+      background: var(--brand-light);
+      color: var(--brand-primary);
+      border: 1px solid rgba(29, 78, 216, 0.18);
+    }
+
+    /* Balance Card */
+    .balance-card {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #0284c7 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-brand);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .balance-card::before {
+      content: "";
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 70%);
+      pointer-events: none;
+    }
+
+    .balance-item {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(8px);
+      border-radius: 14px;
+      padding: 1rem 0.75rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .balance-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .balance-label {
+      font-family: var(--font-heading);
+      font-size: 0.84rem;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 0.3rem;
+    }
+
+    .balance-value {
+      font-family: var(--font-heading);
+      font-size: 1.65rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #ffffff;
+    }
+
+    .balance-unit {
+      font-size: 0.82rem;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* Quick Action Menu Cards */
+    .action-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.4rem 1.25rem;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      width: 100%;
+    }
+
+    .action-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    .action-card:focus-visible {
+      outline: 3px solid rgba(29, 78, 216, 0.35);
+      outline-offset: 2px;
+    }
+
+    .action-icon-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 0.85rem;
+      transition: transform 0.2s ease;
+    }
+
+    .action-card:hover .action-icon-circle {
+      transform: scale(1.06);
+    }
+
+    .action-icon-primary {
+      background: var(--brand-light);
+      color: var(--brand-primary);
+    }
+
+    .action-icon-success {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .action-title {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--ink);
+      margin-bottom: 0.25rem;
+    }
+
+    .action-desc {
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    /* Inline Form Feedback Banner */
+    .feedback-banner {
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-size: 0.88rem;
+      font-family: var(--font-heading);
+    }
+
+    /* Responsive adjustments across Mobile, Tablet, and Desktop */
+    @media (min-width: 768px) {
+      main.app-main {
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+      }
+
+      .profile-card {
+        padding: 1.6rem 1.85rem;
+      }
+
+      .balance-value {
+        font-size: 1.9rem;
+      }
+
+      .action-card {
+        flex-direction: row;
+        text-align: left;
+        justify-content: flex-start;
+        padding: 1.5rem 1.6rem;
+        gap: 1.15rem;
+      }
+
+      .action-icon-circle {
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+    }
+
+    @media (min-width: 992px) {
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: 5fr 7fr;
+        gap: 1.5rem;
+        align-items: start;
+      }
+
+      .dashboard-left-col {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .dashboard-right-col {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <nav class="navbar navbar-dark bg-primary sticky-top">
-    <div class="container-fluid px-3">
-      <span class="navbar-brand mb-0 h6 fw-bold"><i class="bi bi-calendar-check-fill me-1"></i> ระบบลา กปส.</span>
-      <span id="who" class="text-white-50 small">กำลังโหลด...</span>
+  <!-- Top Navigation Bar -->
+  <nav class="navbar navbar-dark app-navbar sticky-top">
+    <div class="app-container px-3 d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <span class="brand-icon-wrap">
+          <i class="bi bi-calendar-check-fill"></i>
+        </span>
+        <div>
+          <span class="navbar-brand mb-0 h6 fw-bold d-block lh-sm">ระบบลา กปส.</span>
+          <span class="text-white-50 d-none d-sm-inline" style="font-size: 0.76rem;">ระบบลาและกำลังพล กองประชาสัมพันธ์</span>
+        </div>
+      </div>
+
+      <div class="user-pill" title="ผู้ใช้งานปัจจุบัน">
+        <i class="bi bi-person-circle"></i>
+        <span id="who">กำลังโหลด...</span>
+      </div>
     </div>
   </nav>
 
-  <main class="container py-3 px-2 px-md-3">
-    <div id="msg" class="alert alert-primary shadow-sm" role="alert">
-      <div class="spinner-border spinner-border-sm me-2" role="status"></div> กำลังเชื่อมต่อระบบ...
+  <!-- Preview Switcher Bar (แสดงเฉพาะเมื่อเปิดทดสอบนอก LINE LIFF เพื่อตรวจสอบทุกหน้าจอบนมือถือ/แท็บเล็ต/คอมพิวเตอร์) -->
+  <div id="previewBar" class="preview-toolbar d-none">
+    <div class="app-container px-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="preview-badge">
+          <i class="bi bi-eye-fill"></i> โหมดตัวอย่าง (Sample Data)
+        </span>
+        <span class="text-muted small d-none d-md-inline">สำหรับตรวจสอบการแสดงผลทุกสถานะเมื่อไม่ได้เปิดผ่าน LINE LIFF</span>
+      </div>
+      <div class="btn-group preview-btn-group" role="group" aria-label="สลับมุมมองตัวอย่าง">
+        <button type="button" class="btn btn-outline-primary active" id="btnPreviewReg">
+          <i class="bi bi-speedometer2 me-1"></i>หน้าหลักพนักงาน
+        </button>
+        <button type="button" class="btn btn-outline-primary" id="btnPreviewUnreg">
+          <i class="bi bi-person-plus me-1"></i>หน้าลงทะเบียน
+        </button>
+        <button type="button" class="btn btn-outline-primary" id="btnPreviewPending">
+          <i class="bi bi-hourglass-split me-1"></i>สถานะรอตรวจสอบ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="app-main app-container px-3">
+
+    <!-- Status / Connection Box -->
+    <div id="msg" class="alert alert-primary" role="alert">
+      <div class="spinner-border spinner-border-sm text-primary flex-shrink-0" role="status" aria-hidden="true"></div>
+      <div>กำลังเชื่อมต่อระบบ...</div>
     </div>
 
     <!-- ส่วนเนื้อหาหลัก (ซ่อนไว้ก่อนจนกว่าจะโหลดสถานะเสร็จ) -->
     <div id="app" class="d-none">
-      
+
       <!-- มุมมองที่ 1: ยังไม่ได้ลงทะเบียน -->
-      <section id="view-unreg" class="d-none py-4">
+      <section id="view-unreg" class="d-none py-2 py-md-4">
         <div class="row justify-content-center">
-          <div class="col-md-6">
-            <div class="card p-4 bg-white">
-              <div class="text-center mb-4">
-                <i class="bi bi-person-badge text-primary" style="font-size: 3rem;"></i>
-                <h4 class="fw-bold mt-2">ลงทะเบียนใช้งานระบบ</h4>
-                <p class="text-muted small">กรุณากรอกข้อมูลเพื่อผูกบัญชี LINE กับฐานข้อมูลกำลังพล</p>
+          <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+            <div class="surface-card reg-card">
+              <div class="reg-card-top-bar"></div>
+              <div class="p-4 p-sm-5">
+                <div class="text-center mb-4">
+                  <div class="reg-hero-icon mb-3">
+                    <i class="bi bi-person-badge"></i>
+                  </div>
+                  <h4 class="fw-bold mb-1 text-dark">ลงทะเบียนใช้งานระบบ</h4>
+                  <p class="text-muted small mb-0">
+                    กรุณากรอกข้อมูลเพื่อผูกบัญชี LINE กับฐานข้อมูลกำลังพล กองประชาสัมพันธ์
+                  </p>
+                </div>
+
+                <!-- กล่องแจ้งเตือนสถานะรอตรวจสอบ -->
+                <div id="regPendingBox" class="d-none alert alert-warning feedback-banner d-flex align-items-center gap-2 mb-4" role="status">
+                  <i class="bi bi-hourglass-split fs-5 flex-shrink-0"></i>
+                  <div>คำขอลงทะเบียนของคุณอยู่ระหว่างรอธุรการตรวจสอบ</div>
+                </div>
+
+                <!-- กล่องแจ้งเตือนผลการกรอกข้อมูล -->
+                <div id="regFeedback" class="d-none alert feedback-banner mb-3" role="alert"></div>
+
+                <div class="mb-3">
+                  <label for="regCode" class="form-label-custom">เลขประจำตัว (PID)</label>
+                  <div class="input-group-custom">
+                    <i class="bi bi-card-heading input-icon"></i>
+                    <input type="text" id="regCode" class="form-control" placeholder="ระบุเลขประจำตัวของคุณ" autocomplete="off">
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label for="regPhone" class="form-label-custom">เบอร์โทรศัพท์มือถือ</label>
+                  <div class="input-group-custom">
+                    <i class="bi bi-telephone input-icon"></i>
+                    <input type="tel" id="regPhone" class="form-control" placeholder="เช่น 0812345678" inputmode="tel" autocomplete="tel">
+                  </div>
+                </div>
+
+                <button id="regBtn" type="button" class="btn btn-submit-primary w-100">
+                  <i class="bi bi-send-check me-1"></i> ส่งคำขอลงทะเบียน
+                </button>
               </div>
-              <div id="regPendingBox" class="d-none alert alert-warning small text-center mb-3">
-                <i class="bi bi-hourglass-split me-1"></i> คำขอลงทะเบียนของคุณอยู่ระหว่างรอธุรการตรวจสอบ
-              </div>
-              <div class="mb-3">
-                <label class="form-label small fw-bold">เลขประจำตัว (PID)</label>
-                <input type="text" id="regCode" class="form-control" placeholder="ระบุเลขประจำตัวของคุณ">
-              </div>
-              <div class="mb-3">
-                <label class="form-label small fw-bold">เบอร์โทรศัพท์มือถือ</label>
-                <input type="tel" id="regPhone" class="form-control" placeholder="เช่น 0812345678">
-              </div>
-              <button id="regBtn" class="btn btn-primary w-100 fw-bold mt-2">ส่งคำขอลงทะเบียน</button>
             </div>
           </div>
         </div>
@@ -60,43 +590,115 @@
 
       <!-- มุมมองที่ 2: ลงทะเบียนแล้ว (Dashboard พนักงาน) -->
       <section id="view-reg" class="d-none">
-        <!-- การ์ดสรุปข้อมูลส่วนตัว -->
-        <div class="card p-3 bg-white mb-3">
-          <div class="d-flex align-items-center">
-            <div class="flex-grow-1">
-              <h5 id="pName" class="fw-bold mb-1 text-dark">ชื่อ-นามสกุล</h5>
-              <div id="pMeta" class="text-muted small">ตำแหน่ง • แผนก</div>
-            </div>
-            <div>
-              <span id="pRoleBadge" class="badge bg-primary bg-opacity-10 text-primary">STAFF</span>
-            </div>
-          </div>
-        </div>
+        <div class="dashboard-grid">
 
-        <!-- การ์ดวันลาคงเหลือ -->
-        <div class="card balance-card p-4 mb-3">
-          <h6 class="fw-bold mb-3 text-white-50"><i class="bi bi-wallet2 me-1"></i> สิทธิ์วันลาคงเหลือ (ปีงบประมาณนี้)</h6>
-          <div id="balanceOut" class="row g-2 text-center">
-            <!-- โหลดผ่าน JS -->
-          </div>
-        </div>
+          <!-- คอลัมน์ซ้าย (บนจอคอมพิวเตอร์): ข้อมูลส่วนตัว + เมนูลัด -->
+          <div class="dashboard-left-col mb-3 mb-lg-0">
+            <!-- การ์ดสรุปข้อมูลส่วนตัว -->
+            <div class="surface-card profile-card">
+              <div class="d-flex align-items-center gap-3">
+                <div class="profile-avatar">
+                  <i class="bi bi-person-vcard"></i>
+                </div>
+                <div class="flex-grow-1 min-w-0">
+                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-1">
+                    <h5 id="pName" class="fw-bold mb-0 text-dark text-truncate">ชื่อ-นามสกุล</h5>
+                    <span id="pRoleBadge" class="role-badge">STAFF</span>
+                  </div>
+                  <div id="pMeta" class="text-muted small text-truncate">ตำแหน่ง • แผนก</div>
+                </div>
+              </div>
+            </div>
 
-        <!-- เมนูลัด หรือข้อมูลเพิ่มเติม -->
-        <div class="row g-2">
-          <div class="col-6">
-            <div class="card p-3 text-center bg-white h-100 py-4">
-              <i class="bi bi-file-earmark-text text-primary fs-3 mb-2"></i>
-              <div class="fw-bold small">ประวัติการลา</div>
-              <div class="text-muted" style="font-size: 0.75rem;">ตรวจสอบสถานะใบลา</div>
+            <!-- เมนูลัด (แสดงใต้วันลาบนมือถือ หรือแสดงฝั่งซ้ายบนจอใหญ่) -->
+            <div class="d-none d-lg-block">
+              <div class="d-flex align-items-center justify-content-between mb-2 px-1">
+                <span class="fw-heading fw-semibold small text-secondary">
+                  <i class="bi bi-grid-1x2 me-1"></i> เมนูบริการกำลังพล
+                </span>
+              </div>
+              <div class="row g-3">
+                <div class="col-12">
+                  <div class="action-card" tabindex="0" role="button" aria-label="ประวัติการลา ตรวจสอบสถานะใบลา">
+                    <div class="action-icon-circle action-icon-primary">
+                      <i class="bi bi-file-earmark-text"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="action-title">ประวัติการลา</div>
+                      <div class="action-desc">ตรวจสอบสถานะใบลาและประวัติย้อนหลัง</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="action-card" tabindex="0" role="button" aria-label="ตาราง WFH ของฉัน ดูวันปฏิบัติงานนอกที่ตั้ง">
+                    <div class="action-icon-circle action-icon-success">
+                      <i class="bi bi-house-door"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="action-title">ตาราง WFH ของฉัน</div>
+                      <div class="action-desc">ดูวันปฏิบัติงานนอกที่ตั้ง (Work From Home)</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="col-6">
-            <div class="card p-3 text-center bg-white h-100 py-4">
-              <i class="bi bi-house-door text-success fs-3 mb-2"></i>
-              <div class="fw-bold small">ตาราง WFH ของฉัน</div>
-              <div class="text-muted" style="font-size: 0.75rem;">ดูวันปฏิบัติงานนอกที่ตั้ง</div>
+
+          <!-- คอลัมน์ขวา (บนจอคอมพิวเตอร์): การ์ดวันลาคงเหลือ + เมนูลัดสำหรับมือถือ/แท็บเล็ต -->
+          <div class="dashboard-right-col">
+            <!-- การ์ดวันลาคงเหลือ -->
+            <div class="card balance-card p-4 p-md-4">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="fw-bold mb-0 text-white d-flex align-items-center gap-2">
+                  <i class="bi bi-wallet2"></i>
+                  <span>สิทธิ์วันลาคงเหลือ (ปีงบประมาณนี้)</span>
+                </h6>
+                <span class="badge bg-white bg-opacity-20 text-white fw-normal rounded-pill px-3 py-1 small">
+                  ปีงบประมาณปัจจุบัน
+                </span>
+              </div>
+
+              <div id="balanceOut" class="row g-2 g-sm-3 text-center">
+                <!-- โหลดผ่าน JS -->
+              </div>
+            </div>
+
+            <!-- เมนูลัดสำหรับหน้าจอมือถือและแท็บเล็ต -->
+            <div class="d-lg-none mt-1">
+              <div class="d-flex align-items-center justify-content-between mb-2 px-1">
+                <span class="fw-heading fw-semibold small text-secondary">
+                  <i class="bi bi-grid-1x2 me-1"></i> เมนูบริการกำลังพล
+                </span>
+              </div>
+              <div class="row g-2 g-sm-3">
+                <div class="col-6">
+                  <div class="action-card" tabindex="0" role="button" aria-label="ประวัติการลา ตรวจสอบสถานะใบลา">
+                    <div class="action-icon-circle action-icon-primary">
+                      <i class="bi bi-file-earmark-text"></i>
+                    </div>
+                    <div>
+                      <div class="action-title">ประวัติการลา</div>
+                      <div class="action-desc">ตรวจสอบสถานะใบลา</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="action-card" tabindex="0" role="button" aria-label="ตาราง WFH ของฉัน ดูวันปฏิบัติงานนอกที่ตั้ง">
+                    <div class="action-icon-circle action-icon-success">
+                      <i class="bi bi-house-door"></i>
+                    </div>
+                    <div>
+                      <div class="action-title">ตาราง WFH ของฉัน</div>
+                      <div class="action-desc">ดูวันปฏิบัติงานนอกที่ตั้ง</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
       </section>
 
@@ -104,89 +706,198 @@
   </main>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<script>
-  const LIFF_ID = '2012347393-9duzGDMx'; // ใส่ LIFF ID ของคุณ
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxbHMFCz8B0PGPAka9h6yawBs8fxxUUrgKt_q1XweY/exec'; // ใส่ URL Web App ของคุณ
+  <script>
+    const LIFF_ID = '2012347393-9duzGDMx'; // ใส่ LIFF ID ของคุณ
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxbHMFCz8B0PGPAka9h6yawBs8fxxUUrgKt_q1XweY/exec'; // ใส่ URL Web App ของคุณ
 
-  const $ = id => document.getElementById(id);
-  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
-    c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const say = (type, text) => { const m = $('msg'); m.className = 'alert alert-' + type + ' shadow-sm'; m.innerHTML = text; };
+    const $ = id => document.getElementById(id);
 
-  async function api(action, payload) {
-    let res, j;
-    try {
-      res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action, payload: payload || {}, idToken: liff.getIDToken() })
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
+      c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    const say = (type, text) => {
+      const m = $('msg');
+      m.className = 'alert alert-' + type + ' shadow-sm';
+      m.innerHTML = text;
+    };
+
+    const showRegFeedback = (type, text) => {
+      const fb = $('regFeedback');
+      if (!fb) return;
+      fb.className = 'alert alert-' + type + ' feedback-banner mb-3';
+      fb.innerHTML = text;
+    };
+
+    function renderBalances(balances) {
+      if (!Array.isArray(balances) || balances.length === 0) {
+        $('balanceOut').innerHTML = '<div class="col-12 text-white-50 small py-3">ไม่พบข้อมูลสิทธิ์วันลา</div>';
+        return;
+      }
+      let bHtml = '';
+      balances.forEach(b => {
+        bHtml += `<div class="col-4 col-sm-4">
+          <div class="balance-item">
+            <div class="balance-label">${esc(b.name)}</div>
+            <div class="balance-value">${esc(b.remaining)} <span class="balance-unit">วัน</span></div>
+          </div>
+        </div>`;
       });
-    } catch (e) { throw new Error('ติดต่อเซิร์ฟเวอร์ไม่ได้'); }
-    try { j = await res.json(); } catch (e) { throw new Error('รูปแบบข้อมูลตอบกลับไม่ถูกต้อง'); }
-    if (!j.ok) { const e = new Error(j.error.message); e.code = j.error.code; throw e; }
-    return j.data;
-  }
+      $('balanceOut').innerHTML = bHtml;
+    }
 
-  async function main() {
-    try {
-      await liff.init({ liffId: LIFF_ID });
-      if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
-      
-      const me = await api('me.get');
+    async function api(action, payload) {
+      let res, j;
+      try {
+        res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action, payload: payload || {}, idToken: liff.getIDToken() })
+        });
+      } catch (e) { throw new Error('ติดต่อเซิร์ฟเวอร์ไม่ได้'); }
+      try { j = await res.json(); } catch (e) { throw new Error('รูปแบบข้อมูลตอบกลับไม่ถูกต้อง'); }
+      if (!j.ok) { const e = new Error(j.error.message); e.code = j.error.code; throw e; }
+      return j.data;
+    }
+
+    function bindRegistrationHandler(isPreview) {
+      $('regBtn').onclick = async () => {
+        const code = $('regCode').value.trim();
+        const phone = $('regPhone').value.trim();
+        if (!code || !phone) {
+          showRegFeedback('warning', '<i class="bi bi-exclamation-circle me-1"></i> กรุณากรอกเลขประจำตัว (PID) และเบอร์โทรศัพท์ให้ครบถ้วน');
+          return;
+        }
+        $('regBtn').disabled = true;
+        $('regBtn').innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>กำลังส่งข้อมูล...';
+
+        if (isPreview) {
+          setTimeout(() => {
+            showRegFeedback('success', '<i class="bi bi-check-circle-fill me-1"></i> ส่งคำขอลงทะเบียนเรียบร้อยแล้ว (โหมดตัวอย่าง) กรุณารอธุรการตรวจสอบ');
+            $('regPendingBox').classList.remove('d-none');
+            $('regBtn').disabled = true;
+            $('regBtn').textContent = 'รอการตรวจสอบจากธุรการ';
+          }, 500);
+          return;
+        }
+
+        try {
+          await api('reg.submit', { code, phone });
+          showRegFeedback('success', '<i class="bi bi-check-circle-fill me-1"></i> ส่งคำขอลงทะเบียนเรียบร้อยแล้ว กรุณารอธุรการตรวจสอบ');
+          setTimeout(() => location.reload(), 1200);
+        } catch (e) {
+          showRegFeedback('danger', '<i class="bi bi-x-circle-fill me-1"></i> ลงทะเบียนไม่สำเร็จ: ' + esc(e.message));
+          $('regBtn').disabled = false;
+          $('regBtn').innerHTML = '<i class="bi bi-send-check me-1"></i> ส่งคำขอลงทะเบียน';
+        }
+      };
+    }
+
+    // โหมดตัวอย่างสำหรับตรวจสอบหน้าจอบนเบราว์เซอร์ทั่วไปเมื่อไม่ได้เปิดผ่าน LINE LIFF
+    function initPreviewFallback() {
+      $('previewBar').classList.remove('d-none');
       $('msg').className = 'd-none';
       $('app').classList.remove('d-none');
 
-      if (!me.registered) {
-        $('view-unreg').classList.remove('d-none');
-        $('who').textContent = me.line.displayName || 'ผู้ใช้งานทั่วไป';
-        if (me.registration === 'PENDING') {
-          $('regPendingBox').classList.remove('d-none');
-          $('regBtn').disabled = true;
-          $('regBtn').textContent = 'รอการตรวจสอบจากธุรการ';
-        }
-        $('regBtn').onclick = async () => {
-          const code = $('regCode').value.trim();
-          const phone = $('regPhone').value.trim();
-          if (!code || !phone) { alert('กรุณากรอกข้อมูลให้ครบถ้วน'); return; }
-          $('regBtn').disabled = true;
-          try {
-            await api('reg.submit', { code, phone });
-            alert('ส่งคำขอลงทะเบียนเรียบร้อยแล้ว กรุณารอธุรการตรวจสอบ');
-            location.reload();
-          } catch (e) {
-            alert('ลงทะเบียนไม่สำเร็จ: ' + e.message);
-            $('regBtn').disabled = false;
-          }
-        };
-      } else {
-        $('view-reg').classList.remove('d-none');
-        $('who').textContent = me.person.name;
-        $('pName').textContent = me.person.name;
-        $('pMeta').textContent = `${me.person.position || ''} • ${me.person.unit || ''}`;
-        $('pRoleBadge').textContent = me.roles.map(r => r.label).join(', ');
+      const sampleBalances = [
+        { name: 'ลาป่วย', remaining: 30 },
+        { name: 'ลากิจส่วนตัว', remaining: 15 },
+        { name: 'ลาพักผ่อน', remaining: 10 }
+      ];
 
-        // โหลดข้อมูลวันลาคงเหลือ
-        try {
-          const balances = await api('leave.balances');
-          let bHtml = '';
-          balances.forEach(b => {
-            bHtml += `<div class="col-4">
-              <div class="p-2 rounded bg-white bg-opacity-15">
-                <div class="small text-white-50">${esc(b.name)}</div>
-                <div class="fs-5 fw-bold">${b.remaining} <span class="small fw-normal">วัน</span></div>
-              </div>
-            </div>`;
-          });
-          $('balanceOut').innerHTML = bHtml;
-        } catch (e) {
-          $('balanceOut').innerHTML = '<div class="col-12 text-white-50 small">ไม่สามารถโหลดข้อมูลวันลาได้</div>';
+      function showPreviewState(mode) {
+        $('btnPreviewReg').classList.toggle('active', mode === 'reg');
+        $('btnPreviewUnreg').classList.toggle('active', mode === 'unreg');
+        $('btnPreviewPending').classList.toggle('active', mode === 'pending');
+
+        if (mode === 'reg') {
+          $('view-unreg').classList.add('d-none');
+          $('view-reg').classList.remove('d-none');
+          $('who').textContent = 'ส.อ. กิตติพงศ์ (ตัวอย่าง)';
+          $('pName').textContent = 'ส.อ. กิตติพงศ์ สายสื่อสาร (ข้อมูลตัวอย่าง)';
+          $('pMeta').textContent = 'เจ้าหน้าที่ประชาสัมพันธ์ • กองประชาสัมพันธ์';
+          $('pRoleBadge').textContent = 'STAFF';
+          renderBalances(sampleBalances);
+        } else {
+          $('view-reg').classList.add('d-none');
+          $('view-unreg').classList.remove('d-none');
+          $('who').textContent = 'ผู้ใช้งานทั่วไป (ตัวอย่าง)';
+          $('regFeedback').className = 'd-none';
+
+          if (mode === 'pending') {
+            $('regPendingBox').classList.remove('d-none');
+            $('regBtn').disabled = true;
+            $('regBtn').textContent = 'รอการตรวจสอบจากธุรการ';
+          } else {
+            $('regPendingBox').classList.add('d-none');
+            $('regBtn').disabled = false;
+            $('regBtn').innerHTML = '<i class="bi bi-send-check me-1"></i> ส่งคำขอลงทะเบียน';
+          }
+          bindRegistrationHandler(true);
         }
       }
-    } catch (e) {
-      say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + e.message);
+
+      $('btnPreviewReg').onclick = () => showPreviewState('reg');
+      $('btnPreviewUnreg').onclick = () => showPreviewState('unreg');
+      $('btnPreviewPending').onclick = () => showPreviewState('pending');
+
+      showPreviewState('reg');
     }
-  }
-  main();
-</script>
+
+    async function main() {
+      try {
+        if (typeof liff === 'undefined') {
+          initPreviewFallback();
+          return;
+        }
+
+        await liff.init({ liffId: LIFF_ID });
+
+        if (!liff.isLoggedIn()) {
+          // หากเปิดใน LINE Client หรือเบราว์เซอร์ปกติที่รองรับการ Redirect ไปหน้า Login
+          if (liff.isInClient()) {
+            liff.login({ redirectUri: location.href });
+            return;
+          }
+          // หากเปิดทดสอบนอก LINE Client แสดงโหมดตัวอย่างเพื่อให้ตรวจสอบ UI ได้ทันที
+          initPreviewFallback();
+          return;
+        }
+
+        const me = await api('me.get');
+        $('msg').className = 'd-none';
+        $('app').classList.remove('d-none');
+
+        if (!me.registered) {
+          $('view-unreg').classList.remove('d-none');
+          $('who').textContent = me.line.displayName || 'ผู้ใช้งานทั่วไป';
+          if (me.registration === 'PENDING') {
+            $('regPendingBox').classList.remove('d-none');
+            $('regBtn').disabled = true;
+            $('regBtn').textContent = 'รอการตรวจสอบจากธุรการ';
+          }
+          bindRegistrationHandler(false);
+        } else {
+          $('view-reg').classList.remove('d-none');
+          $('who').textContent = me.person.name;
+          $('pName').textContent = me.person.name;
+          $('pMeta').textContent = `${me.person.position || ''} • ${me.person.unit || ''}`;
+          $('pRoleBadge').textContent = me.roles.map(r => r.label).join(', ');
+
+          // โหลดข้อมูลวันลาคงเหลือ
+          try {
+            const balances = await api('leave.balances');
+            renderBalances(balances);
+          } catch (e) {
+            $('balanceOut').innerHTML = '<div class="col-12 text-white-50 small py-2">ไม่สามารถโหลดข้อมูลวันลาได้</div>';
+          }
+        }
+      } catch (e) {
+        // กรณีเปิดทดสอบนอกสภาพแวดล้อม LINE LIFF ให้สลับเข้าโหมดตัวอย่างพร้อมแจ้งสถานะ
+        initPreviewFallback();
+      }
+    }
+
+    main();
+  </script>
 </body>
 </html>
