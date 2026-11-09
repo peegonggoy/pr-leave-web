@@ -1154,7 +1154,8 @@
     out.dataset.loaded = '1';
     out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดรายการ...</div></div>';
     try {
-      const list = await api('duty.list', { from: $('dutyFrom').value, to: $('dutyTo').value });
+    const list = await api('duty.list', { from: $('dutyFrom').value, to: $('dutyTo').value });
+      window.DUTY_LIST = list;
       if (!list.length) {
         out.innerHTML = `
           <div class="surface-card empty-state">
@@ -1192,7 +1193,20 @@
       META_LOADED = true;
     } catch (e) { console.error('Failed to load form meta', e); }
   }
-
+  window.editDuty = async function(dutyId) {
+    await initDutyFormMeta();
+    const d = (window.DUTY_LIST || []).find(x => x.duty_id === dutyId);
+    if (!d) return;
+    $('dDutyId').value = d.duty_id;
+    $('dPid').value = d.pid;
+    $('dType').value = d.type_id;
+    $('dStart').value = d.start;
+    $('dEnd').value = d.end;
+    $('dOrder').value = d.order_no || '';
+    $('dNote').value = d.note || '';
+    $('dModalAlert').className = 'd-none';
+    bootstrap.Modal.getOrCreateInstance($('dutyModal')).show();
+  };
   window.deleteDuty = async function(dutyId) {
     const ok = await showConfirm('ยืนยันลบรายการนี้ใช่หรือไม่?');
     if (!ok) return;
@@ -1228,8 +1242,8 @@
                 <td class="fw-bold text-dark" style="min-width: 120px;">${esc(h.name)}</td>
                 <td class="text-muted" style="min-width: 130px;">${esc(h.note)}</td>
                 <td class="text-end pe-3 text-nowrap">
-                  <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editHoliday('${h.date}', '${esc(h.name)}', '${esc(h.note)}')" title="แก้ไข"><i class="bi bi-pencil"></i></button>
-                  <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteHoliday('${h.date}')" title="ลบ"><i class="bi bi-trash"></i></button>
+                  <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editDuty('${d.duty_id}')" title="แก้ไขรายการ"><i class="bi bi-pencil"></i></button>
+                  <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteDuty('${d.duty_id}')" title="ลบรายการ"><i class="bi bi-trash"></i></button>
                 </td>
               </tr>`).join('')}
           </tbody>
@@ -1424,7 +1438,7 @@
       if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
       ME = await api('me.get');
       if (!ME.registered) { say('warning', '<i class="bi bi-exclamation-triangle-fill me-1"></i> บัญชี LINE นี้ยังไม่ได้ลงทะเบียนในระบบ'); return; }
-      if (!can('duty.manage') && !can('holiday.manage')) { say('danger', '<i class="bi bi-slash-circle-fill me-1"></i> บัญชีนี้ไม่มีสิทธิ์เข้าใช้งานหน้าธุรการ'); return; }
+      if (!can('strength.view') && !can('duty.manage') && !can('holiday.manage')) { say('danger', '<i class="bi bi-slash-circle-fill me-1"></i> บัญชีนี้ไม่มีสิทธิ์เข้าใช้งานหน้าธุรการ'); return; }
 
       setupAppUI();
     } catch (e) {
