@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>ระบบลาและกำลังพล - กองประชาสัมพันธ์</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,526 +11,374 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <style>
     :root {
-      --bg-page: #f1f5f9;
+      --bg-page: #f4f7fb;
       --surface: #ffffff;
       --surface-subtle: #f8fafc;
       --border-color: #e2e8f0;
       --ink: #0f172a;
       --ink-secondary: #334155;
       --muted: #64748b;
-      --brand-primary: #1d4ed8;
-      --brand-secondary: #0284c7;
+      --brand-primary: #0d6efd;
+      --brand-dark: #1d4ed8;
+      --brand-cyan: #0dcaf0;
       --brand-light: #eff6ff;
-      --success: #059669;
+      --success: #198754;
       --success-light: #ecfdf5;
-      --warning: #d97706;
-      --warning-light: #fffbeb;
-      --danger: #dc2626;
-      --danger-light: #fef2f2;
       --radius-sm: 10px;
-      --radius-md: 16px;
-      --radius-lg: 20px;
-      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
-      --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.07), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-      --shadow-brand: 0 12px 28px -6px rgba(29, 78, 216, 0.35);
+      --radius-md: 14px;
+      --radius-lg: 18px;
+      --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.07);
+      --shadow-brand: 0 10px 24px rgba(13, 110, 253, 0.25);
       --font-heading: 'Prompt', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-body: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     * {
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
     }
 
     body {
       background-color: var(--bg-page);
-      background-image:
-        radial-gradient(at 0% 0%, rgba(29, 78, 216, 0.06) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(2, 132, 199, 0.06) 0px, transparent 50%);
-      background-attachment: fixed;
       font-family: var(--font-body);
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: var(--ink);
-      line-height: 1.6;
+      line-height: 1.55;
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
-    h1, h2, h3, h4, h5, h6, .navbar-brand, .fw-heading, .btn {
+    h1, h2, h3, h4, h5, h6, .navbar-brand, .btn, .form-label, .badge {
       font-family: var(--font-heading);
     }
 
-    /* Navbar */
-    .app-navbar {
-      background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 55%, #0284c7 100%);
-      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.12);
-      padding-top: 0.75rem;
-      padding-bottom: 0.75rem;
+    /* Navbar - Mobile First */
+    .navbar {
+      background: linear-gradient(135deg, #1d4ed8 0%, #0d6efd 60%, #0284c7 100%);
+      box-shadow: 0 2px 12px rgba(13, 110, 253, 0.18);
+      padding-top: max(0.6rem, env(safe-area-inset-top, 0.6rem));
+      padding-bottom: 0.6rem;
     }
 
     .app-container {
-      max-width: 1080px;
       width: 100%;
+      max-width: 960px;
       margin: 0 auto;
     }
 
-    .brand-icon-wrap {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(6px);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.15rem;
-      color: #ffffff;
-      flex-shrink: 0;
+    .navbar-brand {
+      font-size: 1rem;
+      letter-spacing: -0.01em;
     }
 
-    .user-pill {
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      color: #ffffff;
+    #who {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      color: #ffffff !important;
       border-radius: 999px;
-      padding: 0.35rem 0.85rem;
-      font-size: 0.85rem;
+      padding: 0.28rem 0.75rem;
+      font-size: 0.8rem;
       font-family: var(--font-heading);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      max-width: 220px;
+      max-width: 48vw;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      display: inline-block;
     }
 
-    /* Preview Bar (Shown only when testing outside LINE LIFF) */
-    .preview-toolbar {
-      background: #ffffff;
-      border-bottom: 1px solid var(--border-color);
-      padding: 0.55rem 1rem;
-      font-size: 0.85rem;
-    }
-
-    .preview-badge {
-      background: var(--warning-light);
-      color: var(--warning);
-      border: 1px solid rgba(217, 119, 6, 0.3);
-      font-family: var(--font-heading);
-      font-weight: 600;
-      padding: 0.2rem 0.65rem;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .preview-btn-group .btn {
-      padding: 0.3rem 0.75rem;
-      font-size: 0.8rem;
-      border-radius: 8px;
-    }
-
-    /* Main Content Container */
-    main.app-main {
+    /* Main Container */
+    main.container {
       flex: 1;
-      padding-top: 1.5rem;
-      padding-bottom: 2.5rem;
+      width: 100%;
+      max-width: 960px;
+      padding-top: 0.9rem;
+      padding-bottom: 1.75rem;
+      padding-left: 0.85rem;
+      padding-right: 0.85rem;
     }
 
-    /* Status Alert (#msg) */
+    /* Alert / Status Box (#msg) */
     #msg {
       border: none;
       border-radius: var(--radius-md);
-      padding: 1.1rem 1.25rem;
+      padding: 0.95rem 1rem;
       font-family: var(--font-heading);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
       box-shadow: var(--shadow-sm);
+      margin-bottom: 1rem;
+      word-break: break-word;
     }
 
     /* Cards */
-    .surface-card {
-      background: var(--surface);
-      border: 1px solid var(--border-color);
+    .card {
+      border: 1px solid rgba(226, 232, 240, 0.85);
       border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: var(--shadow-sm);
+      background: var(--surface);
+    }
+
+    /* Form Controls - 16px minimum on mobile to prevent iOS auto-zoom */
+    .form-control {
+      border-radius: 12px;
+      padding: 0.7rem 0.9rem;
+      font-size: 16px;
+      border: 1.5px solid var(--border-color);
+      background-color: var(--surface-subtle);
+      color: var(--ink);
+      min-height: 48px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .form-control:focus {
+      background-color: #ffffff;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+    }
+
+    .btn {
+      border-radius: 12px;
+      padding: 0.7rem 1rem;
+      min-height: 48px;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1d4ed8 0%, #0d6efd 100%);
+      border: none;
+      box-shadow: 0 4px 14px rgba(13, 110, 253, 0.25);
+    }
+
+    .btn-primary:active:not(:disabled) {
+      transform: scale(0.99);
     }
 
     /* Unregistered View */
-    .reg-card {
-      overflow: hidden;
-      position: relative;
-    }
-
-    .reg-card-top-bar {
-      height: 6px;
-      background: linear-gradient(90deg, #1d4ed8, #0284c7, #0ea5e9);
-    }
-
-    .reg-hero-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
+    .unreg-icon-box {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      background: var(--brand-light);
       color: var(--brand-primary);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.2rem;
-      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.12);
+      font-size: 2rem;
     }
 
-    .form-label-custom {
-      font-family: var(--font-heading);
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--ink-secondary);
-      margin-bottom: 0.45rem;
-    }
-
-    .input-group-custom {
-      position: relative;
-    }
-
-    .input-group-custom .input-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted);
-      font-size: 1.1rem;
-      pointer-events: none;
-      transition: color 0.2s ease;
-    }
-
-    .input-group-custom .form-control {
-      padding: 0.78rem 1rem 0.78rem 2.75rem;
-      border-radius: 12px;
-      border: 1.5px solid var(--border-color);
-      font-size: 1rem;
-      color: var(--ink);
-      background-color: var(--surface-subtle);
-      transition: all 0.2s ease;
-    }
-
-    .input-group-custom .form-control:focus {
-      background-color: #ffffff;
-      border-color: var(--brand-primary);
-      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.12);
-    }
-
-    .input-group-custom:focus-within .input-icon {
-      color: var(--brand-primary);
-    }
-
-    .btn-submit-primary {
-      background: linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%);
-      border: none;
-      color: #ffffff;
-      padding: 0.85rem 1.25rem;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 1rem;
-      box-shadow: 0 6px 18px rgba(29, 78, 216, 0.25);
-      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-    }
-
-    .btn-submit-primary:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 22px rgba(29, 78, 216, 0.34);
-      color: #ffffff;
-    }
-
-    .btn-submit-primary:active:not(:disabled) {
-      transform: translateY(0);
-    }
-
-    .btn-submit-primary:disabled {
-      background: #94a3b8;
-      box-shadow: none;
-      cursor: not-allowed;
-    }
-
-    /* Registered Dashboard View */
+    /* Profile Card */
     .profile-card {
-      padding: 1.35rem 1.5rem;
-      background: #ffffff;
-      position: relative;
-      overflow: hidden;
+      padding: 1rem 1.1rem;
     }
 
     .profile-avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #dbeafe 0%, #bae6fd 100%);
-      color: var(--brand-primary);
-      display: flex;
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+      color: var(--brand-dark);
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.65rem;
+      font-size: 1.4rem;
       flex-shrink: 0;
     }
 
-    .role-badge {
-      font-family: var(--font-heading);
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      padding: 0.42rem 0.85rem;
-      border-radius: 999px;
-      background: var(--brand-light);
-      color: var(--brand-primary);
-      border: 1px solid rgba(29, 78, 216, 0.18);
+    #pName {
+      font-size: 1.05rem;
+      line-height: 1.35;
+      word-break: break-word;
     }
 
-    /* Balance Card */
+    #pMeta {
+      font-size: 0.82rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    #pRoleBadge {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Balance Card - Mobile First */
     .balance-card {
-      background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #0284c7 100%);
+      background: linear-gradient(135deg, #0d6efd 0%, #0284c7 60%, #0dcaf0 100%);
       color: #ffffff;
       border: none;
-      border-radius: var(--radius-lg);
       box-shadow: var(--shadow-brand);
+      padding: 1.1rem 0.95rem;
       position: relative;
       overflow: hidden;
     }
 
-    .balance-card::before {
-      content: "";
-      position: absolute;
-      top: -40px;
-      right: -40px;
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 70%);
-      pointer-events: none;
-    }
-
-    .balance-item {
-      background: rgba(255, 255, 255, 0.14);
+    .balance-item-box {
+      background: rgba(255, 255, 255, 0.16);
       border: 1px solid rgba(255, 255, 255, 0.22);
-      backdrop-filter: blur(8px);
-      border-radius: 14px;
-      padding: 1rem 0.75rem;
+      border-radius: 12px;
+      padding: 0.65rem 0.35rem;
       height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      transition: transform 0.2s ease, background-color 0.2s ease;
     }
 
-    .balance-item:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .balance-label {
+    .balance-type-name {
       font-family: var(--font-heading);
-      font-size: 0.84rem;
-      color: rgba(255, 255, 255, 0.85);
-      margin-bottom: 0.3rem;
+      font-size: clamp(0.72rem, 2.6vw, 0.85rem);
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.25;
+      margin-bottom: 0.25rem;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
     }
 
-    .balance-value {
+    .balance-num {
       font-family: var(--font-heading);
-      font-size: 1.65rem;
+      font-size: clamp(1.1rem, 4.5vw, 1.5rem);
       font-weight: 700;
       line-height: 1.2;
       color: #ffffff;
     }
 
     .balance-unit {
-      font-size: 0.82rem;
+      font-size: clamp(0.7rem, 2.3vw, 0.8rem);
       font-weight: 400;
-      color: rgba(255, 255, 255, 0.85);
     }
 
     /* Quick Action Menu Cards */
-    .action-card {
-      background: var(--surface);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 1.4rem 1.25rem;
-      box-shadow: var(--shadow-sm);
+    .menu-card {
+      padding: 1rem 0.7rem;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
       cursor: pointer;
-      transition: all 0.2s ease;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      height: 100%;
-      width: 100%;
     }
 
-    .action-card:hover {
-      transform: translateY(-3px);
+    .menu-card:hover {
+      transform: translateY(-2px);
       box-shadow: var(--shadow-md);
-      border-color: #cbd5e1;
     }
 
-    .action-card:focus-visible {
-      outline: 3px solid rgba(29, 78, 216, 0.35);
-      outline-offset: 2px;
+    .menu-card:active {
+      transform: scale(0.98);
     }
 
-    .action-icon-circle {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
+    .menu-icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.6rem;
-      margin-bottom: 0.85rem;
-      transition: transform 0.2s ease;
+      font-size: 1.45rem;
+      margin-bottom: 0.55rem;
     }
 
-    .action-card:hover .action-icon-circle {
-      transform: scale(1.06);
-    }
-
-    .action-icon-primary {
+    .menu-icon-primary {
       background: var(--brand-light);
       color: var(--brand-primary);
     }
 
-    .action-icon-success {
+    .menu-icon-success {
       background: var(--success-light);
       color: var(--success);
     }
 
-    .action-title {
+    .menu-title {
       font-family: var(--font-heading);
       font-weight: 600;
-      font-size: 1rem;
+      font-size: clamp(0.84rem, 2.8vw, 0.98rem);
       color: var(--ink);
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.15rem;
+      line-height: 1.3;
     }
 
-    .action-desc {
-      font-size: 0.84rem;
+    .menu-subtitle {
+      font-size: clamp(0.72rem, 2.3vw, 0.82rem);
       color: var(--muted);
+      line-height: 1.35;
     }
 
-    /* Inline Form Feedback Banner */
-    .feedback-banner {
-      border-radius: 12px;
-      padding: 0.75rem 1rem;
-      font-size: 0.88rem;
-      font-family: var(--font-heading);
-    }
+    /* Tablet & Desktop Enhancements */
+    @media (min-width: 576px) {
+      #who {
+        max-width: 260px;
+        font-size: 0.85rem;
+      }
 
-    /* Responsive adjustments across Mobile, Tablet, and Desktop */
-    @media (min-width: 768px) {
-      main.app-main {
-        padding-top: 2rem;
-        padding-bottom: 3rem;
+      main.container {
+        padding-top: 1.25rem;
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
       }
 
       .profile-card {
-        padding: 1.6rem 1.85rem;
+        padding: 1.25rem 1.5rem;
       }
 
-      .balance-value {
-        font-size: 1.9rem;
+      .balance-card {
+        padding: 1.5rem;
       }
 
-      .action-card {
-        flex-direction: row;
-        text-align: left;
-        justify-content: flex-start;
-        padding: 1.5rem 1.6rem;
-        gap: 1.15rem;
+      .balance-item-box {
+        padding: 0.9rem 0.75rem;
       }
 
-      .action-icon-circle {
-        margin-bottom: 0;
-        flex-shrink: 0;
+      .menu-card {
+        padding: 1.35rem 1rem;
       }
     }
 
     @media (min-width: 992px) {
-      .dashboard-grid {
-        display: grid;
-        grid-template-columns: 5fr 7fr;
-        gap: 1.5rem;
-        align-items: start;
+      main.container {
+        padding-top: 1.75rem;
       }
 
-      .dashboard-left-col {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-      }
-
-      .dashboard-right-col {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
+      #view-reg .dashboard-row {
+        align-items: stretch;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation Bar -->
-  <nav class="navbar navbar-dark app-navbar sticky-top">
-    <div class="app-container px-3 d-flex align-items-center justify-content-between">
-      <div class="d-flex align-items-center gap-2">
-        <span class="brand-icon-wrap">
-          <i class="bi bi-calendar-check-fill"></i>
-        </span>
-        <div>
-          <span class="navbar-brand mb-0 h6 fw-bold d-block lh-sm">ระบบลา กปส.</span>
-          <span class="text-white-50 d-none d-sm-inline" style="font-size: 0.76rem;">ระบบลาและกำลังพล กองประชาสัมพันธ์</span>
-        </div>
-      </div>
-
-      <div class="user-pill" title="ผู้ใช้งานปัจจุบัน">
-        <i class="bi bi-person-circle"></i>
-        <span id="who">กำลังโหลด...</span>
-      </div>
+  <nav class="navbar navbar-dark bg-primary sticky-top">
+    <div class="app-container px-3 d-flex align-items-center justify-content-between gap-2">
+      <span class="navbar-brand mb-0 h6 fw-bold text-truncate">
+        <i class="bi bi-calendar-check-fill me-1"></i> ระบบลา กปส.
+      </span>
+      <span id="who" class="text-white-50 small">กำลังโหลด...</span>
     </div>
   </nav>
 
-  <!-- Preview Switcher Bar (แสดงเฉพาะเมื่อเปิดทดสอบนอก LINE LIFF เพื่อตรวจสอบทุกหน้าจอบนมือถือ/แท็บเล็ต/คอมพิวเตอร์) -->
-  <div id="previewBar" class="preview-toolbar d-none">
-    <div class="app-container px-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
-      <div class="d-flex align-items-center gap-2">
-        <span class="preview-badge">
-          <i class="bi bi-eye-fill"></i> โหมดตัวอย่าง (Sample Data)
-        </span>
-        <span class="text-muted small d-none d-md-inline">สำหรับตรวจสอบการแสดงผลทุกสถานะเมื่อไม่ได้เปิดผ่าน LINE LIFF</span>
-      </div>
-      <div class="btn-group preview-btn-group" role="group" aria-label="สลับมุมมองตัวอย่าง">
-        <button type="button" class="btn btn-outline-primary active" id="btnPreviewReg">
-          <i class="bi bi-speedometer2 me-1"></i>หน้าหลักพนักงาน
-        </button>
-        <button type="button" class="btn btn-outline-primary" id="btnPreviewUnreg">
-          <i class="bi bi-person-plus me-1"></i>หน้าลงทะเบียน
-        </button>
-        <button type="button" class="btn btn-outline-primary" id="btnPreviewPending">
-          <i class="bi bi-hourglass-split me-1"></i>สถานะรอตรวจสอบ
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <main class="app-main app-container px-3">
-
-    <!-- Status / Connection Box -->
-    <div id="msg" class="alert alert-primary" role="alert">
-      <div class="spinner-border spinner-border-sm text-primary flex-shrink-0" role="status" aria-hidden="true"></div>
+  <main class="container">
+    <div id="msg" class="alert alert-primary shadow-sm" role="alert">
+      <div class="spinner-border spinner-border-sm me-2 flex-shrink-0" role="status"></div>
       <div>กำลังเชื่อมต่อระบบ...</div>
     </div>
 
@@ -540,49 +388,33 @@
       <!-- มุมมองที่ 1: ยังไม่ได้ลงทะเบียน -->
       <section id="view-unreg" class="d-none py-2 py-md-4">
         <div class="row justify-content-center">
-          <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
-            <div class="surface-card reg-card">
-              <div class="reg-card-top-bar"></div>
-              <div class="p-4 p-sm-5">
-                <div class="text-center mb-4">
-                  <div class="reg-hero-icon mb-3">
-                    <i class="bi bi-person-badge"></i>
-                  </div>
-                  <h4 class="fw-bold mb-1 text-dark">ลงทะเบียนใช้งานระบบ</h4>
-                  <p class="text-muted small mb-0">
-                    กรุณากรอกข้อมูลเพื่อผูกบัญชี LINE กับฐานข้อมูลกำลังพล กองประชาสัมพันธ์
-                  </p>
+          <div class="col-12 col-sm-10 col-md-7 col-lg-5">
+            <div class="card p-3 p-sm-4 bg-white">
+              <div class="text-center mb-3 mb-sm-4">
+                <div class="unreg-icon-box mb-2">
+                  <i class="bi bi-person-badge"></i>
                 </div>
-
-                <!-- กล่องแจ้งเตือนสถานะรอตรวจสอบ -->
-                <div id="regPendingBox" class="d-none alert alert-warning feedback-banner d-flex align-items-center gap-2 mb-4" role="status">
-                  <i class="bi bi-hourglass-split fs-5 flex-shrink-0"></i>
-                  <div>คำขอลงทะเบียนของคุณอยู่ระหว่างรอธุรการตรวจสอบ</div>
-                </div>
-
-                <!-- กล่องแจ้งเตือนผลการกรอกข้อมูล -->
-                <div id="regFeedback" class="d-none alert feedback-banner mb-3" role="alert"></div>
-
-                <div class="mb-3">
-                  <label for="regCode" class="form-label-custom">เลขประจำตัว (PID)</label>
-                  <div class="input-group-custom">
-                    <i class="bi bi-card-heading input-icon"></i>
-                    <input type="text" id="regCode" class="form-control" placeholder="ระบุเลขประจำตัวของคุณ" autocomplete="off">
-                  </div>
-                </div>
-
-                <div class="mb-4">
-                  <label for="regPhone" class="form-label-custom">เบอร์โทรศัพท์มือถือ</label>
-                  <div class="input-group-custom">
-                    <i class="bi bi-telephone input-icon"></i>
-                    <input type="tel" id="regPhone" class="form-control" placeholder="เช่น 0812345678" inputmode="tel" autocomplete="tel">
-                  </div>
-                </div>
-
-                <button id="regBtn" type="button" class="btn btn-submit-primary w-100">
-                  <i class="bi bi-send-check me-1"></i> ส่งคำขอลงทะเบียน
-                </button>
+                <h4 class="fw-bold mt-1 mb-1 fs-5">ลงทะเบียนใช้งานระบบ</h4>
+                <p class="text-muted small mb-0">กรุณากรอกข้อมูลเพื่อผูกบัญชี LINE กับฐานข้อมูลกำลังพล</p>
               </div>
+
+              <div id="regPendingBox" class="d-none alert alert-warning small text-center mb-3">
+                <i class="bi bi-hourglass-split me-1"></i> คำขอลงทะเบียนของคุณอยู่ระหว่างรอธุรการตรวจสอบ
+              </div>
+
+              <div id="regNotice" class="d-none alert small mb-3" role="alert"></div>
+
+              <div class="mb-3">
+                <label for="regCode" class="form-label small fw-bold">เลขประจำตัว (PID)</label>
+                <input type="text" id="regCode" class="form-control" placeholder="ระบุเลขประจำตัวของคุณ" autocomplete="off">
+              </div>
+
+              <div class="mb-3">
+                <label for="regPhone" class="form-label small fw-bold">เบอร์โทรศัพท์มือถือ</label>
+                <input type="tel" id="regPhone" class="form-control" placeholder="เช่น 0812345678" inputmode="tel" autocomplete="tel">
+              </div>
+
+              <button id="regBtn" class="btn btn-primary w-100 fw-bold mt-2">ส่งคำขอลงทะเบียน</button>
             </div>
           </div>
         </div>
@@ -590,115 +422,58 @@
 
       <!-- มุมมองที่ 2: ลงทะเบียนแล้ว (Dashboard พนักงาน) -->
       <section id="view-reg" class="d-none">
-        <div class="dashboard-grid">
-
-          <!-- คอลัมน์ซ้าย (บนจอคอมพิวเตอร์): ข้อมูลส่วนตัว + เมนูลัด -->
-          <div class="dashboard-left-col mb-3 mb-lg-0">
-            <!-- การ์ดสรุปข้อมูลส่วนตัว -->
-            <div class="surface-card profile-card">
+        <div class="row g-3 dashboard-row">
+          <!-- ข้อมูลส่วนตัว -->
+          <div class="col-12 col-lg-5">
+            <div class="card profile-card bg-white h-100 d-flex justify-content-center">
               <div class="d-flex align-items-center gap-3">
                 <div class="profile-avatar">
                   <i class="bi bi-person-vcard"></i>
                 </div>
                 <div class="flex-grow-1 min-w-0">
-                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-1">
-                    <h5 id="pName" class="fw-bold mb-0 text-dark text-truncate">ชื่อ-นามสกุล</h5>
-                    <span id="pRoleBadge" class="role-badge">STAFF</span>
+                  <div class="d-flex align-items-start justify-content-between gap-2 mb-1">
+                    <h5 id="pName" class="fw-bold mb-0 text-dark">ชื่อ-นามสกุล</h5>
+                    <span id="pRoleBadge" class="badge bg-primary bg-opacity-10 text-primary flex-shrink-0">STAFF</span>
                   </div>
-                  <div id="pMeta" class="text-muted small text-truncate">ตำแหน่ง • แผนก</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- เมนูลัด (แสดงใต้วันลาบนมือถือ หรือแสดงฝั่งซ้ายบนจอใหญ่) -->
-            <div class="d-none d-lg-block">
-              <div class="d-flex align-items-center justify-content-between mb-2 px-1">
-                <span class="fw-heading fw-semibold small text-secondary">
-                  <i class="bi bi-grid-1x2 me-1"></i> เมนูบริการกำลังพล
-                </span>
-              </div>
-              <div class="row g-3">
-                <div class="col-12">
-                  <div class="action-card" tabindex="0" role="button" aria-label="ประวัติการลา ตรวจสอบสถานะใบลา">
-                    <div class="action-icon-circle action-icon-primary">
-                      <i class="bi bi-file-earmark-text"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                      <div class="action-title">ประวัติการลา</div>
-                      <div class="action-desc">ตรวจสอบสถานะใบลาและประวัติย้อนหลัง</div>
-                    </div>
-                    <i class="bi bi-chevron-right text-muted"></i>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="action-card" tabindex="0" role="button" aria-label="ตาราง WFH ของฉัน ดูวันปฏิบัติงานนอกที่ตั้ง">
-                    <div class="action-icon-circle action-icon-success">
-                      <i class="bi bi-house-door"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                      <div class="action-title">ตาราง WFH ของฉัน</div>
-                      <div class="action-desc">ดูวันปฏิบัติงานนอกที่ตั้ง (Work From Home)</div>
-                    </div>
-                    <i class="bi bi-chevron-right text-muted"></i>
-                  </div>
+                  <div id="pMeta" class="text-muted small">ตำแหน่ง • แผนก</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- คอลัมน์ขวา (บนจอคอมพิวเตอร์): การ์ดวันลาคงเหลือ + เมนูลัดสำหรับมือถือ/แท็บเล็ต -->
-          <div class="dashboard-right-col">
-            <!-- การ์ดวันลาคงเหลือ -->
-            <div class="card balance-card p-4 p-md-4">
-              <div class="d-flex align-items-center justify-content-between mb-3">
-                <h6 class="fw-bold mb-0 text-white d-flex align-items-center gap-2">
-                  <i class="bi bi-wallet2"></i>
-                  <span>สิทธิ์วันลาคงเหลือ (ปีงบประมาณนี้)</span>
-                </h6>
-                <span class="badge bg-white bg-opacity-20 text-white fw-normal rounded-pill px-3 py-1 small">
-                  ปีงบประมาณปัจจุบัน
-                </span>
-              </div>
-
-              <div id="balanceOut" class="row g-2 g-sm-3 text-center">
-                <!-- โหลดผ่าน JS -->
-              </div>
-            </div>
-
-            <!-- เมนูลัดสำหรับหน้าจอมือถือและแท็บเล็ต -->
-            <div class="d-lg-none mt-1">
-              <div class="d-flex align-items-center justify-content-between mb-2 px-1">
-                <span class="fw-heading fw-semibold small text-secondary">
-                  <i class="bi bi-grid-1x2 me-1"></i> เมนูบริการกำลังพล
-                </span>
-              </div>
-              <div class="row g-2 g-sm-3">
-                <div class="col-6">
-                  <div class="action-card" tabindex="0" role="button" aria-label="ประวัติการลา ตรวจสอบสถานะใบลา">
-                    <div class="action-icon-circle action-icon-primary">
-                      <i class="bi bi-file-earmark-text"></i>
-                    </div>
-                    <div>
-                      <div class="action-title">ประวัติการลา</div>
-                      <div class="action-desc">ตรวจสอบสถานะใบลา</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="action-card" tabindex="0" role="button" aria-label="ตาราง WFH ของฉัน ดูวันปฏิบัติงานนอกที่ตั้ง">
-                    <div class="action-icon-circle action-icon-success">
-                      <i class="bi bi-house-door"></i>
-                    </div>
-                    <div>
-                      <div class="action-title">ตาราง WFH ของฉัน</div>
-                      <div class="action-desc">ดูวันปฏิบัติงานนอกที่ตั้ง</div>
-                    </div>
-                  </div>
-                </div>
+          <!-- การ์ดวันลาคงเหลือ -->
+          <div class="col-12 col-lg-7">
+            <div class="card balance-card h-100">
+              <h6 class="fw-bold mb-3 text-white-50 d-flex align-items-center">
+                <i class="bi bi-wallet2 me-1"></i>
+                <span>สิทธิ์วันลาคงเหลือ (ปีงบประมาณนี้)</span>
+              </h6>
+              <div id="balanceOut" class="row g-2 text-center">
+                <!-- โหลดผ่าน JS จากฐานข้อมูลจริง -->
               </div>
             </div>
           </div>
 
+          <!-- เมนูลัด หรือข้อมูลเพิ่มเติม -->
+          <div class="col-6">
+            <div class="card menu-card text-center bg-white h-100">
+              <div class="menu-icon-wrap menu-icon-primary">
+                <i class="bi bi-file-earmark-text"></i>
+              </div>
+              <div class="menu-title">ประวัติการลา</div>
+              <div class="menu-subtitle">ตรวจสอบสถานะใบลา</div>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="card menu-card text-center bg-white h-100">
+              <div class="menu-icon-wrap menu-icon-success">
+                <i class="bi bi-house-door"></i>
+              </div>
+              <div class="menu-title">ตาราง WFH ของฉัน</div>
+              <div class="menu-subtitle">ดูวันปฏิบัติงานนอกที่ตั้ง</div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -721,29 +496,12 @@
       m.innerHTML = text;
     };
 
-    const showRegFeedback = (type, text) => {
-      const fb = $('regFeedback');
-      if (!fb) return;
-      fb.className = 'alert alert-' + type + ' feedback-banner mb-3';
-      fb.innerHTML = text;
+    const notifyReg = (type, text) => {
+      const n = $('regNotice');
+      if (!n) return;
+      n.className = 'alert alert-' + type + ' small mb-3';
+      n.textContent = text;
     };
-
-    function renderBalances(balances) {
-      if (!Array.isArray(balances) || balances.length === 0) {
-        $('balanceOut').innerHTML = '<div class="col-12 text-white-50 small py-3">ไม่พบข้อมูลสิทธิ์วันลา</div>';
-        return;
-      }
-      let bHtml = '';
-      balances.forEach(b => {
-        bHtml += `<div class="col-4 col-sm-4">
-          <div class="balance-item">
-            <div class="balance-label">${esc(b.name)}</div>
-            <div class="balance-value">${esc(b.remaining)} <span class="balance-unit">วัน</span></div>
-          </div>
-        </div>`;
-      });
-      $('balanceOut').innerHTML = bHtml;
-    }
 
     async function api(action, payload) {
       let res, j;
@@ -759,109 +517,10 @@
       return j.data;
     }
 
-    function bindRegistrationHandler(isPreview) {
-      $('regBtn').onclick = async () => {
-        const code = $('regCode').value.trim();
-        const phone = $('regPhone').value.trim();
-        if (!code || !phone) {
-          showRegFeedback('warning', '<i class="bi bi-exclamation-circle me-1"></i> กรุณากรอกเลขประจำตัว (PID) และเบอร์โทรศัพท์ให้ครบถ้วน');
-          return;
-        }
-        $('regBtn').disabled = true;
-        $('regBtn').innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>กำลังส่งข้อมูล...';
-
-        if (isPreview) {
-          setTimeout(() => {
-            showRegFeedback('success', '<i class="bi bi-check-circle-fill me-1"></i> ส่งคำขอลงทะเบียนเรียบร้อยแล้ว (โหมดตัวอย่าง) กรุณารอธุรการตรวจสอบ');
-            $('regPendingBox').classList.remove('d-none');
-            $('regBtn').disabled = true;
-            $('regBtn').textContent = 'รอการตรวจสอบจากธุรการ';
-          }, 500);
-          return;
-        }
-
-        try {
-          await api('reg.submit', { code, phone });
-          showRegFeedback('success', '<i class="bi bi-check-circle-fill me-1"></i> ส่งคำขอลงทะเบียนเรียบร้อยแล้ว กรุณารอธุรการตรวจสอบ');
-          setTimeout(() => location.reload(), 1200);
-        } catch (e) {
-          showRegFeedback('danger', '<i class="bi bi-x-circle-fill me-1"></i> ลงทะเบียนไม่สำเร็จ: ' + esc(e.message));
-          $('regBtn').disabled = false;
-          $('regBtn').innerHTML = '<i class="bi bi-send-check me-1"></i> ส่งคำขอลงทะเบียน';
-        }
-      };
-    }
-
-    // โหมดตัวอย่างสำหรับตรวจสอบหน้าจอบนเบราว์เซอร์ทั่วไปเมื่อไม่ได้เปิดผ่าน LINE LIFF
-    function initPreviewFallback() {
-      $('previewBar').classList.remove('d-none');
-      $('msg').className = 'd-none';
-      $('app').classList.remove('d-none');
-
-      const sampleBalances = [
-        { name: 'ลาป่วย', remaining: 30 },
-        { name: 'ลากิจส่วนตัว', remaining: 15 },
-        { name: 'ลาพักผ่อน', remaining: 10 }
-      ];
-
-      function showPreviewState(mode) {
-        $('btnPreviewReg').classList.toggle('active', mode === 'reg');
-        $('btnPreviewUnreg').classList.toggle('active', mode === 'unreg');
-        $('btnPreviewPending').classList.toggle('active', mode === 'pending');
-
-        if (mode === 'reg') {
-          $('view-unreg').classList.add('d-none');
-          $('view-reg').classList.remove('d-none');
-          $('who').textContent = 'ส.อ. กิตติพงศ์ (ตัวอย่าง)';
-          $('pName').textContent = 'ส.อ. กิตติพงศ์ สายสื่อสาร (ข้อมูลตัวอย่าง)';
-          $('pMeta').textContent = 'เจ้าหน้าที่ประชาสัมพันธ์ • กองประชาสัมพันธ์';
-          $('pRoleBadge').textContent = 'STAFF';
-          renderBalances(sampleBalances);
-        } else {
-          $('view-reg').classList.add('d-none');
-          $('view-unreg').classList.remove('d-none');
-          $('who').textContent = 'ผู้ใช้งานทั่วไป (ตัวอย่าง)';
-          $('regFeedback').className = 'd-none';
-
-          if (mode === 'pending') {
-            $('regPendingBox').classList.remove('d-none');
-            $('regBtn').disabled = true;
-            $('regBtn').textContent = 'รอการตรวจสอบจากธุรการ';
-          } else {
-            $('regPendingBox').classList.add('d-none');
-            $('regBtn').disabled = false;
-            $('regBtn').innerHTML = '<i class="bi bi-send-check me-1"></i> ส่งคำขอลงทะเบียน';
-          }
-          bindRegistrationHandler(true);
-        }
-      }
-
-      $('btnPreviewReg').onclick = () => showPreviewState('reg');
-      $('btnPreviewUnreg').onclick = () => showPreviewState('unreg');
-      $('btnPreviewPending').onclick = () => showPreviewState('pending');
-
-      showPreviewState('reg');
-    }
-
     async function main() {
       try {
-        if (typeof liff === 'undefined') {
-          initPreviewFallback();
-          return;
-        }
-
         await liff.init({ liffId: LIFF_ID });
-
-        if (!liff.isLoggedIn()) {
-          // หากเปิดใน LINE Client หรือเบราว์เซอร์ปกติที่รองรับการ Redirect ไปหน้า Login
-          if (liff.isInClient()) {
-            liff.login({ redirectUri: location.href });
-            return;
-          }
-          // หากเปิดทดสอบนอก LINE Client แสดงโหมดตัวอย่างเพื่อให้ตรวจสอบ UI ได้ทันที
-          initPreviewFallback();
-          return;
-        }
+        if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
 
         const me = await api('me.get');
         $('msg').className = 'd-none';
@@ -875,7 +534,24 @@
             $('regBtn').disabled = true;
             $('regBtn').textContent = 'รอการตรวจสอบจากธุรการ';
           }
-          bindRegistrationHandler(false);
+
+          $('regBtn').onclick = async () => {
+            const code = $('regCode').value.trim();
+            const phone = $('regPhone').value.trim();
+            if (!code || !phone) {
+              notifyReg('warning', 'กรุณากรอกข้อมูลให้ครบถ้วน');
+              return;
+            }
+            $('regBtn').disabled = true;
+            try {
+              await api('reg.submit', { code, phone });
+              notifyReg('success', 'ส่งคำขอลงทะเบียนเรียบร้อยแล้ว กรุณารอธุรการตรวจสอบ');
+              location.reload();
+            } catch (e) {
+              notifyReg('danger', 'ลงทะเบียนไม่สำเร็จ: ' + e.message);
+              $('regBtn').disabled = false;
+            }
+          };
         } else {
           $('view-reg').classList.remove('d-none');
           $('who').textContent = me.person.name;
@@ -883,17 +559,25 @@
           $('pMeta').textContent = `${me.person.position || ''} • ${me.person.unit || ''}`;
           $('pRoleBadge').textContent = me.roles.map(r => r.label).join(', ');
 
-          // โหลดข้อมูลวันลาคงเหลือ
+          // โหลดข้อมูลวันลาคงเหลือจากฐานข้อมูลจริง
           try {
             const balances = await api('leave.balances');
-            renderBalances(balances);
+            let bHtml = '';
+            balances.forEach(b => {
+              bHtml += `<div class="col-4">
+                <div class="balance-item-box">
+                  <div class="balance-type-name">${esc(b.name)}</div>
+                  <div class="balance-num">${b.remaining} <span class="balance-unit">วัน</span></div>
+                </div>
+              </div>`;
+            });
+            $('balanceOut').innerHTML = bHtml;
           } catch (e) {
-            $('balanceOut').innerHTML = '<div class="col-12 text-white-50 small py-2">ไม่สามารถโหลดข้อมูลวันลาได้</div>';
+            $('balanceOut').innerHTML = '<div class="col-12 text-white-50 small">ไม่สามารถโหลดข้อมูลวันลาได้</div>';
           }
         }
       } catch (e) {
-        // กรณีเปิดทดสอบนอกสภาพแวดล้อม LINE LIFF ให้สลับเข้าโหมดตัวอย่างพร้อมแจ้งสถานะ
-        initPreviewFallback();
+        say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + esc(e.message));
       }
     }
 
