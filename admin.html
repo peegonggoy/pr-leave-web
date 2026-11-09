@@ -935,7 +935,7 @@
     if (name === 'holiday' && !$('holOut').dataset.loaded) {
       const curYear = new Date().getFullYear();
       let opt = '';
-      for (let y = curYear - 1; y <= curYear + 2; y++) opt += `<option value="${y}" ${y === curYear ? 'selected' : ''}>พ.ศ. ${y + 543} (${y})</option>`;
+      for (let y = curYear - 1; y <= curYear + 2; y++) opt += `<option value="${y}" ${y === curYear ? 'selected' : ''}>พ.ศ. ${y + 543}</option>`;
       $('holYear').innerHTML = opt;
       loadHoliday();
     }
@@ -1148,13 +1148,21 @@
     } catch (e) { await showAlert('บันทึกไม่สำเร็จ: ' + e.message, true); } finally { btn.disabled = false; updateWfhSaveButtonState(); }
   }
 
+  // แปลงวันที่ YYYY-MM-DD เป็นวันที่ไทย พ.ศ. (เช่น 13 เม.ย. 2569)
+  const TH_MONTHS = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+  function thDateBe(dStr) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dStr || '').trim());
+    if (!m) return dStr || '';
+    return `${Number(m[3])} ${TH_MONTHS[Number(m[2]) - 1]} ${Number(m[1]) + 543}`;
+  }
+
   // ===== แท็บสถานะพิเศษ =====
   async function loadDuty() {
     const out = $('dutyOut');
     out.dataset.loaded = '1';
     out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดรายการ...</div></div>';
     try {
-    const list = await api('duty.list', { from: $('dutyFrom').value, to: $('dutyTo').value });
+      const list = await api('duty.list', { from: $('dutyFrom').value, to: $('dutyTo').value });
       window.DUTY_LIST = list;
       if (!list.length) {
         out.innerHTML = `
@@ -1175,7 +1183,10 @@
                 <td class="fw-semibold text-dark">${esc(d.name)}</td>
                 <td><span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-2 py-1">${esc(d.type)}</span></td>
                 <td><div>${d.order_no ? '<span class="text-dark fw-bold">คำสั่ง: ' + esc(d.order_no) + '</span>' : ''}</div><div class="text-muted" style="font-size:0.8rem;">${esc(d.note)}</div></td>
-                <td class="text-end pe-3"><button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteDuty('${d.duty_id}')" title="ลบรายการ"><i class="bi bi-trash"></i></button></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editDuty('${d.duty_id}')" title="แก้ไขรายการ"><i class="bi bi-pencil"></i></button>
+                  <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteDuty('${d.duty_id}')" title="ลบรายการ"><i class="bi bi-trash"></i></button>
+                </td>
               </tr>`).join('')}
           </tbody>
         </table>
@@ -1193,6 +1204,7 @@
       META_LOADED = true;
     } catch (e) { console.error('Failed to load form meta', e); }
   }
+
   window.editDuty = async function(dutyId) {
     await initDutyFormMeta();
     const d = (window.DUTY_LIST || []).find(x => x.duty_id === dutyId);
@@ -1207,6 +1219,7 @@
     $('dModalAlert').className = 'd-none';
     bootstrap.Modal.getOrCreateInstance($('dutyModal')).show();
   };
+
   window.deleteDuty = async function(dutyId) {
     const ok = await showConfirm('ยืนยันลบรายการนี้ใช่หรือไม่?');
     if (!ok) return;
@@ -1226,7 +1239,7 @@
         out.innerHTML = `
           <div class="surface-card empty-state">
             <div class="empty-state-icon"><i class="bi bi-calendar-x"></i></div>
-            <div class="fw-semibold text-dark mb-1">ไม่พบข้อมูลวันหยุดในปีนี้</div>
+            <div class="fw-semibold text-dark mb-1">ไม่พบข้อมูลวันหยุดในปี พ.ศ. ${Number(year) + 543}</div>
             <div class="small">สามารถกดปุ่ม "ซิงค์ปฏิทิน" หรือ "เพิ่มวันหยุด" ด้านบนได้</div>
           </div>`;
         return;
@@ -1237,13 +1250,13 @@
           <tbody>
             ${list.map(h => `
               <tr>
-                <td class="ps-3 fw-medium text-nowrap"><i class="bi bi-calendar-event text-primary me-1"></i>${esc(h.date)}</td>
+                <td class="ps-3 fw-medium text-nowrap"><i class="bi bi-calendar-event text-primary me-1"></i>${esc(thDateBe(h.date))}</td>
                 <td class="text-nowrap"><span class="badge rounded-pill bg-light text-secondary border">วัน${DOW[h.dow] || ''}</span></td>
                 <td class="fw-bold text-dark" style="min-width: 120px;">${esc(h.name)}</td>
                 <td class="text-muted" style="min-width: 130px;">${esc(h.note)}</td>
                 <td class="text-end pe-3 text-nowrap">
-                  <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editDuty('${d.duty_id}')" title="แก้ไขรายการ"><i class="bi bi-pencil"></i></button>
-                  <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteDuty('${d.duty_id}')" title="ลบรายการ"><i class="bi bi-trash"></i></button>
+                  <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editHoliday('${h.date}', '${esc(h.name)}', '${esc(h.note)}')" title="แก้ไข"><i class="bi bi-pencil"></i></button>
+                  <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteHoliday('${h.date}')" title="ลบ"><i class="bi bi-trash"></i></button>
                 </td>
               </tr>`).join('')}
           </tbody>
@@ -1259,7 +1272,7 @@
   };
 
   window.deleteHoliday = async function(date) {
-    const ok = await showConfirm(`ยืนยันลบวันหยุดวันที่ ${date} ใช่หรือไม่?`);
+    const ok = await showConfirm(`ยืนยันลบวันหยุดวันที่ ${thDateBe(date)} ใช่หรือไม่?`);
     if (!ok) return;
     try { await api('holiday.delete', { date }); loadHoliday(); } catch (e) { await showAlert('ลบไม่สำเร็จ: ' + e.message, true); }
   };
@@ -1405,7 +1418,7 @@
     };
     $('holSyncBtn').onclick = async () => {
       const year = $('holYear').value;
-      const ok = await showConfirm(`ต้องการซิงค์วันหยุดราชการประจำปี ${year} จาก Google Calendar ใช่หรือไม่?`);
+      const ok = await showConfirm(\ต้องการซิงค์วันหยุดราชการประจำปี พ.ศ. ${Number(year) + 543} จาก Google Calendar ใช่หรือไม่?`);`
       if (!ok) return;
       const btn = $('holSyncBtn'); btn.disabled = true;
       try {
