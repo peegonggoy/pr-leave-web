@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ระบบธุรการ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { background: #f4f6f9; }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    .big { font-size: 1.7rem; font-weight: 700; line-height: 1.2; }
+    #tabs { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <nav class="navbar bg-primary">
+    <div class="container">
+      <span class="navbar-brand mb-0 text-white">ระบบธุรการ</span>
+      <span id="who" class="text-white small"></span>
+    </div>
+  </nav>
+
+  <main class="container py-3">
+    <div id="msg" class="alert alert-info">กำลังเชื่อมต่อ...</div>
+
+    <div id="app" class="d-none">
+      <ul id="tabs" class="nav nav-pills mb-3">
+        <li class="nav-item"><button class="nav-link" data-tab="strength" data-perm="strength.view">ยอดกำลังพล</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="wfh" data-perm="duty.manage">ตาราง WFH</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="duty" data-perm="duty.manage">สถานะพิเศษ</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="holiday" data-perm="holiday.manage">วันหยุด</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="unit" data-perm="duty.manage">ตั้งค่าแผนก</button></li>
+      </ul>
+
+      <section id="pane-strength" class="pane">
+        <div class="d-flex gap-2 mb-3">
+          <input type="date" id="stDate" class="form-control" style="max-width:190px">
+          <button id="stGo" class="btn btn-primary">แสดง</button>
+        </div>
+        <div id="stOut"></div>
+      </section>
+      <section id="pane-wfh" class="pane"><div class="alert alert-light">แท็บนี้จะเพิ่มในขั้น 6.2</div></section>
+      <section id="pane-duty" class="pane"><div class="alert alert-light">แท็บนี้จะเพิ่มในขั้น 6.3</div></section>
+      <section id="pane-holiday" class="pane"><div class="alert alert-light">แท็บนี้จะเพิ่มในขั้น 6.4</div></section>
+      <section id="pane-unit" class="pane"><div class="alert alert-light">แท็บนี้จะเพิ่มในขั้น 6.5</div></section>
+    </div>
+  </main>
+
+<script>
+  // ===== ตั้งค่า (แก้ 2 บรรทัดนี้) =====
+  const LIFF_ID = '2012347393-9duzGDMx';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbyxdXyW1pmlMHSNvhkHqd3NUuEloJLOd1cx1uozQ4wU4fz1gAl_evliPHAmsstzxtjg/exec';
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
+    c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const today = () => { const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  const say = (type, text) => { const m = $('msg'); m.className = 'alert alert-' + type; m.textContent = text; };
+  let ME = null;
+  const can = k => !!ME && (ME.permissions.includes('*') || ME.permissions.includes(k));
+
+  // เรียก API หลังบ้าน: ส่ง { action, payload, idToken } ไปที่ doPost → handleApi_
+  async function api(action, payload) {
+    let res, j;
+    try {
+      res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action, payload: payload || {}, idToken: liff.getIDToken() })
+      });
+    } catch (e) { throw new Error('ติดต่อเซิร์ฟเวอร์ไม่ได้ (ตรวจ API_URL)'); }
+    try { j = await res.json(); }
+    catch (e) { throw new Error('เซิร์ฟเวอร์ไม่ได้ตอบเป็นข้อมูล (ตรวจว่า Deploy แบบ "ทุกคน")'); }
+    if (!j.ok) { const e = new Error(j.error.message); e.code = j.error.code; throw e; }
+    return j.data;
+  }
+
+  function openTab(name) {
+    document.querySelectorAll('#tabs .nav-link').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane-' + name));
+    if (name === 'strength' && !$('stOut').dataset.loaded) loadStrength();
+  }
+
+  // ===== แท็บยอดกำลังพล (strength.get) =====
+  async function loadStrength() {
+    const out = $('stOut');
+    out.dataset.loaded = '1';
+    out.innerHTML = '<div class="text-muted">กำลังโหลด...</div>';
+    try {
+      const s = await api('strength.get', { date: $('stDate').value });
+      const w = esc(s.unit_word);
+      const G = { ONSITE: 'ณ ที่ตั้ง', OUTSIDE: 'นอกที่ตั้ง', ABSENT: 'ไม่อยู่' };
+      const card = (t, n, c) => `<div class="col-6 col-md-3"><div class="card card-body text-center py-2">
+        <div class="small text-muted">${t}</div><div class="big text-${c}">${n}</div><div class="small">${w}</div></div></div>`;
+      out.innerHTML = `
+        <h5 class="mb-3">${esc(s.label)} ${s.workday ? '' : '<span class="badge bg-secondary">วันหยุด</span>'}</h5>
+        <div class="row g-2 mb-3">
+          ${card('ยอดทั้งหมด', s.total, 'dark')}${card('ณ ที่ตั้ง', s.groups.ONSITE, 'success')}
+          ${card('นอกที่ตั้ง', s.groups.OUTSIDE, 'primary')}${card('ไม่อยู่', s.groups.ABSENT, 'danger')}
+        </div>
+        <div class="card mb-3"><div class="card-header">รายละเอียดตามสถานะ</div>
+          <ul class="list-group list-group-flush">
+            ${s.by_type.length ? s.by_type.map(t => `<li class="list-group-item">
+                <b>${esc(t.name)}</b> <span class="badge bg-light text-dark">${G[t.group] || ''}</span> ${t.people.length} ${w}
+                <div class="small text-muted">${t.people.map(esc).join(', ')}</div></li>`).join('')
+              : '<li class="list-group-item text-muted">ไม่มีผู้มีสถานะพิเศษในวันนี้</li>'}
+          </ul></div>
+        <div class="card"><div class="card-header">แยกตามแผนก</div>
+          <div class="table-responsive"><table class="table table-sm mb-0 text-center">
+            <thead><tr><th class="text-start">แผนก</th><th>ทั้งหมด</th><th>ณ ที่ตั้ง</th><th>นอกที่ตั้ง</th><th>ไม่อยู่</th></tr></thead>
+            <tbody>${s.by_unit.map(u => `<tr><td class="text-start">${esc(u.name)}</td><td>${u.total}</td>
+              <td>${u.ONSITE}</td><td>${u.OUTSIDE}</td><td>${u.ABSENT}</td></tr>`).join('')}</tbody>
+          </table></div></div>`;
+    } catch (e) {
+      out.innerHTML = `<div class="alert alert-danger">${esc(e.message)}</div>`;
+    }
+  }
+
+  // ===== เริ่มทำงาน =====
+  async function main() {
+    try {
+      await liff.init({ liffId: LIFF_ID });
+      if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
+      ME = await api('me.get');
+      if (!ME.registered) { say('warning', 'บัญชี LINE นี้ยังไม่ได้ลงทะเบียน หรือยังรอธุรการยืนยัน'); return; }
+      if (!can('duty.manage') && !can('holiday.manage')) { say('danger', 'บัญชีนี้ไม่มีสิทธิ์ใช้หน้าธุรการ'); return; }
+      $('who').textContent = ME.person.name + ' (' + ME.roles.map(r => r.label).join(', ') + ')';
+      let first = '';
+      document.querySelectorAll('#tabs .nav-link').forEach(b => {
+        if (!can(b.dataset.perm)) { b.parentElement.remove(); return; }
+        b.onclick = () => openTab(b.dataset.tab);
+        first = first || b.dataset.tab;
+      });
+      $('stDate').value = today();
+      $('stGo').onclick = loadStrength;
+      $('msg').className = 'd-none';
+      $('app').classList.remove('d-none');
+      openTab(first);
+    } catch (e) {
+      say('danger', 'เชื่อมต่อไม่สำเร็จ: ' + e.message + (e.code ? ' [' + e.code + ']' : ''));
+    }
+  }
+  main();
+</script>
+</body>
+</html>
