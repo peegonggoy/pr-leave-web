@@ -584,16 +584,64 @@
     <div id="app" class="d-none">
 
       <!-- เมนูแท็บแสดงครบทั้ง 5 ปุ่มในหน้าจอมือถือ และเรียงเต็มแถบบนแท็บเล็ต/คอมพิวเตอร์ -->
-      <div class="nav-shell mb-3 mb-lg-4">
-        <div id="tabs-container">
-          <ul id="tabs" class="nav nav-pills">
-            <li class="nav-item"><button class="nav-link" data-tab="strength" data-perm="strength.view"><i class="bi bi-pie-chart-fill"></i><span>กำลังพล</span></button></li>
-            <li class="nav-item"><button class="nav-link" data-tab="wfh" data-perm="duty.manage"><i class="bi bi-house-door-fill"></i><span>WFH</span></button></li>
-            <li class="nav-item"><button class="nav-link" data-tab="duty" data-perm="duty.manage"><i class="bi bi-journal-text"></i><span>สถานะพิเศษ</span></button></li>
-            <li class="nav-item"><button class="nav-link" data-tab="holiday" data-perm="holiday.manage"><i class="bi bi-calendar-event-fill"></i><span>วันหยุด</span></button></li>
-            <li class="nav-item"><button class="nav-link" data-tab="unit" data-perm="duty.manage"><i class="bi bi-building-gear"></i><span>ตั้งค่าแผนก</span></button></li>
-            <li class="nav-item"><button class="nav-link" data-tab="people" data-perm="people.manage"><i class="bi bi-people-fill"></i><span>บุคลากร</span></button></li>
-          </ul>
+      <!-- แถบแท็บเมนู (จัด 3 คอลัมน์บนมือถือ ไอคอนตรงกัน ตัวหนังสือบรรทัดเดียว) -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-2.5 mb-5">
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+      
+          <!-- 1. กำลังพล -->
+          <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" 
+            class="tab-btn active flex flex-col items-center justify-center py-2 px-1 rounded-xl min-h-[64px]">
+            <div class="h-6 flex items-center justify-center mb-1">
+              <i class="fa-solid fa-chart-pie text-lg"></i>
+            </div>
+            <span class="text-xs font-medium whitespace-nowrap">กำลังพล</span>
+          </button>
+      
+          <!-- 2. WFH -->
+          <button onclick="switchTab('wfh')" id="tab-wfh-btn" 
+            class="tab-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl min-h-[64px]">
+            <div class="h-6 flex items-center justify-center mb-1">
+              <i class="fa-solid fa-house-laptop text-lg"></i>
+            </div>
+            <span class="text-xs font-medium whitespace-nowrap">WFH</span>
+          </button>
+      
+          <!-- 3. สถานะ (ย่อจาก สถานะพิเศษ) -->
+          <button onclick="switchTab('special')" id="tab-special-btn" 
+            class="tab-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl min-h-[64px]">
+            <div class="h-6 flex items-center justify-center mb-1">
+              <i class="fa-solid fa-clipboard-list text-lg"></i>
+            </div>
+            <span class="text-xs font-medium whitespace-nowrap">สถานะ</span>
+          </button>
+      
+          <!-- 4. วันหยุด -->
+          <button onclick="switchTab('holidays')" id="tab-holidays-btn" 
+            class="tab-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl min-h-[64px]">
+            <div class="h-6 flex items-center justify-center mb-1">
+              <i class="fa-solid fa-calendar-days text-lg"></i>
+            </div>
+            <span class="text-xs font-medium whitespace-nowrap">วันหยุด</span>
+          </button>
+      
+          <!-- 5. แผนก (ย่อจาก ตั้งค่าแผนก) -->
+          <button onclick="switchTab('units')" id="tab-units-btn" 
+            class="tab-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl min-h-[64px]">
+            <div class="h-6 flex items-center justify-center mb-1">
+              <i class="fa-solid fa-building-gear text-lg"></i>
+            </div>
+            <span class="text-xs font-medium whitespace-nowrap">แผนก</span>
+          </button>
+      
+          <!-- 6. บุคลากร (ซ่อนไว้ก่อน จะแสดงเฉพาะคนที่มีบทบาท ADMIN) -->
+          <button onclick="switchTab('people')" id="tab-people-btn" 
+            class="tab-btn hidden flex flex-col items-center justify-center py-2 px-1 rounded-xl min-h-[64px]">
+            <div class="h-6 flex items-center justify-center mb-1">
+              <i class="fa-solid fa-users-gear text-lg"></i>
+            </div>
+            <span class="text-xs font-medium whitespace-nowrap">บุคลากร</span>
+          </button>
+      
         </div>
       </div>
 
@@ -988,6 +1036,11 @@
   const API_URL = 'https://script.google.com/macros/s/AKfycbyxdXyW1pmlMHSNvhkHqd3NUuEloJLOd1cx1uozQ4wU4fz1gAl_evliPHAmsstzxtjg/exec';
 
   const $ = id => document.getElementById(id);
+  const isAdmin = currentUser && currentUser.roles && currentUser.roles.includes('ADMIN');
+  const peopleTabBtn = document.getElementById('tab-people-btn');
+  if (peopleTabBtn && isAdmin) {
+    peopleTabBtn.classList.remove('hidden'); // ถ้าเป็น ADMIN ให้เปิดแสดงปุ่มเมนูบุคลากร
+  }
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
     c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
