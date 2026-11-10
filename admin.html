@@ -53,7 +53,7 @@
       min-height: 100vh;
     }
 
-    /* ===== Navbar ด้านบน (ป้องกันข้อความล้นหรือขาดหายบนมือถือ 100%) ===== */
+    /* ===== Navbar ด้านบน ===== */
     .navbar.app-navbar {
       width: 100%;
       background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand-primary) 100%);
@@ -145,29 +145,31 @@
       }
     }
 
-    /* ===== แถบเมนู 5 แท็บ (แสดงครบทั้ง 5 ปุ่มในจอเดียวบนมือถือ ไม่ถูกตัดขอบซ้าย-ขวา) ===== */
+    /* ===== แถบเมนูแท็บ (ไอคอนตรงระดับเดียวกัน 100% + ตัวหนังสือบรรทัดเดียว) ===== */
     .nav-shell {
       background: var(--card-bg);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
-      padding: 0.35rem;
+      padding: 0.4rem;
       box-shadow: var(--shadow-xs);
       width: 100%;
       overflow: hidden;
     }
 
-    #tabs-container {
-      width: 100%;
-    }
-
     #tabs {
       display: grid !important;
-      grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
-      gap: 0.25rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.35rem;
       width: 100%;
       margin: 0;
       padding: 0;
       list-style: none;
+    }
+
+    @media (min-width: 576px) {
+      #tabs {
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      }
     }
 
     #tabs .nav-item {
@@ -177,11 +179,11 @@
 
     #tabs .nav-link {
       width: 100%;
-      height: 100%;
-      border-radius: 11px;
-      padding: 0.45rem 0.2rem;
+      min-height: 62px;
+      border-radius: 12px;
+      padding: 0.45rem 0.25rem;
       font-weight: 600;
-      font-size: 0.76rem;
+      font-size: 0.8rem;
       line-height: 1.2;
       color: var(--ink-muted);
       background: transparent;
@@ -191,34 +193,42 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      gap: 0.2rem;
+      gap: 0.25rem;
       transition: all 0.18s ease;
       margin: 0;
-      white-space: normal;
-      word-break: keep-all;
+    }
+
+    #tabs .nav-link .tab-icon-box {
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
     #tabs .nav-link i {
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       line-height: 1;
     }
 
+    #tabs .nav-link .tab-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      display: block;
+    }
+
     @media (min-width: 768px) {
-      .nav-shell {
-        padding: 0.4rem;
-      }
-      #tabs {
-        gap: 0.35rem;
-      }
       #tabs .nav-link {
         flex-direction: row;
-        padding: 0.6rem 1rem;
+        min-height: 46px;
+        padding: 0.55rem 0.9rem;
         font-size: 0.92rem;
         gap: 0.45rem;
-        white-space: nowrap;
       }
       #tabs .nav-link i {
-        font-size: 1rem;
+        font-size: 1.05rem;
       }
     }
 
@@ -398,7 +408,7 @@
       margin: 0.15rem 0.2rem 0.15rem 0;
     }
 
-    /* ===== WFH Table (Sticky Column on Mobile & Tablet) ===== */
+    /* ===== WFH Table ===== */
     .wfh-table {
       margin-bottom: 0;
       border-collapse: separate;
@@ -564,7 +574,6 @@
           <small class="text-white-50 d-none d-sm-block" style="font-size: 0.75rem;">ระบบบริหารจัดการกำลังพล กองประชาสัมพันธ์</small>
         </div>
       </div>
-
       <div class="user-pill">
         <i class="bi bi-person-circle flex-shrink-0"></i>
         <div id="who">กำลังโหลด...</div>
@@ -574,7 +583,6 @@
 
   <!-- เนื้อหาหลัก -->
   <main class="app-container">
-
     <!-- กล่องแจ้งสถานะ -->
     <div id="msg" class="alert alert-primary border-0 shadow-sm rounded-4 d-flex align-items-center py-3 px-3" role="alert">
       <div class="spinner-border spinner-border-sm me-2" role="status"></div> กำลังเชื่อมต่อระบบ...
@@ -582,18 +590,47 @@
 
     <!-- ส่วนเนื้อหาหลักหลังโหลดผ่าน -->
     <div id="app" class="d-none">
-
-      <div class="nav-shell mb-3 mb-lg-4">
-        <div id="tabs-container">
-          <ul id="tabs" class="nav">
-            <li class="nav-item"><button class="nav-link" data-tab="strength" data-perm="strength.view"><i class="bi bi-pie-chart-fill"></i><span>กำลังพล</span></button></li>
-            <li class="nav-item"><button class="nav-link" data-tab="wfh" data-perm="duty.manage"><i class="bi bi-house-door-fill"></i><span>WFH</span></button></li>
-            <li class="nav-item"><button class="nav-link" data-tab="duty" data-perm="duty.manage"><i class="bi bi-journal-text"></i><span>สถานะ</span></button></li>
-            <li class="nav-item"><button class="nav-link" data-tab="holiday" data-perm="holiday.manage"><i class="bi bi-calendar-event-fill"></i><span>วันหยุด</span></button></li>
-            <li class="nav-item"><button class="nav-link" data-tab="unit" data-perm="duty.manage"><i class="bi bi-building-gear"></i><span>แผนก</span></button></li>
-            <li class="nav-item"><button class="nav-link" data-tab="people" data-perm="person.manage"><i class="bi bi-people-fill"></i><span>บุคลากร</span></button></li>
-          </ul>
-        </div>
+      <!-- แถบเมนูแท็บ (ไอคอนตรงระดับเดียวกัน 100% + ตัวหนังสือบรรทัดเดียวสวยงาม) -->
+      <div class="nav-shell mb-3 mb-lg-4" id="tabs-container">
+        <ul class="nav" id="tabs">
+          <li class="nav-item">
+            <button type="button" class="nav-link active" data-tab="strength" data-perm="strength.view">
+              <span class="tab-icon-box"><i class="bi bi-pie-chart-fill"></i></span>
+              <span class="tab-label">กำลังพล</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-tab="wfh" data-perm="duty.manage">
+              <span class="tab-icon-box"><i class="bi bi-house-door-fill"></i></span>
+              <span class="tab-label">WFH</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-tab="duty" data-perm="duty.manage">
+              <span class="tab-icon-box"><i class="bi bi-journal-check"></i></span>
+              <span class="tab-label">สถานะ</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-tab="holiday" data-perm="holiday.manage">
+              <span class="tab-icon-box"><i class="bi bi-calendar-event-fill"></i></span>
+              <span class="tab-label">วันหยุด</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button type="button" class="nav-link" data-tab="unit" data-perm="duty.manage">
+              <span class="tab-icon-box"><i class="bi bi-building-fill-gear"></i></span>
+              <span class="tab-label">แผนก</span>
+            </button>
+          </li>
+          <!-- แท็บที่ 6: บุคลากร (ซ่อนเป็นค่าเริ่มต้น จะแสดงเมื่อตรวจพบว่ามีสิทธิ์ ADMIN ใน JS) -->
+          <li class="nav-item" id="tab-people-item" style="display: none;">
+            <button type="button" class="nav-link" data-tab="people" data-perm="admin.only">
+              <span class="tab-icon-box"><i class="bi bi-people-fill"></i></span>
+              <span class="tab-label">บุคลากร</span>
+            </button>
+          </li>
+        </ul>
       </div>
 
       <!-- แท็บที่ 1: ยอดกำลังพล -->
@@ -726,7 +763,7 @@
         </div>
         <div id="unitOut"></div>
       </section>
-      
+
       <!-- แท็บที่ 6: จัดการบุคลากร -->
       <section id="pane-people" class="pane">
         <div class="control-bar mb-3 mb-lg-4">
@@ -751,7 +788,8 @@
       </section>
     </div>
   </main>
-    <!-- Modal จัดการข้อมูลบุคลากร -->
+
+  <!-- Modal จัดการข้อมูลบุคลากร -->
   <div class="modal fade" id="personModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content border-0 shadow-lg rounded-4">
@@ -761,7 +799,7 @@
         </div>
         <div class="modal-body px-4 py-3">
           <input type="hidden" id="pFormPid">
-          
+
           <h6 class="fw-bold text-primary border-bottom pb-1 mb-3"><i class="bi bi-person-lines-fill me-1"></i> 1. ข้อมูลส่วนบุคคล</h6>
           <div class="row g-2 mb-3">
             <div class="col-12 col-sm-3">
@@ -880,6 +918,7 @@
       </div>
     </div>
   </div>
+
   <!-- Modal สถานะพิเศษ -->
   <div class="modal fade" id="dutyModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -960,7 +999,7 @@
     </div>
   </div>
 
-  <!-- Modal แจ้งเตือนและยืนยัน (รองรับทั้ง WebView มือถือ และเบราว์เซอร์ทุกขนาด) -->
+  <!-- Modal แจ้งเตือนและยืนยัน -->
   <div class="modal fade" id="sysDialogModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
       <div class="modal-content border-0 shadow-lg rounded-4">
@@ -980,839 +1019,860 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<script>
-  const LIFF_ID = '2012347393-9duzGDMx';
-  const API_URL = 'https://script.google.com/macros/s/AKfycbyxdXyW1pmlMHSNvhkHqd3NUuEloJLOd1cx1uozQ4wU4fz1gAl_evliPHAmsstzxtjg/exec';
+  <script>
+    const LIFF_ID = '2012347393-9duzGDMx';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyxdXyW1pmlMHSNvhkHqd3NUuEloJLOd1cx1uozQ4wU4fz1gAl_evliPHAmsstzxtjg/exec';
+    const $ = id => document.getElementById(id);
 
-  const $ = id => document.getElementById(id);
-  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
-    c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
+      c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  const today = () => {
-    const d = new Date();
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  };
+    const today = () => {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    };
 
-  const addDays = (dStr, days) => {
-    const d = new Date(dStr);
-    d.setDate(d.getDate() + days);
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  };
+    const addDays = (dStr, days) => {
+      const d = new Date(dStr);
+      d.setDate(d.getDate() + days);
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    };
 
-  const say = (type, text) => {
-    const m = $('msg');
-    m.className = 'alert alert-' + type + ' border-0 shadow-sm rounded-4 py-3 px-3';
-    m.innerHTML = text;
-  };
+    const say = (type, text) => {
+      const m = $('msg');
+      m.className = 'alert alert-' + type + ' border-0 shadow-sm rounded-4 py-3 px-3';
+      m.innerHTML = text;
+    };
 
-  // กล่องโต้ตอบแจ้งเตือนและยืนยันที่เป็นมิตรกับผู้ใช้บนทุกอุปกรณ์
-  function showAlert(message, isError = false) {
-    return new Promise(resolve => {
-      const modalEl = $('sysDialogModal');
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-      $('sysDialogIcon').innerHTML = isError
-        ? '<i class="bi bi-exclamation-circle-fill text-danger"></i>'
-        : '<i class="bi bi-check-circle-fill text-primary"></i>';
-      $('sysDialogMsg').textContent = message;
-      $('sysDialogCancel').classList.add('d-none');
-      const okBtn = $('sysDialogOk');
-      okBtn.textContent = 'ตกลง';
-      okBtn.onclick = () => {
-        modal.hide();
-        resolve(true);
-      };
-      modal.show();
-    });
-  }
-
-  function showConfirm(message) {
-    return new Promise(resolve => {
-      const modalEl = $('sysDialogModal');
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-      $('sysDialogIcon').innerHTML = '<i class="bi bi-question-circle-fill text-warning"></i>';
-      $('sysDialogMsg').textContent = message;
-      const cancelBtn = $('sysDialogCancel');
-      const okBtn = $('sysDialogOk');
-      cancelBtn.classList.remove('d-none');
-      okBtn.textContent = 'ยืนยัน';
-
-      let settled = false;
-      okBtn.onclick = () => {
-        settled = true;
-        modal.hide();
-        resolve(true);
-      };
-      cancelBtn.onclick = () => {
-        settled = true;
-        modal.hide();
-        resolve(false);
-      };
-      modalEl.addEventListener('hidden.bs.modal', function onHide() {
-        modalEl.removeEventListener('hidden.bs.modal', onHide);
-        if (!settled) resolve(false);
-      });
-      modal.show();
-    });
-  }
-
-  let ME = null;
-  const can = k => !!ME && (ME.permissions.includes('*') || ME.permissions.includes(k));
-
-  // ===== ฟังก์ชันดึงข้อมูลจากฐานข้อมูล (คงรูปแบบและวิธีการดึงข้อมูลเดิม 100%) =====
-  async function api(action, payload) {
-    let res, j;
-    try {
-      res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action, payload: payload || {}, idToken: liff.getIDToken() })
-      });
-    } catch (e) { throw new Error('ติดต่อเซิร์ฟเวอร์ไม่ได้'); }
-    try { j = await res.json(); } catch (e) { throw new Error('รูปแบบข้อมูลตอบกลับไม่ถูกต้อง'); }
-    if (!j.ok) { const e = new Error(j.error.message); e.code = j.error.code; throw e; }
-    return j.data;
-  }
-
-  function openTab(name) {
-    document.querySelectorAll('#tabs .nav-link').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-    document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane-' + name));
-    if (name === 'strength' && !$('stOut').dataset.loaded) loadStrength();
-    if (name === 'wfh' && !$('wfhOut').dataset.loaded) { $('wfhDate').value = today(); loadWfh(); }
-    if (name === 'duty' && !$('dutyOut').dataset.loaded) {
-      $('dutyFrom').value = today(); $('dutyTo').value = addDays(today(), 30);
-      loadDuty(); initDutyFormMeta();
-    }
-    if (name === 'holiday' && !$('holOut').dataset.loaded) {
-      const curYear = new Date().getFullYear();
-      let opt = '';
-      for (let y = curYear - 1; y <= curYear + 2; y++) opt += `<option value="${y}" ${y === curYear ? 'selected' : ''}>พ.ศ. ${y + 543}</option>`;
-      $('holYear').innerHTML = opt;
-      loadHoliday();
-    }
-    if (name === 'unit' && !$('unitOut').dataset.loaded) loadUnitSettings();
-    if (name === 'people' && !$('peopleOut').dataset.loaded) { initPersonFormMeta(); loadPeople(); }
-
-  }
-
-  // ===== แท็บยอดกำลังพล =====
-  async function loadStrength() {
-    const out = $('stOut');
-    out.dataset.loaded = '1';
-    out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลด...</div></div>';
-    try {
-      const s = await api('strength.get', { date: $('stDate').value });
-      const w = esc(s.unit_word);
-      const G = { ONSITE: 'ณ ที่ตั้ง', OUTSIDE: 'นอกที่ตั้ง', ABSENT: 'ไม่อยู่' };
-      const groupBadgeColor = {
-        ONSITE: 'bg-success-subtle text-success-emphasis border-success-subtle',
-        OUTSIDE: 'bg-primary-subtle text-primary-emphasis border-primary-subtle',
-        ABSENT: 'bg-danger-subtle text-danger-emphasis border-danger-subtle'
-      };
-      const card = (t, n, c, icon) => `
-        <div class="col-6 col-md-3">
-          <div class="stat-card stat-${c}">
-            <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
-              <div class="small text-muted fw-medium">${t}</div>
-              <div class="stat-icon-box"><i class="bi bi-${icon}"></i></div>
-            </div>
-            <div class="d-flex align-items-baseline gap-2">
-              <div class="big-num text-${c}">${n}</div>
-              <div class="text-secondary" style="font-size: 0.82rem;">${w}</div>
-            </div>
-          </div>
-        </div>`;
-
-      out.innerHTML = `
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 px-1">
-          <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-calendar3 me-2 text-primary"></i>${esc(s.label)}</h6>
-          ${s.workday
-            ? '<span class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle px-3 py-2"><i class="bi bi-briefcase-fill me-1"></i>วันทำงานปกติ</span>'
-            : '<span class="badge rounded-pill bg-secondary px-3 py-2">วันหยุดราชการ</span>'}
-        </div>
-        <div class="row g-2 g-md-3 mb-3 mb-lg-4">
-          ${card('ยอดกำลังพลรวม', s.total, 'dark', 'people')}
-          ${card('ปฏิบัติงาน ณ ที่ตั้ง', s.groups.ONSITE, 'success', 'building-check')}
-          ${card('ปฏิบัติงานนอกที่ตั้ง', s.groups.OUTSIDE, 'primary', 'geo-alt')}
-          ${card('ไม่อยู่ / ลา', s.groups.ABSENT, 'danger', 'person-dash')}
-        </div>
-
-        <div class="row g-3 g-lg-4 mb-4">
-          <div class="col-12 col-lg-5">
-            <div class="surface-card">
-              <div class="surface-card-header">
-                <div class="fw-bold text-dark"><i class="bi bi-list-check me-2 text-primary"></i>รายละเอียดสถานะพิเศษประจำวัน</div>
-                <span class="badge rounded-pill bg-light text-secondary border">${s.by_type.length} ประเภท</span>
-              </div>
-              <ul class="list-group list-group-flush small">
-                ${s.by_type.length ? s.by_type.map(t => `
-                  <li class="list-group-item py-3 px-3">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-1 mb-2">
-                      <span class="fw-bold text-dark">${esc(t.name)}</span>
-                      <span class="badge rounded-pill border ${groupBadgeColor[t.group] || 'bg-light text-dark border'}">${t.people.length} ${w} (${G[t.group] || ''})</span>
-                    </div>
-                    <div class="d-flex flex-wrap">
-                      ${t.people.map(p => `<span class="person-chip"><i class="bi bi-person text-secondary"></i>${esc(p)}</span>`).join('')}
-                    </div>
-                  </li>`).join('')
-                  : '<li class="list-group-item text-muted text-center py-5"><i class="bi bi-check2-circle text-success fs-3 d-block mb-2"></i>ไม่มีผู้มีสถานะพิเศษในวันนี้</li>'}
-              </ul>
-            </div>
-          </div>
-
-          <div class="col-12 col-lg-7">
-            <div class="surface-card">
-              <div class="surface-card-header">
-                <div class="fw-bold text-dark"><i class="bi bi-buildings me-2 text-primary"></i>สรุปแยกตามแผนก</div>
-                <span class="badge rounded-pill bg-light text-secondary border">${s.by_unit.length} แผนก</span>
-              </div>
-              <div class="table-responsive">
-                <table class="table table-custom align-middle mb-0 small text-center">
-                  <thead><tr><th class="text-start ps-3">แผนก</th><th>ทั้งหมด</th><th>ณ ที่ตั้ง</th><th>นอกที่ตั้ง</th><th class="pe-3">ไม่อยู่</th></tr></thead>
-                  <tbody>
-                    ${s.by_unit.map(u => `
-                      <tr>
-                        <td class="text-start ps-3 fw-semibold text-dark">${esc(u.name)}</td>
-                        <td><span class="num-pill bg-secondary bg-opacity-10 text-secondary">${u.total}</span></td>
-                        <td><span class="num-pill bg-success bg-opacity-10 text-success">${u.ONSITE}</span></td>
-                        <td><span class="num-pill bg-primary bg-opacity-10 text-primary">${u.OUTSIDE}</span></td>
-                        <td class="pe-3"><span class="num-pill ${u.ABSENT > 0 ? 'bg-danger bg-opacity-10 text-danger' : 'text-muted'}">${u.ABSENT}</span></td>
-                      </tr>`).join('')}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>`;
-    } catch (e) {
-      out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`;
-    }
-  }
-
-  // ===== แท็บตาราง WFH =====
-  let WFH_DATA = null;
-  const WFH_CHANGES = new Map();
-
-  function updateWfhSaveButtonState() {
-    const btn = $('wfhSave');
-    if (!btn) return;
-    if (WFH_CHANGES.size > 0) {
-      btn.innerHTML = `<i class="bi bi-save me-1"></i> บันทึกการเปลี่ยนแปลง <span class="badge rounded-pill bg-white text-success ms-1">${WFH_CHANGES.size}</span>`;
-    } else {
-      btn.innerHTML = '<i class="bi bi-save me-1"></i> บันทึกการเปลี่ยนแปลง';
-    }
-  }
-
-  async function loadWfh() {
-    const out = $('wfhOut');
-    out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดตาราง WFH...</div></div>';
-    WFH_CHANGES.clear();
-    updateWfhSaveButtonState();
-    try {
-      WFH_DATA = await api('wfh.week', { start: $('wfhDate').value });
-      renderWfhTable();
-    } catch (e) { out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`; }
-  }
-
-  function renderWfhTable() {
-    const out = $('wfhOut');
-    out.dataset.loaded = '1';
-    const d = WFH_DATA;
-    updateWfhSaveButtonState();
-    let html = '';
-
-    if (d.warnings && d.warnings.length) {
-      html += `<div class="alert alert-warning border-0 shadow-sm rounded-4 small mb-3">
-        <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i> ข้อสังเกตและคำเตือนระบบ:</div>
-        <ul class="mb-0 ps-3">${d.warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>
-      </div>`;
-    }
-
-    html += `
-      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2 px-1 small text-muted">
-        <div class="d-flex flex-wrap align-items-center gap-3">
-          <span class="d-inline-flex align-items-center gap-1"><span class="badge bg-info text-white"><i class="bi bi-house-fill"></i></span> WFH (นอกที่ตั้ง)</span>
-          <span class="d-inline-flex align-items-center gap-1"><span class="badge bg-secondary bg-opacity-25 text-secondary"><i class="bi bi-dash"></i></span> ปฏิบัติงาน ณ ที่ตั้ง</span>
-          <span class="d-inline-flex align-items-center gap-1"><span class="badge bg-danger bg-opacity-10 text-danger">สถานะพิเศษ</span> มีรายการลา/ราชการ</span>
-        </div>
-        <span class="d-md-none text-secondary" style="font-size: 0.78rem;"><i class="bi bi-arrows-expand-vertical me-1"></i>เลื่อนตารางซ้าย-ขวาได้</span>
-      </div>`;
-
-    html += `<div class="surface-card mb-4"><div class="table-responsive">
-      <table class="table wfh-table mb-0"><thead><tr>
-      <th class="name-col ps-3">กำลังพล / แผนก</th>
-      ${d.days.map(day => `<th><div class="fw-bold text-dark">${esc(day.label)}</div><span class="text-muted fw-normal" style="font-size:0.74rem;">${day.holiday ? '<span class="text-danger fw-medium">หยุด: '+esc(day.holiday)+'</span>' : (day.workday ? 'วันทำงาน' : 'วันหยุด')}</span></th>`).join('')}
-      </tr></thead><tbody>`;
-
-    d.rows.forEach(p => {
-      html += `<tr><td class="name-col ps-3"><div class="fw-bold text-dark">${esc(p.name)}</div><div class="text-muted" style="font-size:0.76rem;">${esc(p.unit)} ${p.group ? '• กลุ่ม '+esc(p.group) : ''}</div></td>`;
-      p.cells.forEach((c, idx) => {
-        const day = d.days[idx];
-        const key = p.pid + '|' + day.date;
-        const isChanged = WFH_CHANGES.has(key);
-        const isWfhNow = isChanged ? WFH_CHANGES.get(key) : c.wfh;
-        if (c.status) {
-          html += `<td><span class="cell-badge bg-danger bg-opacity-10 text-danger fw-bold" title="${esc(c.label)}">${esc(c.status)}</span></td>`;
-        } else if (!day.workday) {
-          html += `<td><span class="text-muted" style="font-size:0.75rem;">-</span></td>`;
-        } else {
-          html += `<td><button type="button" class="btn btn-sm cell-btn ${isWfhNow ? 'is-wfh' : 'is-off'} ${isChanged ? 'is-changed' : ''}" onclick="toggleWfh('${p.pid}', '${day.date}')" title="คลิกเพื่อสลับ WFH"><i class="bi ${isWfhNow ? 'bi-house-fill' : 'bi-dash'}"></i></button></td>`;
-        }
-      });
-      html += `</tr>`;
-    });
-
-    html += `</tbody><tfoot class="table-light text-center fw-bold"><tr>
-      <td class="name-col ps-3 text-start">ยอด WFH / ณ ที่ตั้ง</td>
-      ${d.summary.map(s => `<td><span class="text-info">${s.wfh}</span> / <span class="text-success">${s.onsite}</span></td>`).join('')}
-    </tr></tfoot></table></div></div>`;
-    out.innerHTML = html;
-  }
-
-  window.toggleWfh = function(pid, date) {
-    const key = pid + '|' + date;
-    const row = WFH_DATA.rows.find(r => r.pid === pid);
-    const dayIdx = WFH_DATA.days.findIndex(d => d.date === date);
-    if (!row || dayIdx === -1) return;
-    const originalState = row.cells[dayIdx].wfh;
-    const currentState = WFH_CHANGES.has(key) ? WFH_CHANGES.get(key) : originalState;
-    const newState = !currentState;
-    if (newState === originalState) WFH_CHANGES.delete(key); else WFH_CHANGES.set(key, newState);
-    renderWfhTable();
-  };
-
-  async function saveWfhChanges() {
-    if (WFH_CHANGES.size === 0) { await showAlert('ไม่มีรายการที่มีการเปลี่ยนแปลง'); return; }
-    const ok = await showConfirm(`ยืนยันบันทึกการเปลี่ยนแปลง WFH จำนวน ${WFH_CHANGES.size} รายการใช่หรือไม่?`);
-    if (!ok) return;
-
-    const changes = [];
-    WFH_CHANGES.forEach((on, key) => {
-      const [pid, date] = key.split('|');
-      changes.push({ pid, date, on });
-    });
-    const btn = $('wfhSave');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังบันทึก...';
-    try {
-      const res = await api('wfh.set', { changes });
-      await showAlert(`บันทึกสำเร็จ: เพิ่ม WFH ${res.added} วัน, ยกเลิก WFH ${res.removed} วัน`);
-      loadWfh();
-    } catch (e) { await showAlert('บันทึกไม่สำเร็จ: ' + e.message, true); } finally { btn.disabled = false; updateWfhSaveButtonState(); }
-  }
-
-  // แปลงวันที่ YYYY-MM-DD เป็นวันที่ไทย พ.ศ. (เช่น 13 เม.ย. 2569)
-  const TH_MONTHS = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-  function thDateBe(dStr) {
-    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dStr || '').trim());
-    if (!m) return dStr || '';
-    return `${Number(m[3])} ${TH_MONTHS[Number(m[2]) - 1]} ${Number(m[1]) + 543}`;
-  }
-
-  // ===== แท็บสถานะพิเศษ =====
-  async function loadDuty() {
-    const out = $('dutyOut');
-    out.dataset.loaded = '1';
-    out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดรายการ...</div></div>';
-    try {
-      const list = await api('duty.list', { from: $('dutyFrom').value, to: $('dutyTo').value });
-      window.DUTY_LIST = list;
-      if (!list.length) {
-        out.innerHTML = `
-          <div class="surface-card empty-state">
-            <div class="empty-state-icon"><i class="bi bi-journal-x"></i></div>
-            <div class="fw-semibold text-dark mb-1">ไม่พบรายการสถานะพิเศษในช่วงวันที่เลือก</div>
-            <div class="small">คุณสามารถเปลี่ยนช่วงวันที่ค้นหา หรือกดปุ่ม "เพิ่มรายการ" ด้านบน</div>
-          </div>`;
-        return;
-      }
-      out.innerHTML = `<div class="surface-card mb-4"><div class="table-responsive">
-        <table class="table table-custom align-middle mb-0 small">
-          <thead><tr><th class="ps-3">วันที่</th><th>กำลังพล</th><th>สถานะ</th><th>คำสั่ง / หมายเหตุ</th><th class="text-end pe-3">จัดการ</th></tr></thead>
-          <tbody>
-            ${list.map(d => `
-              <tr>
-                <td class="ps-3 fw-medium text-nowrap"><i class="bi bi-calendar-range text-primary me-1"></i>${esc(d.range)}</td>
-                <td class="fw-semibold text-dark">${esc(d.name)}</td>
-                <td><span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-2 py-1">${esc(d.type)}</span></td>
-                <td><div>${d.order_no ? '<span class="text-dark fw-bold">คำสั่ง: ' + esc(d.order_no) + '</span>' : ''}</div><div class="text-muted" style="font-size:0.8rem;">${esc(d.note)}</div></td>
-                <td class="text-end pe-3 text-nowrap">
-                  <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editDuty('${d.duty_id}')" title="แก้ไขรายการ"><i class="bi bi-pencil"></i></button>
-                  <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteDuty('${d.duty_id}')" title="ลบรายการ"><i class="bi bi-trash"></i></button>
-                </td>
-              </tr>`).join('')}
-          </tbody>
-        </table>
-      </div></div>`;
-    } catch (e) { out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`; }
-  }
-
-  let META_LOADED = false;
-  async function initDutyFormMeta() {
-    if (META_LOADED) return;
-    try {
-      const [types, people] = await Promise.all([api('duty.types'), api('people.list')]);
-      $('dType').innerHTML = types.map(t => `<option value="${t.type_id}">${esc(t.name)} (${t.category})</option>`).join('');
-      $('dPid').innerHTML = people.filter(p => p.active !== false).map(p => `<option value="${p.pid}">${esc(p.name)} (${esc(p.unit || '')})</option>`).join('');
-      META_LOADED = true;
-    } catch (e) { console.error('Failed to load form meta', e); }
-  }
-
-  window.editDuty = async function(dutyId) {
-    await initDutyFormMeta();
-    const d = (window.DUTY_LIST || []).find(x => x.duty_id === dutyId);
-    if (!d) return;
-    $('dDutyId').value = d.duty_id;
-    $('dPid').value = d.pid;
-    $('dType').value = d.type_id;
-    $('dStart').value = d.start;
-    $('dEnd').value = d.end;
-    $('dOrder').value = d.order_no || '';
-    $('dNote').value = d.note || '';
-    $('dModalAlert').className = 'd-none';
-    bootstrap.Modal.getOrCreateInstance($('dutyModal')).show();
-  };
-
-  window.deleteDuty = async function(dutyId) {
-    const ok = await showConfirm('ยืนยันลบรายการนี้ใช่หรือไม่?');
-    if (!ok) return;
-    try { await api('duty.delete', { duty_id: dutyId }); loadDuty(); } catch (e) { await showAlert('ลบไม่สำเร็จ: ' + e.message, true); }
-  };
-
-  // ===== แท็บวันหยุด =====
-  async function loadHoliday() {
-    const out = $('holOut');
-    out.dataset.loaded = '1';
-    out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดวันหยุด...</div></div>';
-    try {
-      const year = $('holYear').value;
-      const list = await api('holiday.list', { year });
-      const DOW = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสฯ', 'ศุกร์', 'เสาร์'];
-      if (!list.length) {
-        out.innerHTML = `
-          <div class="surface-card empty-state">
-            <div class="empty-state-icon"><i class="bi bi-calendar-x"></i></div>
-            <div class="fw-semibold text-dark mb-1">ไม่พบข้อมูลวันหยุดในปี พ.ศ. ${Number(year) + 543}</div>
-            <div class="small">สามารถกดปุ่ม "ซิงค์ปฏิทิน" หรือ "เพิ่มวันหยุด" ด้านบนได้</div>
-          </div>`;
-        return;
-      }
-      out.innerHTML = `<div class="surface-card mb-4"><div class="table-responsive">
-        <table class="table table-custom align-middle mb-0 small">
-          <thead><tr><th class="ps-3">วันที่</th><th>วัน</th><th>ชื่อวันหยุด</th><th>หมายเหตุ</th><th class="text-end pe-3">จัดการ</th></tr></thead>
-          <tbody>
-            ${list.map(h => `
-              <tr>
-                <td class="ps-3 fw-medium text-nowrap"><i class="bi bi-calendar-event text-primary me-1"></i>${esc(thDateBe(h.date))}</td>
-                <td class="text-nowrap"><span class="badge rounded-pill bg-light text-secondary border">วัน${DOW[h.dow] || ''}</span></td>
-                <td class="fw-bold text-dark" style="min-width: 120px;">${esc(h.name)}</td>
-                <td class="text-muted" style="min-width: 130px;">${esc(h.note)}</td>
-                <td class="text-end pe-3 text-nowrap">
-                  <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editHoliday('${h.date}', '${esc(h.name)}', '${esc(h.note)}')" title="แก้ไข"><i class="bi bi-pencil"></i></button>
-                  <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteHoliday('${h.date}')" title="ลบ"><i class="bi bi-trash"></i></button>
-                </td>
-              </tr>`).join('')}
-          </tbody>
-        </table>
-      </div></div>`;
-    } catch (e) { out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`; }
-  }
-
-  window.editHoliday = function(date, name, note) {
-    $('holModalTitle').textContent = 'แก้ไขวันหยุด';
-    $('holOrigDate').value = date; $('holDate').value = date; $('holName').value = name; $('holNote').value = note;
-    bootstrap.Modal.getOrCreateInstance($('holModal')).show();
-  };
-
-  window.deleteHoliday = async function(date) {
-    const ok = await showConfirm(`ยืนยันลบวันหยุดวันที่ ${thDateBe(date)} ใช่หรือไม่?`);
-    if (!ok) return;
-    try { await api('holiday.delete', { date }); loadHoliday(); } catch (e) { await showAlert('ลบไม่สำเร็จ: ' + e.message, true); }
-  };
-
-  // ===== แท็บตั้งค่าแผนก =====
-  async function loadUnitSettings() {
-    const out = $('unitOut');
-    out.dataset.loaded = '1';
-    out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดตั้งค่าแผนก...</div></div>';
-    try {
-      const units = await api('unit.list');
-      out.innerHTML = `<div class="surface-card mb-4"><div class="table-responsive">
-        <table class="table table-custom align-middle mb-0 small">
-          <thead><tr><th class="ps-3" style="min-width: 170px;">แผนก</th><th class="text-center" style="min-width: 105px;">กำลังพลทั้งหมด</th><th class="text-center" style="min-width: 165px;">รูปแบบเกณฑ์</th><th class="pe-3" style="min-width: 200px;">ค่าขั้นต่ำ (คน หรือ %)</th></tr></thead>
-          <tbody>
-            ${units.map(u => `
-              <tr data-unit="${u.unit_id}">
-                <td class="ps-3 fw-bold text-dark">${esc(u.name)}</td>
-                <td class="text-center"><span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary px-3 py-1">${u.members} คน</span></td>
-                <td class="text-center">
-                  <select class="form-select form-select-sm unit-mode" onchange="toggleUnitMode(this)">
-                    <option value="COUNT" ${u.mode === 'COUNT' ? 'selected' : ''}>ระบุจำนวนคน</option>
-                    <option value="PCT" ${u.mode === 'PCT' ? 'selected' : ''}>ระบุเป็นเปอร์เซ็นต์</option>
-                  </select>
-                </td>
-                <td class="pe-3">
-                  <div class="input-group input-group-sm">
-                    <input type="number" min="0" class="form-control unit-val" value="${u.mode === 'PCT' ? u.min_pct : u.min_onsite}">
-                    <span class="input-group-text unit-unit-lbl">${u.mode === 'PCT' ? '%' : 'คน'}</span>
-                  </div>
-                  <div class="text-muted mt-1" style="font-size:0.76rem;">เทียบเท่า ณ ที่ตั้งอย่างน้อย <span class="fw-bold text-success calc-onsite">${u.min_onsite}</span> คน</div>
-                </td>
-              </tr>`).join('')}
-          </tbody>
-        </table>
-      </div></div>`;
-
-      // ผูกอีเวนต์คำนวณแบบเรียลไทม์
-      document.querySelectorAll('#unitOut tr[data-unit]').forEach(tr => {
-        const modeSel = tr.querySelector('.unit-mode');
-        const valInp = tr.querySelector('.unit-val');
-        const calcSpan = tr.querySelector('.calc-onsite');
-        const members = parseInt(tr.querySelector('.badge').textContent) || 0;
-
-        valInp.oninput = () => {
-          const v = parseInt(valInp.value) || 0;
-          if (modeSel.value === 'PCT') {
-            calcSpan.textContent = Math.ceil(members * v / 100);
-          } else {
-            calcSpan.textContent = v;
-          }
+    function showAlert(message, isError = false) {
+      return new Promise(resolve => {
+        const modalEl = $('sysDialogModal');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        $('sysDialogIcon').innerHTML = isError
+          ? '<i class="bi bi-exclamation-circle-fill text-danger"></i>'
+          : '<i class="bi bi-check-circle-fill text-primary"></i>';
+        $('sysDialogMsg').textContent = message;
+        $('sysDialogCancel').classList.add('d-none');
+        const okBtn = $('sysDialogOk');
+        okBtn.textContent = 'ตกลง';
+        okBtn.onclick = () => {
+          modal.hide();
+          resolve(true);
         };
+        modal.show();
       });
-    } catch (e) { out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`; }
-  }
-
-  window.toggleUnitMode = function(sel) {
-    const tr = sel.closest('tr');
-    const valInp = tr.querySelector('.unit-val');
-    const lbl = tr.querySelector('.unit-unit-lbl');
-    const calcSpan = tr.querySelector('.calc-onsite');
-    const members = parseInt(tr.querySelector('.badge').textContent) || 0;
-
-    if (sel.value === 'PCT') {
-      lbl.textContent = '%';
-      valInp.value = 50; // ค่าเริ่มต้น 50%
-      calcSpan.textContent = Math.ceil(members * 50 / 100);
-    } else {
-      lbl.textContent = 'คน';
-      valInp.value = 1;
-      calcSpan.textContent = 1;
     }
-  };
 
-  async function saveUnitSettings() {
-    const rows = document.querySelectorAll('#unitOut tr[data-unit]');
-    const units = [];
-    rows.forEach(tr => {
-      const unit_id = tr.dataset.unit;
-      const mode = tr.querySelector('.unit-mode').value;
-      const value = parseFloat(tr.querySelector('.unit-val').value) || 0;
-      units.push({ unit_id, mode, value });
-    });
+    function showConfirm(message) {
+      return new Promise(resolve => {
+        const modalEl = $('sysDialogModal');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        $('sysDialogIcon').innerHTML = '<i class="bi bi-question-circle-fill text-warning"></i>';
+        $('sysDialogMsg').textContent = message;
+        const cancelBtn = $('sysDialogCancel');
+        const okBtn = $('sysDialogOk');
+        cancelBtn.classList.remove('d-none');
+        okBtn.textContent = 'ยืนยัน';
+        let settled = false;
+        okBtn.onclick = () => {
+          settled = true;
+          modal.hide();
+          resolve(true);
+        };
+        cancelBtn.onclick = () => {
+          settled = true;
+          modal.hide();
+          resolve(false);
+        };
+        modalEl.addEventListener('hidden.bs.modal', function onHide() {
+          modalEl.removeEventListener('hidden.bs.modal', onHide);
+          if (!settled) resolve(false);
+        });
+        modal.show();
+      });
+    }
 
-    const btn = $('unitSaveBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังบันทึก...';
-    try {
-      await api('unit.save', { units });
-      await showAlert('บันทึกเกณฑ์ขั้นต่ำของแผนกเรียบร้อยแล้ว');
-      loadUnitSettings();
-    } catch (e) { await showAlert('บันทึกไม่สำเร็จ: ' + e.message, true); } finally { btn.disabled = false; btn.innerHTML = '<i class="bi bi-save me-1"></i> บันทึกเกณฑ์'; }
-  }
+    let ME = null;
 
-  // ผูกอีเวนต์และแสดงผลหน้าแอปพลิเคชัน
-  function setupAppUI() {
-    $('personSearch').oninput = renderPeopleTable;
-    $('personUnitFilter').onchange = renderPeopleTable;
-    $('personAddBtn').onclick = async () => {
-      await initPersonFormMeta();
-      $('personModalTitle').textContent = 'เพิ่มบุคลากรใหม่';
-      $('pFormPid').value = '';
-      $('pFormCode').value = '';
-      $('pFormTitle').value = '';
-      $('pFormFirstName').value = '';
-      $('pFormLastName').value = '';
-      $('pFormPosition').value = '';
-      $('pFormPhone').value = '';
-      $('pFormStart').value = today();
-      $('pFormWfhGroup').value = '';
-      $('pFormActive').checked = true;
-      document.querySelectorAll('.role-check').forEach(cb => cb.checked = false);
-      $('pFormCarried').value = 0;
-      $('pFormAdjust').value = 0;
-      bootstrap.Modal.getOrCreateInstance($('personModal')).show();
+    // ตรวจสอบสิทธิ์ สำหรับแท็บ 'admin.only' จะอนุญาตเฉพาะผู้ที่เป็น ADMIN เท่านั้น
+    const isAdminUser = () => {
+      if (!ME) return false;
+      if (Array.isArray(ME.roles) && ME.roles.includes('ADMIN')) return true;
+      if (Array.isArray(ME.permissions) && ME.permissions.includes('*')) return true;
+      return false;
     };
 
-    $('personSaveBtn').onclick = async () => {
-      const roles = [];
-      document.querySelectorAll('.role-check:checked').forEach(cb => roles.push(cb.value));
-      const payload = {
-        pid: $('pFormPid').value,
-        code: $('pFormCode').value,
-        title: $('pFormTitle').value,
-        first_name: $('pFormFirstName').value,
-        last_name: $('pFormLastName').value,
-        pt_id: $('pFormPt').value,
-        unit_id: $('pFormUnit').value,
-        position: $('pFormPosition').value,
-        gender: $('pFormGender').value,
-        service_start: $('pFormStart').value,
-        phone: $('pFormPhone').value,
-        wfh_group: $('pFormWfhGroup').value,
-        active: $('pFormActive').checked,
-        roles,
-        carried: parseFloat($('pFormCarried').value) || 0,
-        adjust: parseFloat($('pFormAdjust').value) || 0
-      };
+    const can = k => {
+      if (!ME) return false;
+      if (k === 'admin.only') return isAdminUser();
+      const perms = Array.isArray(ME.permissions) ? ME.permissions : [];
+      return perms.includes('*') || perms.includes(k);
+    };
 
-      const btn = $('personSaveBtn');
-      btn.disabled = true;
+    async function api(action, payload) {
+      let res, j;
       try {
-        await api('person.save', payload);
-        bootstrap.Modal.getOrCreateInstance($('personModal')).hide();
-        await showAlert('บันทึกข้อมูลบุคลากรเรียบร้อยแล้ว');
-        loadPeople();
-      } catch (e) {
-        await showAlert('บันทึกไม่สำเร็จ: ' + e.message, true);
-      } finally {
-        btn.disabled = false;
+        res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action, payload: payload || {}, idToken: liff.getIDToken() })
+        });
+      } catch (e) { throw new Error('ติดต่อเซิร์ฟเวอร์ไม่ได้'); }
+      try { j = await res.json(); } catch (e) { throw new Error('รูปแบบข้อมูลตอบกลับไม่ถูกต้อง'); }
+      if (!j.ok) { const e = new Error(j.error.message); e.code = j.error.code; throw e; }
+      return j.data;
+    }
+
+    function openTab(name) {
+      document.querySelectorAll('#tabs .nav-link').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+      document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane-' + name));
+
+      if (name === 'strength' && !$('stOut').dataset.loaded) loadStrength();
+      if (name === 'wfh' && !$('wfhOut').dataset.loaded) { $('wfhDate').value = today(); loadWfh(); }
+      if (name === 'duty' && !$('dutyOut').dataset.loaded) {
+        $('dutyFrom').value = today(); $('dutyTo').value = addDays(today(), 30);
+        loadDuty(); initDutyFormMeta();
       }
+      if (name === 'holiday' && !$('holOut').dataset.loaded) {
+        const curYear = new Date().getFullYear();
+        let opt = '';
+        for (let y = curYear - 1; y <= curYear + 2; y++) opt += `<option value="${y}" ${y === curYear ? 'selected' : ''}>พ.ศ. ${y + 543}</option>`;
+        $('holYear').innerHTML = opt;
+        loadHoliday();
+      }
+      if (name === 'unit' && !$('unitOut').dataset.loaded) loadUnitSettings();
+      if (name === 'people' && !$('peopleOut').dataset.loaded) {
+        initPersonFormMeta();
+        loadPeople();
+      }
+    }
+
+    // ===== แท็บที่ 1: ยอดกำลังพล =====
+    async function loadStrength() {
+      const out = $('stOut');
+      out.dataset.loaded = '1';
+      out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลด...</div></div>';
+      try {
+        const s = await api('strength.get', { date: $('stDate').value });
+        const w = esc(s.unit_word);
+        const G = { ONSITE: 'ณ ที่ตั้ง', OUTSIDE: 'นอกที่ตั้ง', ABSENT: 'ไม่อยู่' };
+        const groupBadgeColor = {
+          ONSITE: 'bg-success-subtle text-success-emphasis border-success-subtle',
+          OUTSIDE: 'bg-primary-subtle text-primary-emphasis border-primary-subtle',
+          ABSENT: 'bg-danger-subtle text-danger-emphasis border-danger-subtle'
+        };
+        const card = (t, n, c, icon) => `
+          <div class="col-6 col-md-3">
+            <div class="stat-card stat-${c}">
+              <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                <div class="small text-muted fw-medium">${t}</div>
+                <div class="stat-icon-box"><i class="bi bi-${icon}"></i></div>
+              </div>
+              <div class="d-flex align-items-baseline gap-2">
+                <div class="big-num text-${c}">${n}</div>
+                <div class="text-secondary" style="font-size: 0.82rem;">${w}</div>
+              </div>
+            </div>
+          </div>`;
+
+        out.innerHTML = `
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 px-1">
+            <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-calendar3 me-2 text-primary"></i>${esc(s.label)}</h6>
+            ${s.workday
+              ? '<span class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle px-3 py-2"><i class="bi bi-briefcase-fill me-1"></i>วันทำงานปกติ</span>'
+              : '<span class="badge rounded-pill bg-secondary px-3 py-2">วันหยุดราชการ</span>'}
+          </div>
+          <div class="row g-2 g-md-3 mb-3 mb-lg-4">
+            ${card('ยอดกำลังพลรวม', s.total, 'dark', 'people')}
+            ${card('ปฏิบัติงาน ณ ที่ตั้ง', s.groups.ONSITE, 'success', 'building-check')}
+            ${card('ปฏิบัติงานนอกที่ตั้ง', s.groups.OUTSIDE, 'primary', 'geo-alt')}
+            ${card('ไม่อยู่ / ลา', s.groups.ABSENT, 'danger', 'person-dash')}
+          </div>
+          <div class="row g-3 g-lg-4 mb-4">
+            <div class="col-12 col-lg-5">
+              <div class="surface-card">
+                <div class="surface-card-header">
+                  <div class="fw-bold text-dark"><i class="bi bi-list-check me-2 text-primary"></i>รายละเอียดสถานะพิเศษประจำวัน</div>
+                  <span class="badge rounded-pill bg-light text-secondary border">${s.by_type.length} ประเภท</span>
+                </div>
+                <ul class="list-group list-group-flush small">
+                  ${s.by_type.length ? s.by_type.map(t => `
+                    <li class="list-group-item py-3 px-3">
+                      <div class="d-flex justify-content-between align-items-center flex-wrap gap-1 mb-2">
+                        <span class="fw-bold text-dark">${esc(t.name)}</span>
+                        <span class="badge rounded-pill border ${groupBadgeColor[t.group] || 'bg-light text-dark border'}">${t.people.length} ${w} (${G[t.group] || ''})</span>
+                      </div>
+                      <div class="d-flex flex-wrap">
+                        ${t.people.map(p => `<span class="person-chip"><i class="bi bi-person text-secondary"></i>${esc(p)}</span>`).join('')}
+                      </div>
+                    </li>`).join('')
+                    : '<li class="list-group-item text-muted text-center py-5"><i class="bi bi-check2-circle text-success fs-3 d-block mb-2"></i>ไม่มีผู้มีสถานะพิเศษในวันนี้</li>'}
+                </ul>
+              </div>
+            </div>
+            <div class="col-12 col-lg-7">
+              <div class="surface-card">
+                <div class="surface-card-header">
+                  <div class="fw-bold text-dark"><i class="bi bi-buildings me-2 text-primary"></i>สรุปแยกตามแผนก</div>
+                  <span class="badge rounded-pill bg-light text-secondary border">${s.by_unit.length} แผนก</span>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-custom align-middle mb-0 small text-center">
+                    <thead><tr><th class="text-start ps-3">แผนก</th><th>ทั้งหมด</th><th>ณ ที่ตั้ง</th><th>นอกที่ตั้ง</th><th class="pe-3">ไม่อยู่</th></tr></thead>
+                    <tbody>
+                      ${s.by_unit.map(u => `
+                        <tr>
+                          <td class="text-start ps-3 fw-semibold text-dark">${esc(u.name)}</td>
+                          <td><span class="num-pill bg-secondary bg-opacity-10 text-secondary">${u.total}</span></td>
+                          <td><span class="num-pill bg-success bg-opacity-10 text-success">${u.ONSITE}</span></td>
+                          <td><span class="num-pill bg-primary bg-opacity-10 text-primary">${u.OUTSIDE}</span></td>
+                          <td class="pe-3"><span class="num-pill ${u.ABSENT > 0 ? 'bg-danger bg-opacity-10 text-danger' : 'text-muted'}">${u.ABSENT}</span></td>
+                        </tr>`).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      } catch (e) {
+        out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`;
+      }
+    }
+
+    // ===== แท็บที่ 2: ตาราง WFH =====
+    let WFH_DATA = null;
+    const WFH_CHANGES = new Map();
+
+    function updateWfhSaveButtonState() {
+      const btn = $('wfhSave');
+      if (!btn) return;
+      if (WFH_CHANGES.size > 0) {
+        btn.innerHTML = `<i class="bi bi-save me-1"></i> บันทึกการเปลี่ยนแปลง <span class="badge rounded-pill bg-white text-success ms-1">${WFH_CHANGES.size}</span>`;
+      } else {
+        btn.innerHTML = '<i class="bi bi-save me-1"></i> บันทึกการเปลี่ยนแปลง';
+      }
+    }
+
+    async function loadWfh() {
+      const out = $('wfhOut');
+      out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดตาราง WFH...</div></div>';
+      WFH_CHANGES.clear();
+      updateWfhSaveButtonState();
+      try {
+        WFH_DATA = await api('wfh.week', { start: $('wfhDate').value });
+        renderWfhTable();
+      } catch (e) { out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`; }
+    }
+
+    function renderWfhTable() {
+      const out = $('wfhOut');
+      out.dataset.loaded = '1';
+      const d = WFH_DATA;
+      updateWfhSaveButtonState();
+      let html = '';
+      if (d.warnings && d.warnings.length) {
+        html += `<div class="alert alert-warning border-0 shadow-sm rounded-4 small mb-3">
+          <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i> ข้อสังเกตและคำเตือนระบบ:</div>
+          <ul class="mb-0 ps-3">${d.warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>
+        </div>`;
+      }
+      html += `
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2 px-1 small text-muted">
+          <div class="d-flex flex-wrap align-items-center gap-3">
+            <span class="d-inline-flex align-items-center gap-1"><span class="badge bg-info text-white"><i class="bi bi-house-fill"></i></span> WFH (นอกที่ตั้ง)</span>
+            <span class="d-inline-flex align-items-center gap-1"><span class="badge bg-secondary bg-opacity-25 text-secondary"><i class="bi bi-dash"></i></span> ปฏิบัติงาน ณ ที่ตั้ง</span>
+            <span class="d-inline-flex align-items-center gap-1"><span class="badge bg-danger bg-opacity-10 text-danger">สถานะพิเศษ</span> มีรายการลา/ราชการ</span>
+          </div>
+          <span class="d-md-none text-secondary" style="font-size: 0.78rem;"><i class="bi bi-arrows-expand-vertical me-1"></i>เลื่อนตารางซ้าย-ขวาได้</span>
+        </div>`;
+
+      html += `<div class="surface-card mb-4"><div class="table-responsive">
+        <table class="table wfh-table mb-0"><thead><tr>
+        <th class="name-col ps-3">กำลังพล / แผนก</th>
+        ${d.days.map(day => `<th><div class="fw-bold text-dark">${esc(day.label)}</div><span class="text-muted fw-normal" style="font-size:0.74rem;">${day.holiday ? '<span class="text-danger fw-medium">หยุด: '+esc(day.holiday)+'</span>' : (day.workday ? 'วันทำงาน' : 'วันหยุด')}</span></th>`).join('')}
+        </tr></thead><tbody>`;
+
+      d.rows.forEach(p => {
+        html += `<tr><td class="name-col ps-3"><div class="fw-bold text-dark">${esc(p.name)}</div><div class="text-muted" style="font-size:0.76rem;">${esc(p.unit)} ${p.group ? '• กลุ่ม '+esc(p.group) : ''}</div></td>`;
+        p.cells.forEach((c, idx) => {
+          const day = d.days[idx];
+          const key = p.pid + '|' + day.date;
+          const isChanged = WFH_CHANGES.has(key);
+          const isWfhNow = isChanged ? WFH_CHANGES.get(key) : c.wfh;
+          if (c.status) {
+            html += `<td><span class="cell-badge bg-danger bg-opacity-10 text-danger fw-bold" title="${esc(c.label)}">${esc(c.status)}</span></td>`;
+          } else if (!day.workday) {
+            html += `<td><span class="text-muted" style="font-size:0.75rem;">-</span></td>`;
+          } else {
+            html += `<td><button type="button" class="btn btn-sm cell-btn ${isWfhNow ? 'is-wfh' : 'is-off'} ${isChanged ? 'is-changed' : ''}" onclick="toggleWfh('${p.pid}', '${day.date}')" title="คลิกเพื่อสลับ WFH"><i class="bi ${isWfhNow ? 'bi-house-fill' : 'bi-dash'}"></i></button></td>`;
+          }
+        });
+        html += `</tr>`;
+      });
+
+      html += `</tbody><tfoot class="table-light text-center fw-bold"><tr>
+        <td class="name-col ps-3 text-start">ยอด WFH / ณ ที่ตั้ง</td>
+        ${d.summary.map(s => `<td><span class="text-info">${s.wfh}</span> / <span class="text-success">${s.onsite}</span></td>`).join('')}
+      </tr></tfoot></table></div></div>`;
+      out.innerHTML = html;
+    }
+
+    window.toggleWfh = function(pid, date) {
+      const key = pid + '|' + date;
+      const row = WFH_DATA.rows.find(r => r.pid === pid);
+      const dayIdx = WFH_DATA.days.findIndex(d => d.date === date);
+      if (!row || dayIdx === -1) return;
+      const originalState = row.cells[dayIdx].wfh;
+      const currentState = WFH_CHANGES.has(key) ? WFH_CHANGES.get(key) : originalState;
+      const newState = !currentState;
+      if (newState === originalState) WFH_CHANGES.delete(key); else WFH_CHANGES.set(key, newState);
+      renderWfhTable();
     };
-    $('who').textContent = ME.person.name;
-    let first = '';
-    document.querySelectorAll('#tabs .nav-link').forEach(b => {
-      if (!can(b.dataset.perm)) { b.parentElement.remove(); return; }
-      b.onclick = () => openTab(b.dataset.tab);
-      first = first || b.dataset.tab;
-    });
 
-    $('stDate').value = today();
-    $('stGo').onclick = loadStrength;
+    async function saveWfhChanges() {
+      if (WFH_CHANGES.size === 0) { await showAlert('ไม่มีรายการที่มีการเปลี่ยนแปลง'); return; }
+      const ok = await showConfirm(`ยืนยันบันทึกการเปลี่ยนแปลงตาราง WFH จำนวน ${WFH_CHANGES.size} รายการใช่หรือไม่?`);
+      if (!ok) return;
+      const changes = [];
+      WFH_CHANGES.forEach((on, key) => {
+        const [pid, date] = key.split('|');
+        changes.push({ pid, date, on });
+      });
+      const btn = $('wfhSave');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังบันทึก...';
+      try {
+        const res = await api('wfh.set', { changes });
+        await showAlert(`บันทึกสำเร็จ: เพิ่ม WFH ${res.added} วัน, ยกเลิก WFH ${res.removed} วัน`);
+        loadWfh();
+      } catch (e) { await showAlert('บันทึกไม่สำเร็จ: ' + e.message, true); } finally { btn.disabled = false; updateWfhSaveButtonState(); }
+    }
 
-    $('wfhDate').value = today();
-    $('wfhGo').onclick = loadWfh;
-    $('wfhSave').onclick = saveWfhChanges;
+    const TH_MONTHS = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+    function thDateBe(dStr) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dStr || '').trim());
+      if (!m) return dStr || '';
+      return `${Number(m[3])} ${TH_MONTHS[Number(m[2]) - 1]} ${Number(m[1]) + 543}`;
+    }
 
-    $('dutyGo').onclick = loadDuty;
-    $('dutyAddBtn').onclick = () => {
-      initDutyFormMeta();
-      $('dDutyId').value = ''; $('dStart').value = today(); $('dEnd').value = today();
-      $('dOrder').value = ''; $('dNote').value = ''; $('dModalAlert').className = 'd-none';
+    // ===== แท็บที่ 3: สถานะพิเศษ =====
+    async function loadDuty() {
+      const out = $('dutyOut');
+      out.dataset.loaded = '1';
+      out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดรายการ...</div></div>';
+      try {
+        const list = await api('duty.list', { from: $('dutyFrom').value, to: $('dutyTo').value });
+        window.DUTY_LIST = list;
+        if (!list.length) {
+          out.innerHTML = `
+            <div class="surface-card empty-state">
+              <div class="empty-state-icon"><i class="bi bi-journal-x"></i></div>
+              <div class="fw-semibold text-dark mb-1">ไม่พบรายการสถานะพิเศษในช่วงวันที่เลือก</div>
+              <div class="small">คุณสามารถเปลี่ยนช่วงวันที่ค้นหา หรือกดปุ่ม "เพิ่มรายการ" ด้านบน</div>
+            </div>`;
+          return;
+        }
+        out.innerHTML = `<div class="surface-card mb-4"><div class="table-responsive">
+          <table class="table table-custom align-middle mb-0 small">
+            <thead><tr><th class="ps-3">วันที่</th><th>กำลังพล</th><th>สถานะ</th><th>คำสั่ง / หมายเหตุ</th><th class="text-end pe-3">จัดการ</th></tr></thead>
+            <tbody>
+              ${list.map(d => `
+                <tr>
+                  <td class="ps-3 fw-medium text-nowrap"><i class="bi bi-calendar-range text-primary me-1"></i>${esc(d.range)}</td>
+                  <td class="fw-semibold text-dark">${esc(d.name)}</td>
+                  <td><span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-2 py-1">${esc(d.type)}</span></td>
+                  <td><div>${d.order_no ? '<span class="text-dark fw-bold">คำสั่ง: ' + esc(d.order_no) + '</span>' : ''}</div><div class="text-muted" style="font-size:0.8rem;">${esc(d.note)}</div></td>
+                  <td class="text-end pe-3 text-nowrap">
+                    <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editDuty('${d.duty_id}')" title="แก้ไขรายการ"><i class="bi bi-pencil"></i></button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteDuty('${d.duty_id}')" title="ลบรายการ"><i class="bi bi-trash"></i></button>
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div></div>`;
+      } catch (e) { out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`; }
+    }
+
+    let META_LOADED = false;
+    async function initDutyFormMeta() {
+      if (META_LOADED) return;
+      try {
+        const [types, people] = await Promise.all([api('duty.types'), api('people.list')]);
+        $('dType').innerHTML = types.map(t => `<option value="${t.type_id}">${esc(t.name)} (${t.category})</option>`).join('');
+        $('dPid').innerHTML = people.filter(p => p.active !== false).map(p => `<option value="${p.pid}">${esc(p.name)} (${esc(p.unit || '')})</option>`).join('');
+        META_LOADED = true;
+      } catch (e) { console.error('Failed to load form meta', e); }
+    }
+
+    window.editDuty = async function(dutyId) {
+      await initDutyFormMeta();
+      const d = (window.DUTY_LIST || []).find(x => x.duty_id === dutyId);
+      if (!d) return;
+      $('dDutyId').value = d.duty_id;
+      $('dPid').value = d.pid;
+      $('dType').value = d.type_id;
+      $('dStart').value = d.start;
+      $('dEnd').value = d.end;
+      $('dOrder').value = d.order_no || '';
+      $('dNote').value = d.note || '';
+      $('dModalAlert').className = 'd-none';
       bootstrap.Modal.getOrCreateInstance($('dutyModal')).show();
     };
-    $('dSaveBtn').onclick = async () => {
-      const payload = {
-        duty_id: $('dDutyId').value, pid: $('dPid').value, type_id: $('dType').value,
-        start_date: $('dStart').value, end_date: $('dEnd').value, order_no: $('dOrder').value, note: $('dNote').value
-      };
-      const btn = $('dSaveBtn'); btn.disabled = true;
-      try {
-        const res = await api('duty.save', payload);
-        if (res && res.warnings && res.warnings.length) {
-          $('dModalAlert').className = 'alert alert-warning small mt-3 mb-0';
-          $('dModalAlert').innerHTML = res.warnings.join('<br>');
-          setTimeout(() => { bootstrap.Modal.getOrCreateInstance($('dutyModal')).hide(); loadDuty(); }, 2500);
-        } else {
-          bootstrap.Modal.getOrCreateInstance($('dutyModal')).hide(); loadDuty();
-        }
-      } catch (e) { await showAlert('บันทึกไม่สำเร็จ: ' + e.message, true); } finally { btn.disabled = false; }
+
+    window.deleteDuty = async function(dutyId) {
+      const ok = await showConfirm('ยืนยันลบรายการนี้ใช่หรือไม่?');
+      if (!ok) return;
+      try { await api('duty.delete', { duty_id: dutyId }); loadDuty(); } catch (e) { await showAlert('ลบไม่สำเร็จ: ' + e.message, true); }
     };
 
-    $('holGo').onclick = loadHoliday;
-    $('holYear').onchange = loadHoliday;
-    $('holAddBtn').onclick = () => {
-      $('holModalTitle').textContent = 'เพิ่มวันหยุด';
-      $('holOrigDate').value = ''; $('holDate').value = today(); $('holName').value = ''; $('holNote').value = '';
+    // ===== แท็บที่ 4: วันหยุด =====
+    async function loadHoliday() {
+      const out = $('holOut');
+      out.dataset.loaded = '1';
+      out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดวันหยุด...</div></div>';
+      try {
+        const year = $('holYear').value;
+        const list = await api('holiday.list', { year });
+        const DOW = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสฯ', 'ศุกร์', 'เสาร์'];
+        if (!list.length) {
+          out.innerHTML = `
+            <div class="surface-card empty-state">
+              <div class="empty-state-icon"><i class="bi bi-calendar-x"></i></div>
+              <div class="fw-semibold text-dark mb-1">ไม่พบข้อมูลวันหยุดในปี พ.ศ. ${Number(year) + 543}</div>
+              <div class="small">สามารถกดปุ่ม "ซิงค์ปฏิทิน" หรือ "เพิ่มวันหยุด" ด้านบนได้</div>
+            </div>`;
+          return;
+        }
+        out.innerHTML = `<div class="surface-card mb-4"><div class="table-responsive">
+          <table class="table table-custom align-middle mb-0 small">
+            <thead><tr><th class="ps-3">วันที่</th><th>วัน</th><th>ชื่อวันหยุด</th><th>หมายเหตุ</th><th class="text-end pe-3">จัดการ</th></tr></thead>
+            <tbody>
+              ${list.map(h => `
+                <tr>
+                  <td class="ps-3 fw-medium text-nowrap"><i class="bi bi-calendar-event text-primary me-1"></i>${esc(thDateBe(h.date))}</td>
+                  <td class="text-nowrap"><span class="badge rounded-pill bg-light text-secondary border">วัน${DOW[h.dow] || ''}</span></td>
+                  <td class="fw-bold text-dark" style="min-width: 120px;">${esc(h.name)}</td>
+                  <td class="text-muted" style="min-width: 130px;">${esc(h.note)}</td>
+                  <td class="text-end pe-3 text-nowrap">
+                    <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editHoliday('${h.date}', '${esc(h.name)}', '${esc(h.note)}')" title="แก้ไข"><i class="bi bi-pencil"></i></button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteHoliday('${h.date}')" title="ลบ"><i class="bi bi-trash"></i></button>
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div></div>`;
+      } catch (e) { out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`; }
+    }
+
+    window.editHoliday = function(date, name, note) {
+      $('holModalTitle').textContent = 'แก้ไขวันหยุด';
+      $('holOrigDate').value = date; $('holDate').value = date; $('holName').value = name; $('holNote').value = note;
       bootstrap.Modal.getOrCreateInstance($('holModal')).show();
     };
-    $('holSyncBtn').onclick = async () => {
-      const year = $('holYear').value;
-      const ok = await showConfirm(`ต้องการซิงค์วันหยุดราชการประจำปี พ.ศ. ${Number(year) + 543} จาก Google Calendar ใช่หรือไม่?`);
+
+    window.deleteHoliday = async function(date) {
+      const ok = await showConfirm(`ยืนยันลบวันหยุดวันที่ ${thDateBe(date)} ใช่หรือไม่?`);
       if (!ok) return;
-      const btn = $('holSyncBtn'); btn.disabled = true;
-      try {
-        const res = await api('holiday.sync', { year: Number(year) });
-        await showAlert(`ซิงค์สำเร็จ เพิ่มวันหยุดใหม่ ${res.added} วัน`);
-        loadHoliday();
-      } catch (e) { await showAlert('ซิงค์ไม่สำเร็จ: ' + e.message, true); } finally { btn.disabled = false; }
-    };
-    $('holSaveBtn').onclick = async () => {
-      const payload = { original_date: $('holOrigDate').value, date: $('holDate').value, name: $('holName').value, note: $('holNote').value };
-      const btn = $('holSaveBtn'); btn.disabled = true;
-      try {
-        await api('holiday.save', payload);
-        bootstrap.Modal.getOrCreateInstance($('holModal')).hide();
-        loadHoliday();
-      } catch (e) { await showAlert('บันทึกไม่สำเร็จ: ' + e.message, true); } finally { btn.disabled = false; }
+      try { await api('holiday.delete', { date }); loadHoliday(); } catch (e) { await showAlert('ลบไม่สำเร็จ: ' + e.message, true); }
     };
 
-    $('unitSaveBtn').onclick = saveUnitSettings;
+    // ===== แท็บที่ 5: ตั้งค่าแผนก =====
+    async function loadUnitSettings() {
+      const out = $('unitOut');
+      out.dataset.loaded = '1';
+      out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดตั้งค่าแผนก...</div></div>';
+      try {
+        const units = await api('unit.list');
+        out.innerHTML = `<div class="surface-card mb-4"><div class="table-responsive">
+          <table class="table table-custom align-middle mb-0 small">
+            <thead><tr><th class="ps-3" style="min-width: 170px;">แผนก</th><th class="text-center" style="min-width: 105px;">กำลังพลทั้งหมด</th><th class="text-center" style="min-width: 165px;">รูปแบบเกณฑ์</th><th class="pe-3" style="min-width: 200px;">ค่าขั้นต่ำ (คน หรือ %)</th></tr></thead>
+            <tbody>
+              ${units.map(u => `
+                <tr data-unit="${u.unit_id}">
+                  <td class="ps-3 fw-bold text-dark">${esc(u.name)}</td>
+                  <td class="text-center"><span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary px-3 py-1">${u.members} คน</span></td>
+                  <td class="text-center">
+                    <select class="form-select form-select-sm unit-mode" onchange="toggleUnitMode(this)">
+                      <option value="COUNT" ${u.mode === 'COUNT' ? 'selected' : ''}>ระบุจำนวนคน</option>
+                      <option value="PCT" ${u.mode === 'PCT' ? 'selected' : ''}>ระบุเป็นเปอร์เซ็นต์</option>
+                    </select>
+                  </td>
+                  <td class="pe-3">
+                    <div class="input-group input-group-sm">
+                      <input type="number" min="0" class="form-control unit-val" value="${u.mode === 'PCT' ? u.min_pct : u.min_onsite}">
+                      <span class="input-group-text unit-unit-lbl">${u.mode === 'PCT' ? '%' : 'คน'}</span>
+                    </div>
+                    <div class="text-muted mt-1" style="font-size:0.76rem;">เทียบเท่า ณ ที่ตั้งอย่างน้อย <span class="fw-bold text-success calc-onsite">${u.min_onsite}</span> คน</div>
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div></div>`;
 
-    $('msg').className = 'd-none';
-    $('app').classList.remove('d-none');
-    openTab(first);
-  }
-
-  // ===== เริ่มทำงาน =====
-  async function main() {
-    try {
-      await liff.init({ liffId: LIFF_ID });
-      if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
-      ME = await api('me.get');
-      if (!ME.registered) { say('warning', '<i class="bi bi-exclamation-triangle-fill me-1"></i> บัญชี LINE นี้ยังไม่ได้ลงทะเบียนในระบบ'); return; }
-      if (!can('strength.view') && !can('duty.manage') && !can('holiday.manage')) { say('danger', '<i class="bi bi-slash-circle-fill me-1"></i> บัญชีนี้ไม่มีสิทธิ์เข้าใช้งานหน้าธุรการ'); return; }
-
-      setupAppUI();
-    } catch (e) {
-      say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + e.message);
-    }
-  }
-    // ===== แท็บจัดการบุคลากร (HR Portal) =====
-  let ALL_PEOPLE = [];
-
-  async function loadPeople() {
-    const out = $('peopleOut');
-    out.dataset.loaded = '1';
-    out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดรายชื่อ...</div></div>';
-    try {
-      ALL_PEOPLE = await api('people.list');
-      renderPeopleTable();
-    } catch (e) {
-      out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`;
-    }
-  }
-
-  function renderPeopleTable() {
-    const out = $('peopleOut');
-    const q = ($('personSearch')?.value || '').trim().toLowerCase();
-    const uFilter = $('personUnitFilter')?.value || '';
-
-    const filtered = ALL_PEOPLE.filter(p => {
-      const matchQ = !q || p.name.toLowerCase().includes(q) || (p.pid && p.pid.toLowerCase().includes(q)) || (p.position && p.position.toLowerCase().includes(q));
-      const matchU = !uFilter || p.unit_id === uFilter;
-      return matchQ && matchU;
-    });
-
-    if (!filtered.length) {
-      out.innerHTML = `
-        <div class="surface-card empty-state">
-          <div class="empty-state-icon"><i class="bi bi-people"></i></div>
-          <div class="fw-semibold text-dark mb-1">ไม่พบบุคลากรที่ค้นหา</div>
-          <div class="small">ลองเปลี่ยนคำค้นหา หรือกดปุ่ม "เพิ่มบุคลากร" ด้านบน</div>
-        </div>`;
-      return;
+        document.querySelectorAll('#unitOut tr[data-unit]').forEach(tr => {
+          const modeSel = tr.querySelector('.unit-mode');
+          const valInp = tr.querySelector('.unit-val');
+          const calcSpan = tr.querySelector('.calc-onsite');
+          const members = parseInt(tr.querySelector('.badge').textContent) || 0;
+          valInp.oninput = () => {
+            const v = parseInt(valInp.value) || 0;
+            if (modeSel.value === 'PCT') {
+              calcSpan.textContent = Math.ceil(members * v / 100);
+            } else {
+              calcSpan.textContent = v;
+            }
+          };
+        });
+      } catch (e) { out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`; }
     }
 
-    out.innerHTML = `<div class="surface-card mb-4"><div class="table-responsive">
-      <table class="table table-custom align-middle mb-0 small">
-        <thead>
-          <tr>
-            <th class="ps-3">ชื่อ-นามสกุล</th>
-            <th>แผนก/ตำแหน่ง</th>
-            <th class="text-center">กลุ่ม WFH</th>
-            <th class="text-center">สถานะ LINE</th>
-            <th class="text-end pe-3">จัดการ</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${filtered.map(p => `
-            <tr>
-              <td class="ps-3">
-                <div class="fw-bold text-dark">${esc(p.name)}</div>
-                <div class="text-muted" style="font-size:0.75rem;">PID: ${esc(p.pid)}</div>
-              </td>
-              <td>
-                <div class="fw-medium text-dark">${esc(p.unit || '-')}</div>
-                <div class="text-muted" style="font-size:0.75rem;">${esc(p.position || '-')}</div>
-              </td>
-              <td class="text-center">
-                ${p.wfh_group ? `<span class="badge bg-info text-dark">กลุ่ม ${esc(p.wfh_group)}</span>` : '<span class="text-muted">-</span>'}
-              </td>
-              <td class="text-center">
-                ${p.linked 
-                  ? `<span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-check-circle-fill me-1"></i>ผูกแล้ว</span>`
-                  : `<span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1">ยังไม่ผูก</span>`}
-              </td>
-              <td class="text-end pe-3 text-nowrap">
-                <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editPerson('${p.pid}')" title="แก้ไขข้อมูล/สิทธิ์"><i class="bi bi-pencil-square"></i></button>
-                ${p.linked ? `<button type="button" class="btn btn-outline-warning btn-sm me-1" onclick="unlinkPersonLine('${p.pid}')" title="ยกเลิกผูก LINE"><i class="bi bi-link-45deg"></i></button>` : ''}
-                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deactivatePerson('${p.pid}', '${esc(p.name)}')" title="ปิดใช้งาน"><i class="bi bi-person-x"></i></button>
-              </td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
-    </div></div>`;
-  }
-
-  async function initPersonFormMeta() {
-    try {
-      const [units, ptypes] = await Promise.all([api('unit.list'), api('config.public')]);
-      const uSelect = $('pFormUnit');
-      const uFilter = $('personUnitFilter');
-      if (uSelect) uSelect.innerHTML = units.map(u => `<option value="${u.unit_id}">${esc(u.name)}</option>`).join('');
-      if (uFilter) uFilter.innerHTML = '<option value="">ทุกแผนก</option>' + units.map(u => `<option value="${u.unit_id}">${esc(u.name)}</option>`).join('');
-      
-      const ptSelect = $('pFormPt');
-      if (ptSelect) {
-        ptSelect.innerHTML = `
-          <option value="OFF">นายทหารสัญญาบัตร (OFF)</option>
-          <option value="NCO">นายทหารประทวน (NCO)</option>
-          <option value="GOV">พนักงานราชการ (GOV)</option>
-          <option value="EMP">ลูกจ้าง (EMP)</option>`;
+    window.toggleUnitMode = function(sel) {
+      const tr = sel.closest('tr');
+      const valInp = tr.querySelector('.unit-val');
+      const lbl = tr.querySelector('.unit-unit-lbl');
+      const calcSpan = tr.querySelector('.calc-onsite');
+      const members = parseInt(tr.querySelector('.badge').textContent) || 0;
+      if (sel.value === 'PCT') {
+        lbl.textContent = '%';
+        valInp.value = 50;
+        calcSpan.textContent = Math.ceil(members * 50 / 100);
+      } else {
+        lbl.textContent = 'คน';
+        valInp.value = 1;
+        calcSpan.textContent = 1;
       }
-    } catch (e) { console.error('Meta load failed', e); }
-  }
+    };
 
-  window.editPerson = async function(pid) {
-    await initPersonFormMeta();
-    try {
-      const d = await api('person.detail', { pid });
-      const p = d.person;
-      $('personModalTitle').textContent = 'แก้ไขข้อมูลบุคลากร (' + p.pid + ')';
-      $('pFormPid').value = p.pid;
-      $('pFormCode').value = p.code;
-      $('pFormTitle').value = p.title;
-      $('pFormFirstName').value = p.first_name;
-      $('pFormLastName').value = p.last_name;
-      $('pFormPt').value = p.pt_id;
-      $('pFormUnit').value = p.unit_id;
-      $('pFormPosition').value = p.position;
-      $('pFormGender').value = p.gender || 'ชาย';
-      $('pFormStart').value = p.service_start;
-      $('pFormPhone').value = p.phone;
-      $('pFormWfhGroup').value = p.wfh_group;
-      $('pFormActive').checked = p.active;
+    async function saveUnitSettings() {
+      const rows = document.querySelectorAll('#unitOut tr[data-unit]');
+      const units = [];
+      rows.forEach(tr => {
+        const unit_id = tr.dataset.unit;
+        const mode = tr.querySelector('.unit-mode').value;
+        const value = parseFloat(tr.querySelector('.unit-val').value) || 0;
+        units.push({ unit_id, mode, value });
+      });
+      const btn = $('unitSaveBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังบันทึก...';
+      try {
+        await api('unit.save', { units });
+        await showAlert('บันทึกเกณฑ์ขั้นต่ำของแผนกเรียบร้อยแล้ว');
+        loadUnitSettings();
+      } catch (e) { await showAlert('บันทึกไม่สำเร็จ: ' + e.message, true); } finally { btn.disabled = false; btn.innerHTML = '<i class="bi bi-save me-1"></i> บันทึกเกณฑ์'; }
+    }
 
-      document.querySelectorAll('.role-check').forEach(cb => {
-        cb.checked = (d.roles || []).includes(cb.value);
+    // ===== แท็บที่ 6: จัดการบุคลากร (เฉพาะ ADMIN) =====
+    let ALL_PEOPLE = [];
+
+    async function loadPeople() {
+      const out = $('peopleOut');
+      out.dataset.loaded = '1';
+      out.innerHTML = '<div class="surface-card text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-2">กำลังโหลดรายชื่อ...</div></div>';
+      try {
+        ALL_PEOPLE = await api('people.list');
+        renderPeopleTable();
+      } catch (e) {
+        out.innerHTML = `<div class="alert alert-danger border-0 shadow-sm rounded-4">${esc(e.message)}</div>`;
+      }
+    }
+
+    function renderPeopleTable() {
+      const out = $('peopleOut');
+      const q = ($('personSearch')?.value || '').trim().toLowerCase();
+      const uFilter = $('personUnitFilter')?.value || '';
+      const filtered = ALL_PEOPLE.filter(p => {
+        const matchQ = !q || p.name.toLowerCase().includes(q) || (p.pid && p.pid.toLowerCase().includes(q)) || (p.position && p.position.toLowerCase().includes(q));
+        const matchU = !uFilter || p.unit_id === uFilter;
+        return matchQ && matchU;
       });
 
-      $('pFormCarried').value = d.balance ? d.balance.carried : 0;
-      $('pFormAdjust').value = d.balance ? d.balance.adjust : 0;
+      if (!filtered.length) {
+        out.innerHTML = `
+          <div class="surface-card empty-state">
+            <div class="empty-state-icon"><i class="bi bi-people"></i></div>
+            <div class="fw-semibold text-dark mb-1">ไม่พบบุคลากรที่ค้นหา</div>
+            <div class="small">ลองเปลี่ยนคำค้นหา หรือกดปุ่ม "เพิ่มบุคลากร" ด้านบน</div>
+          </div>`;
+        return;
+      }
 
-      bootstrap.Modal.getOrCreateInstance($('personModal')).show();
-    } catch (e) { await showAlert('ดึงข้อมูลไม่สำเร็จ: ' + e.message, true); }
-  };
+      out.innerHTML = `<div class="surface-card mb-4"><div class="table-responsive">
+        <table class="table table-custom align-middle mb-0 small">
+          <thead>
+            <tr>
+              <th class="ps-3">ชื่อ-นามสกุล</th>
+              <th>แผนก/ตำแหน่ง</th>
+              <th class="text-center">กลุ่ม WFH</th>
+              <th class="text-center">สถานะ LINE</th>
+              <th class="text-end pe-3">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.map(p => `
+              <tr>
+                <td class="ps-3">
+                  <div class="fw-bold text-dark">${esc(p.name)}</div>
+                  <div class="text-muted" style="font-size:0.75rem;">PID: ${esc(p.pid)}</div>
+                </td>
+                <td>
+                  <div class="fw-medium text-dark">${esc(p.unit || '-')}</div>
+                  <div class="text-muted" style="font-size:0.75rem;">${esc(p.position || '-')}</div>
+                </td>
+                <td class="text-center">
+                  ${p.wfh_group ? `<span class="badge bg-info text-dark">กลุ่ม ${esc(p.wfh_group)}</span>` : '<span class="text-muted">-</span>'}
+                </td>
+                <td class="text-center">
+                  ${p.linked 
+                    ? `<span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-check-circle-fill me-1"></i>ผูกแล้ว</span>`
+                    : `<span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1">ยังไม่ผูก</span>`}
+                </td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button type="button" class="btn btn-outline-primary btn-sm me-1" onclick="editPerson('${p.pid}')" title="แก้ไขข้อมูล/สิทธิ์"><i class="bi bi-pencil-square"></i></button>
+                  ${p.linked ? `<button type="button" class="btn btn-outline-warning btn-sm me-1" onclick="unlinkPersonLine('${p.pid}')" title="ยกเลิกผูก LINE"><i class="bi bi-link-45deg"></i></button>` : ''}
+                  <button type="button" class="btn btn-outline-danger btn-sm" onclick="deactivatePerson('${p.pid}', '${esc(p.name)}')" title="ปิดใช้งาน"><i class="bi bi-person-x"></i></button>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div></div>`;
+    }
 
-  window.unlinkPersonLine = async function(pid) {
-    const ok = await showConfirm('ยืนยันยกเลิกการผูกบัญชี LINE ของบุคลากรนี้ใช่หรือไม่?');
-    if (!ok) return;
-    try {
-      await api('reg.unlink', { pid });
-      await showAlert('ยกเลิกการผูก LINE สำเร็จ');
-      loadPeople();
-    } catch (e) { await showAlert('ทำรายการไม่สำเร็จ: ' + e.message, true); }
-  };
+    async function initPersonFormMeta() {
+      try {
+        const [units, ptypes] = await Promise.all([api('unit.list'), api('config.public')]);
+        const uSelect = $('pFormUnit');
+        const uFilter = $('personUnitFilter');
+        if (uSelect) uSelect.innerHTML = units.map(u => `<option value="${u.unit_id}">${esc(u.name)}</option>`).join('');
+        if (uFilter) uFilter.innerHTML = '<option value="">ทุกแผนก</option>' + units.map(u => `<option value="${u.unit_id}">${esc(u.name)}</option>`).join('');
 
-  window.deactivatePerson = async function(pid, name) {
-    const ok = await showConfirm(`ยืนยันปิดการใช้งาน ${name} ในระบบใช่หรือไม่?`);
-    if (!ok) return;
-    try {
-      await api('person.delete', { pid });
-      await showAlert('ปิดการใช้งานเรียบร้อยแล้ว');
-      loadPeople();
-    } catch (e) { await showAlert('ปิดการใช้งานไม่สำเร็จ: ' + e.message, true); }
-  };
-  main();
-</script>
+        const ptSelect = $('pFormPt');
+        if (ptSelect) {
+          ptSelect.innerHTML = `
+            <option value="OFF">นายทหารสัญญาบัตร (OFF)</option>
+            <option value="NCO">นายทหารประทวน (NCO)</option>
+            <option value="GOV">พนักงานราชการ (GOV)</option>
+            <option value="EMP">ลูกจ้าง (EMP)</option>`;
+        }
+      } catch (e) { console.error('Meta load failed', e); }
+    }
+
+    window.editPerson = async function(pid) {
+      await initPersonFormMeta();
+      try {
+        const d = await api('person.detail', { pid });
+        const p = d.person;
+        $('personModalTitle').textContent = 'แก้ไขข้อมูลบุคลากร (' + p.pid + ')';
+        $('pFormPid').value = p.pid;
+        $('pFormCode').value = p.code;
+        $('pFormTitle').value = p.title;
+        $('pFormFirstName').value = p.first_name;
+        $('pFormLastName').value = p.last_name;
+        $('pFormPt').value = p.pt_id;
+        $('pFormUnit').value = p.unit_id;
+        $('pFormPosition').value = p.position;
+        $('pFormGender').value = p.gender || 'ชาย';
+        $('pFormStart').value = p.service_start;
+        $('pFormPhone').value = p.phone;
+        $('pFormWfhGroup').value = p.wfh_group;
+        $('pFormActive').checked = p.active;
+
+        document.querySelectorAll('.role-check').forEach(cb => {
+          cb.checked = (d.roles || []).includes(cb.value);
+        });
+
+        $('pFormCarried').value = d.balance ? d.balance.carried : 0;
+        $('pFormAdjust').value = d.balance ? d.balance.adjust : 0;
+
+        bootstrap.Modal.getOrCreateInstance($('personModal')).show();
+      } catch (e) { await showAlert('ดึงข้อมูลไม่สำเร็จ: ' + e.message, true); }
+    };
+
+    window.unlinkPersonLine = async function(pid) {
+      const ok = await showConfirm('ยืนยันยกเลิกการผูกบัญชี LINE ของบุคลากรนี้ใช่หรือไม่?');
+      if (!ok) return;
+      try {
+        await api('reg.unlink', { pid });
+        await showAlert('ยกเลิกการผูก LINE สำเร็จ');
+        loadPeople();
+      } catch (e) { await showAlert('ทำรายการไม่สำเร็จ: ' + e.message, true); }
+    };
+
+    window.deactivatePerson = async function(pid, name) {
+      const ok = await showConfirm(`ยืนยันปิดการใช้งาน ${name} ในระบบใช่หรือไม่?`);
+      if (!ok) return;
+      try {
+        await api('person.delete', { pid });
+        await showAlert('ปิดการใช้งานเรียบร้อยแล้ว');
+        loadPeople();
+      } catch (e) { await showAlert('ปิดการใช้งานไม่สำเร็จ: ' + e.message, true); }
+    };
+
+    // ===== การตั้งค่าแอปพลิเคชันและการแสดงแท็บ =====
+    function setupAppUI() {
+      // สำหรับแท็บคน (People)
+      $('personSearch').oninput = renderPeopleTable;
+      $('personUnitFilter').onchange = renderPeopleTable;
+      $('personAddBtn').onclick = async () => {
+        await initPersonFormMeta();
+        $('personModalTitle').textContent = 'เพิ่มบุคลากรใหม่';
+        $('pFormPid').value = '';
+        $('pFormCode').value = '';
+        $('pFormTitle').value = '';
+        $('pFormFirstName').value = '';
+        $('pFormLastName').value = '';
+        $('pFormPosition').value = '';
+        $('pFormPhone').value = '';
+        $('pFormStart').value = today();
+        $('pFormWfhGroup').value = '';
+        $('pFormActive').checked = true;
+        document.querySelectorAll('.role-check').forEach(cb => cb.checked = false);
+        $('pFormCarried').value = 0;
+        $('pFormAdjust').value = 0;
+        bootstrap.Modal.getOrCreateInstance($('personModal')).show();
+      };
+
+      $('personSaveBtn').onclick = async () => {
+        const roles = [];
+        document.querySelectorAll('.role-check:checked').forEach(cb => roles.push(cb.value));
+        const payload = {
+          pid: $('pFormPid').value,
+          code: $('pFormCode').value,
+          title: $('pFormTitle').value,
+          first_name: $('pFormFirstName').value,
+          last_name: $('pFormLastName').value,
+          pt_id: $('pFormPt').value,
+          unit_id: $('pFormUnit').value,
+          position: $('pFormPosition').value,
+          gender: $('pFormGender').value,
+          service_start: $('pFormStart').value,
+          phone: $('pFormPhone').value,
+          wfh_group: $('pFormWfhGroup').value,
+          active: $('pFormActive').checked,
+          roles,
+          carried: parseFloat($('pFormCarried').value) || 0,
+          adjust: parseFloat($('pFormAdjust').value) || 0
+        };
+        const btn = $('personSaveBtn');
+        btn.disabled = true;
+        try {
+          await api('person.save', payload);
+          bootstrap.Modal.getOrCreateInstance($('personModal')).hide();
+          await showAlert('บันทึกข้อมูลบุคลากรเรียบร้อยแล้ว');
+          loadPeople();
+        } catch (e) {
+          await showAlert('บันทึกไม่สำเร็จ: ' + e.message, true);
+        } finally {
+          btn.disabled = false;
+        }
+      };
+
+      $('who').textContent = ME.person.name;
+
+      // ตรวจสอบสิทธิ์การแสดงแท็บต่างๆ
+      let first = '';
+      document.querySelectorAll('#tabs .nav-item').forEach(li => {
+        const btn = li.querySelector('.nav-link');
+        if (!btn) return;
+        
+        if (!can(btn.dataset.perm)) {
+          li.style.display = 'none'; // ซ่อนแท็บที่ไม่มีสิทธิ์
+        } else {
+          li.style.display = 'block'; // แสดงแท็บที่มีสิทธิ์
+          btn.onclick = () => openTab(btn.dataset.tab);
+          if (!first) first = btn.dataset.tab;
+        }
+      });
+
+      // จัดการอีเวนต์อื่นๆ
+      $('stDate').value = today();
+      $('stGo').onclick = loadStrength;
+      $('wfhDate').value = today();
+      $('wfhGo').onclick = loadWfh;
+      $('wfhSave').onclick = saveWfhChanges;
+      $('dutyGo').onclick = loadDuty;
+      $('dutyAddBtn').onclick = () => {
+        initDutyFormMeta();
+        $('dDutyId').value = ''; $('dStart').value = today(); $('dEnd').value = today();
+        $('dOrder').value = ''; $('dNote').value = ''; $('dModalAlert').className = 'd-none';
+        bootstrap.Modal.getOrCreateInstance($('dutyModal')).show();
+      };
+      $('dSaveBtn').onclick = async () => {
+        const payload = {
+          duty_id: $('dDutyId').value, pid: $('dPid').value, type_id: $('dType').value,
+          start_date: $('dStart').value, end_date: $('dEnd').value, order_no: $('dOrder').value, note: $('dNote').value
+        };
+        const btn = $('dSaveBtn'); btn.disabled = true;
+        try {
+          const res = await api('duty.save', payload);
+          if (res && res.warnings && res.warnings.length) {
+            $('dModalAlert').className = 'alert alert-warning small mt-3 mb-0';
+            $('dModalAlert').innerHTML = res.warnings.join('<br>');
+            setTimeout(() => { bootstrap.Modal.getOrCreateInstance($('dutyModal')).hide(); loadDuty(); }, 2500);
+          } else {
+            bootstrap.Modal.getOrCreateInstance($('dutyModal')).hide(); loadDuty();
+          }
+        } catch (e) { await showAlert('บันทึกไม่สำเร็จ: ' + e.message, true); } finally { btn.disabled = false; }
+      };
+
+      $('holGo').onclick = loadHoliday;
+      $('holYear').onchange = loadHoliday;
+      $('holAddBtn').onclick = () => {
+        $('holModalTitle').textContent = 'เพิ่มวันหยุด';
+        $('holOrigDate').value = ''; $('holDate').value = today(); $('holName').value = ''; $('holNote').value = '';
+        bootstrap.Modal.getOrCreateInstance($('holModal')).show();
+      };
+      $('holSyncBtn').onclick = async () => {
+        const year = $('holYear').value;
+        const ok = await showConfirm(`ต้องการซิงค์วันหยุดราชการประจำปี พ.ศ. ${Number(year) + 543} จาก Google Calendar ใช่หรือไม่?`);
+        if (!ok) return;
+        const btn = $('holSyncBtn'); btn.disabled = true;
+        try {
+          const res = await api('holiday.sync', { year: Number(year) });
+          await showAlert(`ซิงค์สำเร็จ เพิ่มวันหยุดใหม่ ${res.added} วัน`);
+          loadHoliday();
+        } catch (e) { await showAlert('ซิงค์ไม่สำเร็จ: ' + e.message, true); } finally { btn.disabled = false; }
+      };
+      $('holSaveBtn').onclick = async () => {
+        const payload = { original_date: $('holOrigDate').value, date: $('holDate').value, name: $('holName').value, note: $('holNote').value };
+        const btn = $('holSaveBtn'); btn.disabled = true;
+        try {
+          await api('holiday.save', payload);
+          bootstrap.Modal.getOrCreateInstance($('holModal')).hide();
+          loadHoliday();
+        } catch (e) { await showAlert('บันทึกไม่สำเร็จ: ' + e.message, true); } finally { btn.disabled = false; }
+      };
+
+      $('unitSaveBtn').onclick = saveUnitSettings;
+
+      $('msg').className = 'd-none';
+      $('app').classList.remove('d-none');
+
+      if (first) openTab(first);
+    }
+
+    // ===== เริ่มทำงาน =====
+    async function main() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
+
+        ME = await api('me.get');
+        if (!ME.registered) { say('warning', '<i class="bi bi-exclamation-triangle-fill me-1"></i> บัญชี LINE นี้ยังไม่ได้ลงทะเบียนในระบบ'); return; }
+
+        if (!can('strength.view') && !can('duty.manage') && !can('holiday.manage') && !can('admin.only')) { 
+          say('danger', '<i class="bi bi-slash-circle-fill me-1"></i> บัญชีนี้ไม่มีสิทธิ์เข้าใช้งานหน้าธุรการ'); 
+          return; 
+        }
+
+        setupAppUI();
+      } catch (e) {
+        say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + e.message);
+      }
+    }
+
+    main();
+
+  </script>
 </body>
 </html>
