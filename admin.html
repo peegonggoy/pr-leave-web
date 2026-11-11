@@ -937,7 +937,7 @@
             <select id="dPid" class="form-select"></select>
           </div>
           <div class="mb-3">
-            <label for="dType" class="form-label small fw-bold text-secondary">ประเภทสถานะ</label>
+            <label for="dType" class="form-label small fw-bold text-secondary">ราชการนอกที่ตั้งะ</label>
             <select id="dType" class="form-select"></select>
           </div>
           <div class="row g-2 mb-2">
@@ -1370,14 +1370,14 @@
           out.innerHTML = `
             <div class="surface-card empty-state">
               <div class="empty-state-icon"><i class="bi bi-journal-x"></i></div>
-              <div class="fw-semibold text-dark mb-1">ไม่พบรายการสถานะพิเศษในช่วงวันที่เลือก</div>
+              <div class="fw-semibold text-dark mb-1">ไม่พบการไปราชการนอกที่ตั้งในช่วงวันที่เลือก</div>
               <div class="small">คุณสามารถเปลี่ยนช่วงวันที่ค้นหา หรือกดปุ่ม "เพิ่มรายการ" ด้านบน</div>
             </div>`;
           return;
         }
         out.innerHTML = `<div class="surface-card mb-4"><div class="table-responsive">
           <table class="table table-custom align-middle mb-0 small">
-            <thead><tr><th class="ps-3">วันที่</th><th>กำลังพล</th><th>สถานะ</th><th>คำสั่ง / หมายเหตุ</th><th class="text-end pe-3">จัดการ</th></tr></thead>
+            <thead><tr><th class="ps-3">วันที่</th><th>กำลังพล</th><th>ราชการนอกที่ตั้ง</th><th>คำสั่ง / หมายเหตุ</th><th class="text-end pe-3">จัดการ</th></tr></thead>
             <tbody>
               ${list.map(d => `
                 <tr>
