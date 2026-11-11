@@ -919,7 +919,7 @@
     </div>
   </div>
 
-  <!-- Modal สถานะพิเศษ -->
+  <!-- Modal สถานะพิเศษ (สำหรับธุรการบันทึก ปฏิบัติงานนอกที่ตั้ง / ไปศึกษาอบรม / ช่วยราชการ / อื่น ๆ พร้อมระบุช่วงวันที่ยาวได้) -->
   <div class="modal fade" id="dutyModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg rounded-4">
@@ -940,23 +940,26 @@
             <label for="dType" class="form-label small fw-bold text-secondary">ประเภทสถานะ</label>
             <select id="dType" class="form-select"></select>
           </div>
-          <div class="row g-2 mb-3">
+          <div class="row g-2 mb-2">
             <div class="col-12 col-sm-6">
-              <label for="dStart" class="form-label small fw-bold text-secondary">วันที่เริ่มต้น</label>
+              <label for="dStart" class="form-label small fw-bold text-secondary">ตั้งแต่วันที่ (วันเริ่มต้น)</label>
               <input type="date" id="dStart" class="form-control">
             </div>
             <div class="col-12 col-sm-6">
-              <label for="dEnd" class="form-label small fw-bold text-secondary">วันที่สิ้นสุด</label>
+              <label for="dEnd" class="form-label small fw-bold text-secondary">ถึงวันที่ (วันสิ้นสุด)</label>
               <input type="date" id="dEnd" class="form-control">
             </div>
+          </div>
+          <div class="small text-muted mb-3">
+            <i class="bi bi-info-circle me-1"></i>สามารถเลือกช่วงวันที่ต่อเนื่องกันยาวๆ ได้ในครั้งเดียว (เช่น ไปศึกษา/อบรม หรือสัมมนาหลายวัน)
           </div>
           <div class="mb-3">
             <label for="dOrder" class="form-label small fw-bold text-secondary">เลขที่คำสั่ง / อ้างอิง</label>
             <input type="text" id="dOrder" class="form-control" placeholder="เช่น ปก. 123/2569">
           </div>
           <div class="mb-2">
-            <label for="dNote" class="form-label small fw-bold text-secondary">หมายเหตุ</label>
-            <textarea id="dNote" class="form-control" rows="2" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)"></textarea>
+            <label for="dNote" class="form-label small fw-bold text-secondary">หมายเหตุ / สถานที่</label>
+            <textarea id="dNote" class="form-control" rows="2" placeholder="รายละเอียดเพิ่มเติม เช่น หลักสูตร หรือสถานที่ไปราชการ (ถ้ามี)"></textarea>
           </div>
           <div id="dModalAlert" class="d-none alert alert-warning small mt-3 mb-0"></div>
         </div>
@@ -1394,14 +1397,34 @@
     }
 
     let META_LOADED = false;
+    // กรองเฉพาะสถานะที่ธุรการเป็นคนบันทึก (ตัดการลา LEAVE และตัด WFH ออก)
+    const ALLOWED_DUTY_IDS = ['TRAVEL', 'STUDY', 'ATTACH', 'OTHER'];
+    const FALLBACK_DUTY_TYPES = [
+      { type_id: 'TRAVEL', name: 'ปฏิบัติงานนอกที่ตั้ง' },
+      { type_id: 'STUDY', name: 'ไปศึกษา/อบรม' },
+      { type_id: 'ATTACH', name: 'ช่วยราชการหน่วยอื่น' },
+      { type_id: 'OTHER', name: 'อื่น ๆ' }
+    ];
+
     async function initDutyFormMeta() {
       if (META_LOADED) return;
       try {
         const [types, people] = await Promise.all([api('duty.types'), api('people.list')]);
-        $('dType').innerHTML = types.map(t => `<option value="${t.type_id}">${esc(t.name)} (${t.category})</option>`).join('');
-        $('dPid').innerHTML = people.filter(p => p.active !== false).map(p => `<option value="${p.pid}">${esc(p.name)} (${esc(p.unit || '')})</option>`).join('');
+        // กรองเอาเฉพาะ 4 ประเภทสถานะของธุรการ (หรือหมวด DUTY ที่ไม่ใช่ WFH)
+        let dutyOnly = (types || []).filter(t =>
+          ALLOWED_DUTY_IDS.includes(t.type_id) ||
+          (t.category === 'DUTY' && t.type_id !== 'WFH')
+        );
+        if (!dutyOnly.length) {
+          dutyOnly = FALLBACK_DUTY_TYPES;
+        }
+        $('dType').innerHTML = dutyOnly.map(t => `<option value="${t.type_id}">${esc(t.name)}</option>`).join('');
+        $('dPid').innerHTML = (people || []).filter(p => p.active !== false).map(p => `<option value="${p.pid}">${esc(p.name)} (${esc(p.unit || '')})</option>`).join('');
         META_LOADED = true;
-      } catch (e) { console.error('Failed to load form meta', e); }
+      } catch (e) {
+        console.error('Failed to load form meta', e);
+        $('dType').innerHTML = FALLBACK_DUTY_TYPES.map(t => `<option value="${t.type_id}">${esc(t.name)}</option>`).join('');
+      }
     }
 
     window.editDuty = async function(dutyId) {
@@ -1774,7 +1797,7 @@
       document.querySelectorAll('#tabs .nav-item').forEach(li => {
         const btn = li.querySelector('.nav-link');
         if (!btn) return;
-        
+
         if (!can(btn.dataset.perm)) {
           li.style.display = 'none'; // ซ่อนแท็บที่ไม่มีสิทธิ์
         } else {
@@ -1796,6 +1819,12 @@
         $('dDutyId').value = ''; $('dStart').value = today(); $('dEnd').value = today();
         $('dOrder').value = ''; $('dNote').value = ''; $('dModalAlert').className = 'd-none';
         bootstrap.Modal.getOrCreateInstance($('dutyModal')).show();
+      };
+      // เมื่อเปลี่ยนวันเริ่มต้น หากวันสิ้นสุดน้อยกว่าวันเริ่มต้น ให้ปรับตามอัตโนมัติ
+      $('dStart').onchange = () => {
+        if ($('dEnd').value && $('dEnd').value < $('dStart').value) {
+          $('dEnd').value = $('dStart').value;
+        }
       };
       $('dSaveBtn').onclick = async () => {
         const payload = {
