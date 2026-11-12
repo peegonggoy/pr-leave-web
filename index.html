@@ -935,12 +935,15 @@
 
         out.innerHTML = list.map(item => `
           <div class="card p-3 bg-white mb-3 border-start border-4 border-warning" id="req-card-${item.id}">
-            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
-              <div class="min-w-0">
-                <div class="fw-bold text-dark text-truncate" style="font-size: 1rem;">${esc(item.name)}</div>
-                <div class="text-muted small text-truncate">สังกัด: ${esc(item.unit || '-')}</div>
-              </div>
-              <span class="badge bg-light text-dark border flex-shrink-0" style="font-size: 0.75rem;">ยื่นเมื่อ: ${esc(item.created_at ? item.created_at.slice(0, 16) : '-')}</span>
+            <!-- ย้ายวันที่ยื่นมาไว้ด้านบนสุด ชิดขวา -->
+            <div class="d-flex justify-content-end mb-1">
+              <span class="badge bg-light text-dark border" style="font-size: 0.75rem;">ยื่นเมื่อ: ${esc(item.created_at ? item.created_at.slice(0, 16) : '-')}</span>
+            </div>
+
+            <!-- ส่วนชื่อและสังกัดอยู่บรรทัดถัดลงมา -->
+            <div class="mb-2">
+              <div class="fw-bold text-dark" style="font-size: 1rem; word-break: break-word;">${esc(item.name)}</div>
+              <div class="text-muted small">สังกัด: ${esc(item.unit || '-')}</div>
             </div>
             
             <div class="small text-primary fw-bold mb-2"><i class="bi bi-tag-fill me-1"></i>${esc(item.type)} • ${esc(item.range)} (${item.days} วัน)</div>
@@ -981,7 +984,7 @@
               }
             }
           } catch (err) {
-            if (box) box.innerHTML = `<span class="text-muted"><i class="bi bi-info-circle me-1"></i>ยังไม่เปิดใช้งานฟังก์ชันดึงสิทธิ์ (เพิ่ม apiPersonLeaveBalances_ ใน Apps Script)</span>`;
+            if (box) box.innerHTML = `<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i>โหลดสิทธิ์วันลาไม่สำเร็จ</span>`;
           }
         });
 
