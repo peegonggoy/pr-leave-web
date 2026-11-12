@@ -933,22 +933,25 @@
           return;
         }
 
-        // วาดรายการพร้อมดึงข้อมูลสรุปวันลามาแปะ
         out.innerHTML = list.map(item => `
           <div class="card p-3 bg-white mb-3 border-start border-4 border-warning" id="req-card-${item.id}">
-            <div class="d-flex justify-content-between align-items-start">
-              <div class="fw-bold text-dark text-break">${esc(item.name)} <span class="text-muted small fw-normal">(${esc(item.unit)})</span></div>
-              <span class="badge bg-light text-dark border">ยื่นเมื่อ: ${esc(item.created_at || '-')}</span>
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+              <div>
+                <span class="fw-bold text-dark fs-6">${esc(item.name)}</span>
+                <div class="text-muted small">สังกัด: ${esc(item.unit || '-')}</div>
+              </div>
+              <span class="badge bg-light text-dark border flex-shrink-0">ยื่นเมื่อ: ${esc(item.created_at ? item.created_at.slice(0, 16) : '-')}</span>
             </div>
             
-            <div class="small text-primary fw-bold my-1">${esc(item.type)} • ${esc(item.range)} (${item.days} วัน)</div>
-            <div class="small text-secondary bg-light p-2 rounded mb-2 text-break">เหตุผล: ${esc(item.reason)}</div>
+            <div class="small text-primary fw-bold mb-2"><i class="bi bi-tag-fill me-1"></i>${esc(item.type)} • ${esc(item.range)} (${item.days} วัน)</div>
+            <div class="small text-secondary bg-light p-2 rounded mb-2 text-break"><b>เหตุผล:</b> ${esc(item.reason)}</div>
             
-            <!-- ส่วนแสดงสรุปวันลา (ดึงมาแปะเพิ่ม) -->
-            <div id="balance-summary-${item.id}" class="small alert alert-secondary py-1 px-2 mb-2">
-              <span class="spinner-border spinner-border-sm me-1"></span> กำลังโหลดสิทธิ์วันลา...
+            <!-- ส่วนแสดงสรุปวันลาคงเหลือ -->
+            <div id="balance-summary-${item.id}" class="small text-muted bg-white border p-2 rounded mb-2">
+              <span class="spinner-border spinner-border-sm me-1 text-primary"></span> กำลังโหลดสิทธิ์วันลา...
             </div>
 
+            <!-- ปุ่มเปิดดูเอกสารแนบ (แสดงเฉพาะเมื่อมีไฟล์) -->
             ${item.attachment_url ? `
               <div class="mb-3">
                 <a href="https://drive.google.com/uc?export=view&id=${esc(item.attachment_url)}" target="_blank" class="btn btn-outline-primary btn-sm w-100">
@@ -962,21 +965,24 @@
             </div>
           </div>`).join('');
 
-        // วนลูปดึงข้อมูลสิทธิ์วันลาของแต่ละคนมาใส่ในการ์ดแบบ Asynchronous
+        // ดึงข้อมูลสิทธิ์วันลาของแต่ละรายการมาแสดง
         list.forEach(async (item) => {
+          const box = $(`balance-summary-${item.id}`);
           try {
-            // สมมติว่ามี API ดึงสิทธิ์ของ PID นั้นๆ หรือดึงประวัติการลา
-            const summaryData = await api('leave.person_summary', { pid: item.pid, type_id: item.type_id });
-            const box = $(`balance-summary-${item.id}`);
+            const balances = await api('leave.person_balances', { pid: item.pid });
+            // ค้นหาประเภทการลาที่ตรงกับที่กำลังขอ
+            const matched = balances.find(b => String(b.type_id) === String(item.type_id) || b.name === item.type);
+            
             if (box) {
-              box.className = 'small bg-light border p-2 rounded mb-2 text-dark';
-              box.innerHTML = `
-                <div><b>สิทธิ์การลา (${esc(item.type)}):</b> คงเหลือ <b>${summaryData.left}</b> จากทั้งหมด ${summaryData.total} วัน (ปีนี้ใช้ไปแล้ว ${summaryData.used} ครั้ง / ${summaryData.used_days} วัน)</div>
-              `;
+              if (matched) {
+                const leftText = matched.unlimited ? 'ไม่จำกัดจำนวนวัน' : `คงเหลือ <b>${matched.left}</b> วัน (ใช้ไป ${matched.used || 0} ครั้ง)`;
+                box.innerHTML = `<i class="bi bi-wallet2 text-primary me-1"></i>สิทธิ์${esc(matched.name)}: ${leftText}`;
+              } else {
+                box.innerHTML = `<i class="bi bi-wallet2 text-muted me-1"></i>ไม่พบข้อมูลสิทธิ์ของประเภทลานี้`;
+              }
             }
           } catch (err) {
-            const box = $(`balance-summary-${item.id}`);
-            if (box) box.innerHTML = '<span class="text-muted">ไม่สามารถโหลดข้อมูลสิทธิ์วันลาได้</span>';
+            if (box) box.innerHTML = `<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i>โหลดสิทธิ์วันลาไม่สำเร็จ</span>`;
           }
         });
 
