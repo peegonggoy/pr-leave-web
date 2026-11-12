@@ -732,18 +732,19 @@
     };
 
     function initDatePickers() {
+      if (fpStart) return;   // ถ้าสร้างไว้แล้ว ไม่ต้องสร้างซ้ำ
       const opt = {
         locale: 'th',
-        dateFormat: 'Y-m-d',   // ค่าที่ส่งไป Backend (เหมือนเดิม)
+        dateFormat: 'Y-m-d',
         altInput: true,
-        altFormat: 'd/m/y',    // ที่แสดงบนหน้าจอ = วว/ดด/ปป
-        disableMobile: true    // บังคับใช้ Flatpickr บนมือถือด้วย
+        altFormat: 'd/m/y',
+        disableMobile: true
       };
       fpStart = flatpickr('#leaveStart', {
         ...opt,
         onChange: (sel) => {
           if (!sel[0]) return;
-          fpEnd.set('minDate', sel[0]);   // วันสิ้นสุดห้ามก่อนวันเริ่ม
+          fpEnd.set('minDate', sel[0]);
           if (!fpEnd.selectedDates[0] || fpEnd.selectedDates[0] < sel[0]) fpEnd.setDate(sel[0]);
         }
       });
@@ -770,6 +771,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (paneName === 'leave-form') {
+        initDatePickers();
         fpStart.setDate(today(), true);
         fpEnd.setDate(today(), true);
         $('leaveReason').value = '';
