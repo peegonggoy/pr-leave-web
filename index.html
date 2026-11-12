@@ -1165,10 +1165,13 @@
 
           $('myWfhGo').onclick = loadMyWfh;
 
+          // เอาเงื่อนไขเปิดหน้าอัตโนมัติออก เพื่อให้เปิดมาอยู่ที่หน้าแรก (Home) เสมอ
+          // เว้นแต่จะกดผ่านปุ่มเมนูลัดที่ต้องการจริงๆ
           const p = new URLSearchParams(location.search).get('p');
           if (p === 'request') switchPane('leave-form');
-          else if (p === 'mine' || p === 'leave') switchPane('leave-history');
-          else if (p === 'approve') switchPane('approval');
+          else if (p === 'approve') switchPane('approve');
+          // (ตัดคำว่า mine ออก หน้าเว็บจะไม่เด้งไปประวัติเองอีก)
+
         }
       } catch (e) {
         say('danger', '<i class="bi bi-wifi-off me-1"></i> เชื่อมต่อระบบไม่สำเร็จ: ' + e.message);
