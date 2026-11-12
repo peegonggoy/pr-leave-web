@@ -9,6 +9,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Flatpickr (ตัวเลือกวันที่ วว/ดด/ปป) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
   <style>
     :root {
       --bg-page: #f4f7fb;
@@ -582,18 +586,27 @@
                   <button class="btn btn-outline-secondary btn-sm btn-back me-2" onclick="switchPane('home')"><i class="bi bi-arrow-left"></i></button>
                   <h5 class="fw-bold mb-0 text-dark">ยื่นคำขอลา</h5>
                 </div>
+                <!-- ประเภทการลา -->
                 <div class="mb-3">
                   <label class="form-label small fw-bold" for="leaveType">ประเภทการลา</label>
                   <select id="leaveType" class="form-select"></select>
                 </div>
+                
+                <!-- วันลาคงเหลือ (แยกออกมา เปลี่ยนตามประเภทที่เลือก) -->
+                <div class="mb-3">
+                  <label class="form-label small fw-bold" for="leaveBalance">วันลาคงเหลือ</label>
+                  <input type="text" id="leaveBalance" class="form-control bg-light fw-bold text-primary" readonly value="-">
+                </div>
+                
+                <!-- วันที่เริ่มต้น / สิ้นสุด -->
                 <div class="row g-2 mb-3">
                   <div class="col-12 col-sm-6">
                     <label class="form-label small fw-bold" for="leaveStart">ตั้งแต่วันที่</label>
-                    <input type="date" id="leaveStart" class="form-control">
+                    <input type="text" id="leaveStart" class="form-control" placeholder="วว/ดด/ปป">
                   </div>
                   <div class="col-12 col-sm-6">
                     <label class="form-label small fw-bold" for="leaveEnd">ถึงวันที่</label>
-                    <input type="date" id="leaveEnd" class="form-control">
+                    <input type="text" id="leaveEnd" class="form-control" placeholder="วว/ดด/ปป">
                   </div>
                 </div>
                 <div class="mb-3">
@@ -718,6 +731,25 @@
       m.innerHTML = text;
     };
 
+    function initDatePickers() {
+      const opt = {
+        locale: 'th',
+        dateFormat: 'Y-m-d',   // ค่าที่ส่งไป Backend (เหมือนเดิม)
+        altInput: true,
+        altFormat: 'd/m/y',    // ที่แสดงบนหน้าจอ = วว/ดด/ปป
+        disableMobile: true    // บังคับใช้ Flatpickr บนมือถือด้วย
+      };
+      fpStart = flatpickr('#leaveStart', {
+        ...opt,
+        onChange: (sel) => {
+          if (!sel[0]) return;
+          fpEnd.set('minDate', sel[0]);   // วันสิ้นสุดห้ามก่อนวันเริ่ม
+          if (!fpEnd.selectedDates[0] || fpEnd.selectedDates[0] < sel[0]) fpEnd.setDate(sel[0]);
+        }
+      });
+      fpEnd = flatpickr('#leaveEnd', opt);
+    }
+    
     async function api(action, payload) {
       let res, j;
       try {
@@ -738,8 +770,8 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (paneName === 'leave-form') {
-        $('leaveStart').value = today();
-        $('leaveEnd').value = today();
+        fpStart.setDate(today(), true);
+        fpEnd.setDate(today(), true);
         $('leaveReason').value = '';
         loadLeaveTypes();
       }
@@ -751,15 +783,32 @@
       if (paneName === 'approval') loadApprovalList();
     };
 
+    let LEAVE_TYPES = [];   // เก็บข้อมูลประเภทการลาไว้ใช้ดูยอดคงเหลือ
+    
     async function loadLeaveTypes() {
       try {
-        const types = await api('leave.types');
-        $('leaveType').innerHTML = types.map(t => {
-          const leftTxt = t.balance && t.balance.configured && !t.balance.unlimited ? ` (คงเหลือ ${t.balance.left} วัน)` : '';
-          return `<option value="${t.type_id}">${esc(t.name)}${esc(leftTxt)}</option>`;
-        }).join('');
+        LEAVE_TYPES = await api('leave.types');
+        // แสดงเฉพาะชื่อประเภท ไม่มีวงเล็บคงเหลือแล้ว
+        $('leaveType').innerHTML = LEAVE_TYPES.map(t =>
+          `<option value="${t.type_id}">${esc(t.name)}</option>`
+        ).join('');
+        $('leaveType').onchange = updateLeaveBalance;
+        updateLeaveBalance();
       } catch (e) { console.error(e); }
     }
+    
+    function updateLeaveBalance() {
+      const t = LEAVE_TYPES.find(x => String(x.type_id) === String($('leaveType').value));
+      let txt = '-';
+      if (t && t.balance && t.balance.configured) {
+        txt = t.balance.unlimited ? 'ไม่จำกัดจำนวนวัน' : `${t.balance.left} วัน`;
+      }
+      $('leaveBalance').value = txt;
+    }
+    
+    let fpStart, fpEnd;
+    
+
 
     async function loadLeaveHistory() {
       const out = $('historyOut');
