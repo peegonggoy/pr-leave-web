@@ -936,11 +936,11 @@
         out.innerHTML = list.map(item => `
           <div class="card p-3 bg-white mb-3 border-start border-4 border-warning" id="req-card-${item.id}">
             <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
-              <div>
-                <span class="fw-bold text-dark fs-6">${esc(item.name)}</span>
-                <div class="text-muted small">สังกัด: ${esc(item.unit || '-')}</div>
+              <div class="min-w-0">
+                <div class="fw-bold text-dark text-truncate" style="font-size: 1rem;">${esc(item.name)}</div>
+                <div class="text-muted small text-truncate">สังกัด: ${esc(item.unit || '-')}</div>
               </div>
-              <span class="badge bg-light text-dark border flex-shrink-0">ยื่นเมื่อ: ${esc(item.created_at ? item.created_at.slice(0, 16) : '-')}</span>
+              <span class="badge bg-light text-dark border flex-shrink-0" style="font-size: 0.75rem;">ยื่นเมื่อ: ${esc(item.created_at ? item.created_at.slice(0, 16) : '-')}</span>
             </div>
             
             <div class="small text-primary fw-bold mb-2"><i class="bi bi-tag-fill me-1"></i>${esc(item.type)} • ${esc(item.range)} (${item.days} วัน)</div>
@@ -965,12 +965,11 @@
             </div>
           </div>`).join('');
 
-        // ดึงข้อมูลสิทธิ์วันลาของแต่ละรายการมาแสดง
+        // ดึงข้อมูลสิทธิ์วันลาของแต่ละรายการมาแสดงแบบ Asynchronous
         list.forEach(async (item) => {
           const box = $(`balance-summary-${item.id}`);
           try {
             const balances = await api('leave.person_balances', { pid: item.pid });
-            // ค้นหาประเภทการลาที่ตรงกับที่กำลังขอ
             const matched = balances.find(b => String(b.type_id) === String(item.type_id) || b.name === item.type);
             
             if (box) {
@@ -978,11 +977,11 @@
                 const leftText = matched.unlimited ? 'ไม่จำกัดจำนวนวัน' : `คงเหลือ <b>${matched.left}</b> วัน (ใช้ไป ${matched.used || 0} ครั้ง)`;
                 box.innerHTML = `<i class="bi bi-wallet2 text-primary me-1"></i>สิทธิ์${esc(matched.name)}: ${leftText}`;
               } else {
-                box.innerHTML = `<i class="bi bi-wallet2 text-muted me-1"></i>ไม่พบข้อมูลสิทธิ์ของประเภทลานี้`;
+                box.innerHTML = `<i class="bi bi-wallet2 text-muted me-1"></i>ไม่พบข้อมูลสิทธิ์ประเภทนี้`;
               }
             }
           } catch (err) {
-            if (box) box.innerHTML = `<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i>โหลดสิทธิ์วันลาไม่สำเร็จ</span>`;
+            if (box) box.innerHTML = `<span class="text-muted"><i class="bi bi-info-circle me-1"></i>ยังไม่เปิดใช้งานฟังก์ชันดึงสิทธิ์ (เพิ่ม apiPersonLeaveBalances_ ใน Apps Script)</span>`;
           }
         });
 
