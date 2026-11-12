@@ -936,7 +936,15 @@
           <div class="card p-3 bg-white mb-3 border-start border-4 border-warning">
             <div class="fw-bold text-dark text-break">${esc(item.name)} <span class="text-muted small fw-normal">(${esc(item.unit)})</span></div>
             <div class="small text-primary fw-bold my-1">${esc(item.type)} • ${esc(item.range)} (${item.days} วัน)</div>
-            <div class="small text-secondary bg-light p-2 rounded mb-3 text-break">เหตุผล: ${esc(item.reason)}</div>
+            <div class="small text-secondary bg-light p-2 rounded mb-2 text-break">เหตุผล: ${esc(item.reason)}</div>
+            
+            ${item.attachment_url ? `
+              <div class="mb-3">
+                <a href="https://drive.google.com/uc?export=view&id=${esc(item.attachment_url)}" target="_blank" class="btn btn-outline-primary btn-sm w-100">
+                  <i class="bi bi-file-earmark-arrow-down me-1"></i> เปิดดูเอกสารแนบ / ใบรับรองแพทย์
+                </a>
+              </div>` : ''}
+
             <div class="d-flex gap-2">
               <button class="btn btn-success btn-sm flex-grow-1" onclick="processApproval('${item.id}', 'APPROVE', '${item.stamp || ''}')"><i class="bi bi-check-lg me-1"></i> อนุมัติ</button>
               <button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="processApproval('${item.id}', 'REJECT', '${item.stamp || ''}')"><i class="bi bi-x-lg me-1"></i> ไม่อนุมัติ</button>
