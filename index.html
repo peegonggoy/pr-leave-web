@@ -655,7 +655,7 @@
               </div>
               <div class="card p-3 bg-white mb-3">
                 <div class="row g-2 align-items-center">
-                  <div class="col-12 col-sm-8"><input type="date" id="myWfhDate" class="form-control"></div>
+                  <div class="col-12 col-sm-8"><input type="text" id="myWfhDate" class="form-control" placeholder="วว/ดด/ปป"></div>
                   <div class="col-12 col-sm-4"><button id="myWfhGo" class="btn btn-primary w-100">ดูสัปดาห์นี้</button></div>
                 </div>
               </div>
@@ -731,26 +731,46 @@
       m.innerHTML = text;
     };
 
+    // ===================== ตัวเลือกวันที่ (วว/ดด/ปป) =====================
+    let fpStart = null, fpEnd = null, fpWfh = null;
+
     function initDatePickers() {
-      if (fpStart) return;   // ถ้าสร้างไว้แล้ว ไม่ต้องสร้างซ้ำ
+      if (typeof flatpickr !== 'function') {
+        console.warn('Flatpickr ยังไม่ถูกโหลด ใช้ช่องวันที่แบบปกติแทน');
+        return;
+      }
       const opt = {
-        locale: 'th',
-        dateFormat: 'Y-m-d',
+        dateFormat: 'Y-m-d',   // ค่าที่ส่งไป Backend
         altInput: true,
-        altFormat: 'd/m/y',
+        altFormat: 'd/m/y',    // ค่าที่แสดงบนหน้าจอ = วว/ดด/ปป
         disableMobile: true
       };
-      fpStart = flatpickr('#leaveStart', {
-        ...opt,
-        onChange: (sel) => {
-          if (!sel[0]) return;
-          fpEnd.set('minDate', sel[0]);
-          if (!fpEnd.selectedDates[0] || fpEnd.selectedDates[0] < sel[0]) fpEnd.setDate(sel[0]);
-        }
-      });
-      fpEnd = flatpickr('#leaveEnd', opt);
+      if (flatpickr.l10ns && flatpickr.l10ns.th) opt.locale = 'th';
+
+      if (!fpEnd && $('leaveEnd')) {
+        fpEnd = flatpickr($('leaveEnd'), opt);
+      }
+      if (!fpStart && $('leaveStart')) {
+        fpStart = flatpickr($('leaveStart'), {
+          ...opt,
+          onChange: (sel) => {
+            if (!sel[0] || !fpEnd) return;
+            fpEnd.set('minDate', sel[0]);   // วันสิ้นสุดห้ามก่อนวันเริ่ม
+            if (!fpEnd.selectedDates[0] || fpEnd.selectedDates[0] < sel[0]) fpEnd.setDate(sel[0], true);
+          }
+        });
+      }
+      if (!fpWfh && $('myWfhDate')) {
+        fpWfh = flatpickr($('myWfhDate'), opt);
+      }
     }
-    
+
+    // ตั้งค่าวันที่แบบปลอดภัย: ถ้าตัวเลือกวันที่ยังไม่พร้อม จะใส่ค่าลงช่องตรง ๆ แทน
+    function setDateField(fp, id, val) {
+      if (fp && typeof fp.setDate === 'function') fp.setDate(val, true);
+      else if ($(id)) $(id).value = val;
+    }
+
     async function api(action, payload) {
       let res, j;
       try {
@@ -772,33 +792,39 @@
 
       if (paneName === 'leave-form') {
         initDatePickers();
-        fpStart.setDate(today(), true);
-        fpEnd.setDate(today(), true);
+        if (fpEnd) fpEnd.set('minDate', null);
+        setDateField(fpStart, 'leaveStart', today());
+        setDateField(fpEnd, 'leaveEnd', today());
         $('leaveReason').value = '';
+        if ($('leaveAttachment')) $('leaveAttachment').value = '';
         loadLeaveTypes();
       }
       if (paneName === 'leave-history') loadLeaveHistory();
       if (paneName === 'my-wfh') {
-        if (!$('myWfhDate').value) $('myWfhDate').value = today();
+        initDatePickers();
+        if (!$('myWfhDate').value) setDateField(fpWfh, 'myWfhDate', today());
         loadMyWfh();
       }
       if (paneName === 'approval') loadApprovalList();
     };
 
-    let LEAVE_TYPES = [];   // เก็บข้อมูลประเภทการลาไว้ใช้ดูยอดคงเหลือ
-    
+    // ===================== ประเภทการลา + วันลาคงเหลือ =====================
+    let LEAVE_TYPES = [];
+
     async function loadLeaveTypes() {
       try {
         LEAVE_TYPES = await api('leave.types');
-        // แสดงเฉพาะชื่อประเภท ไม่มีวงเล็บคงเหลือแล้ว
         $('leaveType').innerHTML = LEAVE_TYPES.map(t =>
           `<option value="${t.type_id}">${esc(t.name)}</option>`
         ).join('');
         $('leaveType').onchange = updateLeaveBalance;
         updateLeaveBalance();
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        console.error(e);
+        $('leaveBalance').value = 'โหลดข้อมูลไม่สำเร็จ';
+      }
     }
-    
+
     function updateLeaveBalance() {
       const t = LEAVE_TYPES.find(x => String(x.type_id) === String($('leaveType').value));
       let txt = '-';
@@ -807,11 +833,8 @@
       }
       $('leaveBalance').value = txt;
     }
-    
-    let fpStart, fpEnd;
-    
 
-
+    // ===================== ประวัติการลา =====================
     async function loadLeaveHistory() {
       const out = $('historyOut');
       out.innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>กำลังโหลดประวัติ...</div>';
@@ -867,6 +890,7 @@
       }
     };
 
+    // ===================== ตาราง WFH =====================
     async function loadMyWfh() {
       const out = $('myWfhOut');
       out.innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>กำลังโหลดตาราง WFH...</div>';
@@ -897,6 +921,7 @@
       }
     }
 
+    // ===================== อนุมัติใบลา =====================
     async function loadApprovalList() {
       const out = $('approvalOut');
       out.innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>กำลังโหลดรายการ...</div>';
@@ -957,64 +982,22 @@
         </div>`;
       row.appendChild(col);
     }
-        // ฟังก์ชันอ่านไฟล์เป็น Base64
-function readFileAsBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve({
-      name: file.name,
-      type: file.type,
-      size: file.size,
-      base64: reader.result
-    });
-    reader.onerror = error => reject(error);
-    reader.readAsDataURL(file);
-  });
-}
 
-// ในฟังก์ชันกดยื่นใบลา
-async function submitLeave() {
-  const fileInput = document.getElementById('leaveAttachment');
-  let attachment = null;
-
-  if (fileInput.files.length > 0) {
-    const file = fileInput.files[0];
-    if (file.size > 5 * 1024 * 1024) {
-      alert('ขนาดไฟล์เกิน 5 MB กรุณาเลือกไฟล์ใหม่');
-      return;
+    // อ่านไฟล์เป็น Base64 (เก็บไว้ใช้ตอนเชื่อมระบบแนบไฟล์กับ Backend)
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({ name: file.name, type: file.type, size: file.size, base64: reader.result });
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+      });
     }
-    attachment = await readFileAsBase64(file);
-  }
 
-  const payload = {
-    action: 'leave.submit',
-    idToken: liff.getIDToken(),
-    leave_type: document.getElementById('leaveType').value,
-    start_date: document.getElementById('startDate').value,
-    end_date: document.getElementById('endDate').value,
-    days: parseFloat(document.getElementById('leaveDays').value),
-    reason: document.getElementById('leaveReason').value,
-    attachment: attachment
-  };
-
-  // ส่งข้อมูลไปยัง Apps Script Web App
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify(payload)
-  })
-  .then(res => res.json())
-  .then(res => {
-    if (res.success) {
-      alert('ยื่นใบลาสำเร็จ');
-      location.reload();
-    } else {
-      alert('เกิดข้อผิดพลาด: ' + (res.message || 'ไม่สามารถส่งข้อมูลได้'));
-    }
-  });
-}
-
+    // ===================== เริ่มต้นระบบ =====================
     async function main() {
       try {
+        initDatePickers();   // สร้างตัวเลือกวันที่ก่อนทุกอย่าง
+
         await liff.init({ liffId: LIFF_ID });
         if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
 
@@ -1060,10 +1043,8 @@ async function submitLeave() {
             }).catch(() => {});
           }
 
-          // เพิ่มการ์ดปุ่มเข้าหน้า admin.html สำหรับธุรการและผู้บริหาร
           addAdminCardIfAllowed(perms);
 
-          // โหลดข้อมูลวันลาคงเหลือ (แสดงเฉพาะประเภทที่ตั้งค่าแล้ว หรือ 3 ประเภทหลัก)
           try {
             const balances = await api('leave.balances');
             const showList = balances.filter(b => b.configured && ['VAC', 'SICK', 'BIZ'].includes(b.type_id));
@@ -1080,8 +1061,12 @@ async function submitLeave() {
           }
 
           $('leaveSubmitBtn').onclick = async () => {
-            const type_id = $('leaveType').value, start_date = $('leaveStart').value, end_date = $('leaveEnd').value, reason = $('leaveReason').value.trim();
+            const type_id = $('leaveType').value,
+                  start_date = $('leaveStart').value,   // ค่าเป็น ปปปป-ดด-วว
+                  end_date = $('leaveEnd').value,
+                  reason = $('leaveReason').value.trim();
             if (!start_date || !end_date || !reason) { alert('กรุณากรอกข้อมูลให้ครบถ้วน'); return; }
+            if (end_date < start_date) { alert('วันสิ้นสุดต้องไม่ก่อนวันเริ่มต้น'); return; }
             const btn = $('leaveSubmitBtn');
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังส่งคำขอ...';
@@ -1099,7 +1084,6 @@ async function submitLeave() {
 
           $('myWfhGo').onclick = loadMyWfh;
 
-          // เปิดหน้าที่ตรงกับพารามิเตอร์ ?p= จากปุ่มบนการ์ด LINE
           const p = new URLSearchParams(location.search).get('p');
           if (p === 'request') switchPane('leave-form');
           else if (p === 'mine' || p === 'leave') switchPane('leave-history');
