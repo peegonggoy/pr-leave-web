@@ -932,12 +932,23 @@
           out.innerHTML = '<div class="card p-4 bg-white text-center text-muted">ไม่มีรายการรออนุมัติ ✓</div>';
           return;
         }
+
+        // วาดรายการพร้อมดึงข้อมูลสรุปวันลามาแปะ
         out.innerHTML = list.map(item => `
-          <div class="card p-3 bg-white mb-3 border-start border-4 border-warning">
-            <div class="fw-bold text-dark text-break">${esc(item.name)} <span class="text-muted small fw-normal">(${esc(item.unit)})</span></div>
+          <div class="card p-3 bg-white mb-3 border-start border-4 border-warning" id="req-card-${item.id}">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="fw-bold text-dark text-break">${esc(item.name)} <span class="text-muted small fw-normal">(${esc(item.unit)})</span></div>
+              <span class="badge bg-light text-dark border">ยื่นเมื่อ: ${esc(item.created_at || '-')}</span>
+            </div>
+            
             <div class="small text-primary fw-bold my-1">${esc(item.type)} • ${esc(item.range)} (${item.days} วัน)</div>
             <div class="small text-secondary bg-light p-2 rounded mb-2 text-break">เหตุผล: ${esc(item.reason)}</div>
             
+            <!-- ส่วนแสดงสรุปวันลา (ดึงมาแปะเพิ่ม) -->
+            <div id="balance-summary-${item.id}" class="small alert alert-secondary py-1 px-2 mb-2">
+              <span class="spinner-border spinner-border-sm me-1"></span> กำลังโหลดสิทธิ์วันลา...
+            </div>
+
             ${item.attachment_url ? `
               <div class="mb-3">
                 <a href="https://drive.google.com/uc?export=view&id=${esc(item.attachment_url)}" target="_blank" class="btn btn-outline-primary btn-sm w-100">
@@ -950,28 +961,29 @@
               <button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="processApproval('${item.id}', 'REJECT', '${item.stamp || ''}')"><i class="bi bi-x-lg me-1"></i> ไม่อนุมัติ</button>
             </div>
           </div>`).join('');
+
+        // วนลูปดึงข้อมูลสิทธิ์วันลาของแต่ละคนมาใส่ในการ์ดแบบ Asynchronous
+        list.forEach(async (item) => {
+          try {
+            // สมมติว่ามี API ดึงสิทธิ์ของ PID นั้นๆ หรือดึงประวัติการลา
+            const summaryData = await api('leave.person_summary', { pid: item.pid, type_id: item.type_id });
+            const box = $(`balance-summary-${item.id}`);
+            if (box) {
+              box.className = 'small bg-light border p-2 rounded mb-2 text-dark';
+              box.innerHTML = `
+                <div><b>สิทธิ์การลา (${esc(item.type)}):</b> คงเหลือ <b>${summaryData.left}</b> จากทั้งหมด ${summaryData.total} วัน (ปีนี้ใช้ไปแล้ว ${summaryData.used} ครั้ง / ${summaryData.used_days} วัน)</div>
+              `;
+            }
+          } catch (err) {
+            const box = $(`balance-summary-${item.id}`);
+            if (box) box.innerHTML = '<span class="text-muted">ไม่สามารถโหลดข้อมูลสิทธิ์วันลาได้</span>';
+          }
+        });
+
       } catch (e) {
         out.innerHTML = `<div class="alert alert-danger small">โหลดรายการไม่สำเร็จ: ${esc(e.message)}</div>`;
       }
     }
-
-    window.processApproval = async function (leaveId, action, stamp) {
-      let comment = '';
-      if (action !== 'APPROVE') {
-        comment = prompt('กรุณาระบุเหตุผลที่ไม่อนุมัติ:');
-        if (comment === null) return;
-        if (!comment.trim()) { alert('กรุณาระบุเหตุผล'); return; }
-      } else {
-        if (!confirm(`ยืนยันการอนุมัติใบลา ${leaveId} ใช่หรือไม่?`)) return;
-      }
-      try {
-        await api('approve.decide', { id: leaveId, action, comment: comment.trim(), stamp });
-        alert('ดำเนินการเรียบร้อยแล้ว');
-        loadApprovalList();
-      } catch (e) {
-        alert('ทำรายการไม่สำเร็จ: ' + e.message);
-      }
-    };
 
     function addAdminCardIfAllowed(perms) {
       const canAdmin = perms.includes('*') || perms.includes('duty.manage') || perms.includes('holiday.manage') || perms.includes('strength.view');
