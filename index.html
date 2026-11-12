@@ -1060,22 +1060,74 @@
             $('balanceOut').innerHTML = '<div class="col-12 text-white-50 small">ไม่สามารถโหลดข้อมูลวันลาได้</div>';
           }
 
+          // ===================== ส่งคำขอลา (รวมอัปโหลดไฟล์) =====================
           $('leaveSubmitBtn').onclick = async () => {
-            const type_id = $('leaveType').value,
-                  start_date = $('leaveStart').value,   // ค่าเป็น ปปปป-ดด-วว
-                  end_date = $('leaveEnd').value,
-                  reason = $('leaveReason').value.trim();
-            if (!start_date || !end_date || !reason) { alert('กรุณากรอกข้อมูลให้ครบถ้วน'); return; }
-            if (end_date < start_date) { alert('วันสิ้นสุดต้องไม่ก่อนวันเริ่มต้น'); return; }
+            const type_id = $('leaveType').value;
+            const start_date = $('leaveStart').value;
+            const end_date = $('leaveEnd').value;
+            const reason = $('leaveReason').value.trim();
+            
+            if (!start_date || !end_date || !reason) { 
+              alert('กรุณากรอกข้อมูลให้ครบถ้วน'); 
+              return; 
+            }
+            if (end_date < start_date) { 
+              alert('วันสิ้นสุดต้องไม่ก่อนวันเริ่มต้น'); 
+              return; 
+            }
+
             const btn = $('leaveSubmitBtn');
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังส่งคำขอ...';
+            
             try {
-              await api('leave.submit', { type_id, start_date, end_date, reason });
+              let attachment_url = '';
+              const fileInput = $('leaveAttachment');
+              
+              // ถ้ามีการเลือกไฟล์ ให้ทำการอัปโหลดขึ้นเซิร์ฟเวอร์ก่อน
+              if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                if (file.size > 5 * 1024 * 1024) {
+                  alert('ขนาดไฟล์เกิน 5 MB กรุณาเลือกไฟล์ใหม่');
+                  btn.disabled = false;
+                  return;
+                }
+                
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังอัปโหลดไฟล์...';
+                
+                // อ่านไฟล์เป็น Base64
+                const base64Data = await new Promise((resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.onload = () => resolve(reader.result);
+                  reader.onerror = error => reject(error);
+                  reader.readAsDataURL(file);
+                });
+
+                // เรียก API อัปโหลดไฟล์ (ไปที่ฟังก์ชัน apiFileUpload_ ใน Apps Script)
+                const uploadRes = await api('file.upload', {
+                  mime: file.type,
+                  data: base64Data
+                });
+                
+                // ได้ file_id กลับมา นำไปใช้เป็น attachment_url ตามที่ Backend ต้องการ
+                attachment_url = uploadRes.file_id;
+              }
+
+              btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังส่งคำขอลา...';
+
+              // ส่งคำขอลาพร้อม attachment_url
+              await api('leave.submit', { 
+                type_id, 
+                start_date, 
+                end_date, 
+                reason, 
+                attachment_url 
+              });
+
               alert('ส่งคำขอลาสำเร็จ!');
               switchPane('leave-history');
+
             } catch (e) {
-              alert('ส่งคำขอไม่สำเร็จ: ' + e.message);
+              alert('ทำรายการไม่สำเร็จ: ' + e.message);
             } finally {
               btn.disabled = false;
               btn.innerHTML = '<i class="bi bi-send me-1"></i> ส่งคำขอลา';
