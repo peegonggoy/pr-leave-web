@@ -681,6 +681,17 @@
 
     </div>
   </main>
+  
+    <div id="fileViewer" class="d-none" style="position:fixed;inset:0;z-index:2000;background:rgba(15,23,42,.85);display:flex;flex-direction:column;">
+    <div class="d-flex align-items-center justify-content-between p-2 text-white">
+      <span id="fileViewerName" class="small text-truncate me-2">เอกสารแนบ</span>
+      <div class="d-flex gap-2 flex-shrink-0">
+        <a id="fileViewerDrive" class="btn btn-light btn-sm" target="_blank">เปิดใน Drive</a>
+        <button class="btn btn-danger btn-sm" onclick="closeFileViewer()"><i class="bi bi-x-lg"></i></button>
+      </div>
+    </div>
+    <div id="fileViewerBody" class="flex-grow-1 d-flex align-items-center justify-content-center p-2" style="overflow:auto;"></div>
+  </div>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
@@ -958,11 +969,10 @@
             <!-- ปุ่มเปิดดูเอกสารแนบ (แสดงเฉพาะเมื่อมีไฟล์) -->
             ${item.attachment_url ? `
               <div class="mb-3">
-                <a href="https://drive.google.com/uc?export=view&id=${esc(item.attachment_url)}" target="_blank" class="btn btn-outline-primary btn-sm w-100">
-                  <i class="bi bi-file-earmark-arrow-down me-1"></i> เปิดดูเอกสารแนบ / ใบรับรองแพทย์
-                </a>
-              </div>` : ''}
-
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="viewAttachment('${esc(item.attachment_url)}')">
+                  <i class="bi bi-paperclip me-1"></i> เปิดดูเอกสารแนบ / ใบรับรองแพทย์
+                </button>
+              </div>` : '<div class="small text-muted mb-2"><i class="bi bi-paperclip me-1"></i>ไม่มีเอกสารแนบ</div>'}
             <div class="d-flex gap-2">
               <button class="btn btn-success btn-sm flex-grow-1" onclick="processApproval('${item.id}', 'APPROVE', '${item.stamp || ''}')"><i class="bi bi-check-lg me-1"></i> อนุมัติ</button>
               <button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="processApproval('${item.id}', 'REJECT', '${item.stamp || ''}')"><i class="bi bi-x-lg me-1"></i> ไม่อนุมัติ</button>
@@ -970,29 +980,78 @@
           </div>`).join('');
 
         // ดึงข้อมูลสิทธิ์วันลาของแต่ละรายการมาแสดงแบบ Asynchronous
-        list.forEach(async (item) => {
+        list.forEach(item => {
           const box = $(`balance-summary-${item.id}`);
-          try {
-            const balances = await api('leave.person_balances', { pid: item.pid });
-            const matched = balances.find(b => String(b.type_id) === String(item.type_id) || b.name === item.type);
-            
-            if (box) {
-              if (matched) {
-                const leftText = matched.unlimited ? 'ไม่จำกัดจำนวนวัน' : `คงเหลือ <b>${matched.left}</b> วัน (ใช้ไป ${matched.used || 0} ครั้ง)`;
-                box.innerHTML = `<i class="bi bi-wallet2 text-primary me-1"></i>สิทธิ์${esc(matched.name)}: ${leftText}`;
-              } else {
-                box.innerHTML = `<i class="bi bi-wallet2 text-muted me-1"></i>ไม่พบข้อมูลสิทธิ์ประเภทนี้`;
-              }
-            }
-          } catch (err) {
-            if (box) box.innerHTML = `<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i>โหลดสิทธิ์วันลาไม่สำเร็จ</span>`;
-          }
+          if (!box) return;
+          const b = item.balance || {};
+          const h = item.history || { times: 0, days: 0 };
+          const hist = `ปีนี้ลาไปแล้ว <b>${h.times}</b> ครั้ง รวม <b>${h.days}</b> วัน`;
+          let left = '';
+          if (b.configured === false) left = 'ไม่ได้กำหนดสิทธิ์';
+          else if (b.unlimited) left = 'ไม่จำกัดจำนวนวัน';
+          else left = `คงเหลือ <b class="${b.left < item.days ? 'text-danger' : 'text-success'}">${b.left ?? '-'}</b> วัน`;
+          box.innerHTML = `
+            <div class="fw-bold text-dark mb-1"><i class="bi bi-bar-chart-line text-primary me-1"></i>สิทธิ์${esc(item.type)}</div>
+            <div>${hist}</div>
+            <div>${left}</div>`;
         });
 
       } catch (e) {
         out.innerHTML = `<div class="alert alert-danger small">โหลดรายการไม่สำเร็จ: ${esc(e.message)}</div>`;
       }
     }
+    // ===================== ดูไฟล์แนบ =====================
+    window.viewAttachment = async function (fileRef) {
+      const m = String(fileRef).match(/[-\w]{25,}/);
+      const id = m ? m[0] : fileRef;
+      const box = $('fileViewer'), body = $('fileViewerBody');
+      $('fileViewerDrive').href = `https://drive.google.com/file/d/${id}/view`;
+      body.innerHTML = '<div class="text-white"><span class="spinner-border spinner-border-sm me-2"></span>กำลังโหลดไฟล์...</div>';
+      box.classList.remove('d-none');
+      try {
+        const f = await api('file.view', { file_id: id });
+        $('fileViewerName').textContent = f.name || 'เอกสารแนบ';
+        const bin = atob(f.data), bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        const url = URL.createObjectURL(new Blob([bytes], { type: f.mime }));
+        body.innerHTML = f.mime.startsWith('image/')
+          ? `<img src="${url}" style="max-width:100%;max-height:100%;border-radius:8px;">`
+          : `<iframe src="${url}" style="width:100%;height:100%;border:0;background:#fff;border-radius:8px;"></iframe>`;
+      } catch (e) {
+        body.innerHTML = `<div class="alert alert-danger small m-3">เปิดไฟล์ไม่สำเร็จ: ${esc(e.message)}</div>`;
+      }
+    };
+    window.closeFileViewer = function () {
+      $('fileViewer').classList.add('d-none');
+      $('fileViewerBody').innerHTML = '';
+    };
+
+    // ===================== อนุมัติ / ไม่อนุมัติ =====================
+    // ตั้งชื่อ action และชื่อฟิลด์ให้ตรงกับ backend (ดูข้อ 1.4)
+    const APPROVE_ACTION = 'approve.decide';
+
+    window.processApproval = async function (reqId, decision, stamp) {
+      const isApprove = decision === 'APPROVE';
+      let comment = '';
+      if (isApprove) {
+        if (!confirm(`ยืนยันอนุมัติใบลา ${reqId} ใช่หรือไม่?`)) return;
+      } else {
+        comment = prompt('กรุณาระบุเหตุผลที่ไม่อนุมัติ:');
+        if (comment === null) return;
+        if (!comment.trim()) { alert('กรุณาระบุเหตุผล'); return; }
+      }
+      const card = $(`req-card-${reqId}`);
+      const btns = card ? card.querySelectorAll('button') : [];
+      btns.forEach(b => b.disabled = true);
+      try {
+        await api(APPROVE_ACTION, { id: reqId, req_id: reqId, decision, action: decision, comment: comment.trim(), reason: comment.trim(), stamp });
+        alert(isApprove ? 'อนุมัติเรียบร้อยแล้ว' : 'บันทึกไม่อนุมัติเรียบร้อยแล้ว');
+        loadApprovalList();
+      } catch (e) {
+        alert('ทำรายการไม่สำเร็จ: ' + e.message);
+        btns.forEach(b => b.disabled = false);
+      }
+    };
 
     function addAdminCardIfAllowed(perms) {
       const canAdmin = perms.includes('*') || perms.includes('duty.manage') || perms.includes('holiday.manage') || perms.includes('strength.view');
