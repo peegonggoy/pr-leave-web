@@ -960,8 +960,12 @@
             
             <div class="small text-primary fw-bold mb-2"><i class="bi bi-tag-fill me-1"></i>${esc(item.type)} • ${esc(item.range)} (${item.days} วัน)</div>
             <div class="small text-secondary bg-light p-2 rounded mb-2 text-break"><b>เหตุผล:</b> ${esc(item.reason)}</div>
-            
-            <!-- ส่วนแสดงสรุปวันลาคงเหลือ -->
+            <!-- เพิ่มส่วนแสดงกล่องเตือน (ถ้ามีข้อความเตือนส่งมาจาก backend) -->
+            ${item.warning ? `
+              <div class="alert alert-warning py-1 px-2 mb-2 small text-dark fw-bold border-warning">
+                <i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i> ${esc(item.warning)}
+              </div>` : ''}
+            <!-- ส่วนแสดงสรุปวันลาคงเหลือ -->            
             <div id="balance-summary-${item.id}" class="small text-muted bg-white border p-2 rounded mb-2">
               <span class="spinner-border spinner-border-sm me-1 text-primary"></span> กำลังโหลดสิทธิ์วันลา...
             </div>
